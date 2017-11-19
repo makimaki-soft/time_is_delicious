@@ -5,22 +5,22 @@ using UnityEngine;
 public class SystemMenuButton : MonoBehaviour {
 
     private Animator animator;
+    private int waitingStateHash;
+    private const int BaseLayerIndex = 0;
 
     // Use this for initialization
     void Start () {
         animator = GetComponent<Animator>();
+        waitingStateHash = Animator.StringToHash("BaseLayer.WaitingState");
     }
-	
-	// Update is called once per frame
-	//void Update () {
-		
-	//}
-
-    
 
     public void OnClick()
     {
         Debug.Log("Clicked/SystemMenuButton");
-        //animator.SetBool("IsSystemMenuButtonSelected", true);
+        var info = animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+        if (info.fullPathHash == waitingStateHash)
+        {
+            Debug.Log("Clicked/OnWaitingState");
+        }
     }
 }
