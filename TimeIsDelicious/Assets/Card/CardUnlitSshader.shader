@@ -2,8 +2,8 @@
 {
 	Properties
 	{
-		_FrontTex ("Texture", 2D) = "white" {}
-		_BackTex ("Texture", 2D) = "white" {}
+		_FrontTex ("Front Texture", 2D) = "white" {}
+		_BackTex ("Back Texture", 2D) = "white" {}
 	}
 	SubShader
 	{
