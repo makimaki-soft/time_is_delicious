@@ -24,7 +24,6 @@ public class EventDeck : MonoBehaviour, IPointerClickHandler {
 	public void OnPointerClick(PointerEventData data) {
 		// クリック時の処理
 		if (currentEventCard != null) {
-
 			// to do ちょっとまってから破棄
 			Destroy (currentEventCard);
 		}
