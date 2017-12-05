@@ -4,13 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class TempManager : MonoBehaviour {
+public class TempManager : MonoBehaviour
+{
 
-	public GameObject cardVMPrefab;
+    public GameObject cardVMPrefab;
     private TimeIsDelicious timeIsDelicious; // Game Manager
+    private PlayersUIWindowVM playersUIVM;
+    private List<FoodCard> _foodCardList;
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
 
         timeIsDelicious = new TimeIsDelicious();
 
@@ -31,16 +35,29 @@ public class TempManager : MonoBehaviour {
         }
 
         var cards = timeIsDelicious.StartRound();
+        _foodCardList = cards;
 
-        for (int i = 0; i < cards.Count; i++) {
-			GameObject cardvm = (GameObject)Instantiate (
-				cardVMPrefab,
-				new Vector3 (-100+30*i, 11, 0),
-				Quaternion.identity
-			);
-			cardvm.GetComponent<CardViewModel> ().nikuNo=i+1;
+        // debug
+        int id = 0;
+        foreach (var player in timeIsDelicious.Players)
+        {
+            player.Bet(cards[id++]);
+        } 
+
+        for (int i = 0; i < cards.Count; i++)
+        {
+            GameObject cardvm = (GameObject)Instantiate(
+                cardVMPrefab,
+                new Vector3(-100 + 30 * i, 11, 0),
+                Quaternion.identity
+            );
+            cardvm.GetComponent<CardViewModel>().nikuNo = i + 1;
             cardvm.GetComponent<CardViewModel>().setModel(cards[i]);
         }
+
+        playersUIVM = new PlayersUIWindowVM(timeIsDelicious.Players);
+        var tmp = GameObject.Find("PlayerUIPanel").GetComponent<PlayersUIWindowController>();
+        tmp.SetVM(playersUIVM);
     }
 
     // For Debug
@@ -62,5 +79,12 @@ public class TempManager : MonoBehaviour {
 
         timeIsDelicious.AdvanceTime(dice);
     }
-
+    public void OnClickForDebug2()
+    {
+        int i = 0;
+        foreach (var player in timeIsDelicious.Players)
+        {
+            player.Sell(_foodCardList[i++]);
+        }
+    }
 }

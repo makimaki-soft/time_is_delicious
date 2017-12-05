@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace RuleManager
 {
@@ -40,6 +41,12 @@ namespace RuleManager
 
         public void Sell(FoodCard card)
         {
+            if( !_bets.Any(n => n.GUID == card.GUID) )
+            {
+                UnityEngine.Debug.Log("持ってないカードは売れません。");
+                return;
+            }
+
             TotalEarned += card.Price;
             _bets.Remove(card);
             card.PropertyChanged -= OnFoodCardPropertyChanged;
