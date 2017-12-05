@@ -30,7 +30,7 @@ namespace RuleManager
 
         public List<FoodCard> StartRound()
         {
-            _foodCardOnRound = _foodCardList.Chunks(6);
+            _foodCardOnRound = _foodCardList.Chunks(5);
             return _foodCardOnRound;
         }
 

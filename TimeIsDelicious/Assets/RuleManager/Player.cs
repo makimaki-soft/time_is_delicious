@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace RuleManager
 {
-    class Player : GameComponent
+    public class Player : GameComponent
     {
         private readonly int _id;
         public int ID

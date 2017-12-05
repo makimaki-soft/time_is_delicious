@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace RuleManager
 {
-    class GameComponent : INotifyPropertyChanged
+    public class GameComponent : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged([CallerMemberName] String propertyName = "")

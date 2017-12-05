@@ -1,6 +1,6 @@
 ﻿namespace RuleManager
 {
-    class FoodCard : GameComponent
+    public class FoodCard : GameComponent
     {
         private int _aged;
         public int Aged

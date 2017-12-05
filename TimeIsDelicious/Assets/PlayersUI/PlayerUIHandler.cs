@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,13 +10,11 @@ public class PlayerUIHandler : MonoBehaviour {
 
     [SerializeField]
     private int numberOfPlayers;
-
     private List<GameObject> playerUIList;
-
     private int turn = 0;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 		
         if(numberOfPlayers<1)
         {
@@ -35,9 +34,9 @@ public class PlayerUIHandler : MonoBehaviour {
         //    rectTrans.offsetMin = new Vector2(0.2f, 0.2f);
         //    rectTrans.offsetMax = new Vector2(0.8f, 0.8f);
             var controller = UI.GetComponent<PlayerUIController>();
-            controller.ChangeOrder(numberOfPlayers-i);
+            controller.ChangePosision(numberOfPlayers-i);
             playerUIList.Add(UI);
-         }
+        }
         for(int i= numberOfPlayers; i < 4; i++)
         {
             var name = "PlayerPrefab_" + i.ToString();
@@ -57,12 +56,12 @@ public class PlayerUIHandler : MonoBehaviour {
 
         for ( int i = 0; i < numberOfPlayers; i++)
         {
-            playerUIList[i].GetComponent<PlayerUIController>().ChangeOrder(((numberOfPlayers-i) + turn) % numberOfPlayers);
+            playerUIList[i].GetComponent<PlayerUIController>().ChangePosision(((numberOfPlayers-i) + turn) % numberOfPlayers);
         }        
     }
 
     public void AddScore()
     {
-        playerUIList[turn % numberOfPlayers].GetComponent<PlayerUIController>().AddScore();
+        playerUIList[turn % numberOfPlayers].GetComponent<PlayerUIController>().SetScore(turn);
     }
 }
