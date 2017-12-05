@@ -6,10 +6,7 @@ using UnityEngine.UI;
 
 public class PlayerUIController : MonoBehaviour {
 
-    [SerializeField]
-    private int score;
     private GameObject scoreText;
-    private GameDirector gameDirector;
     private Animator animator;
 
     void Awake()
@@ -20,38 +17,23 @@ public class PlayerUIController : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        score = 0;
         scoreText = transform.Find("Score").gameObject;
-        gameDirector = GameObject.Find("GameDirector").GetComponent<GameDirector>();
-        // animator = GetComponent<Animator>();
-
-        // Binding 
-        gameDirector.PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
-        {
-            var p = (GameDirector)sender;
-            switch (e.PropertyName)
-            {
-                case "Count":
-                    score = p.Count;
-                    break;
-            };
-        };
+        SetScore(0);
     }
 
     // Update is called once per frame
     void Update()
     {
+    }
+
+    public void SetScore(int score)
+    {
         scoreText.GetComponent<Text>().text = score.ToString();
     }
 
-    public void AddScore()
+    public void ChangePosision(int posision)
     {
-        score++;
-    }
-
-    public void ChangeOrder(int order)
-    {
-        animator.SetInteger("Order", order);
+        animator.SetInteger("Order", posision);
         animator.SetTrigger("ChangeOrder");
     }
 }

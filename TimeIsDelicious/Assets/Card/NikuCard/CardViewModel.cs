@@ -33,7 +33,34 @@ public class CardViewModel: MonoBehaviour {
 		get { return _agingPoint; }
 	}
 
-	void Start () {
+    private RuleManager.FoodCard _cardModel;
+    public void setModel(RuleManager.FoodCard model )
+    {
+        _cardModel = model;
+        _cardModel.PropertyChanged += _cardModel_PropertyChanged;
+    }
+
+    private void _cardModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        var card = sender as RuleManager.FoodCard;
+        if (e.PropertyName == "Aged")
+        {
+            if (!card.Rotten)
+            {
+                agingPoint = card.Aged;
+                agingPointText.GetComponent<TextMesh>().text = agingPoint.ToString();
+            }
+        }
+        else if (e.PropertyName == "Rotten")
+        {
+            if(card.Rotten)
+            {
+                agingPointText.GetComponent<TextMesh>().text = "×";
+            }
+        }
+    }
+
+    void Start () {
 
 		Vector3 deckPosition = GameObject.Find ("MeetDeck").transform.position;
 		Debug.Log (deckPosition);
