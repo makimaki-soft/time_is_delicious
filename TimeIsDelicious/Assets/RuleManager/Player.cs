@@ -46,7 +46,6 @@ namespace RuleManager
                 UnityEngine.Debug.Log("持ってないカードは売れません。");
                 return;
             }
-
             TotalEarned += card.Price;
             _bets.Remove(card);
             card.PropertyChanged -= OnFoodCardPropertyChanged;
