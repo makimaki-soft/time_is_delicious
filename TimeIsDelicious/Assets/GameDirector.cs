@@ -12,9 +12,27 @@ public class GameDirector : MonoBehaviour
     void Start () {
       
         _mainVM = new GameDirectorVM();
+        _mainVM.PropertyChanged += _mainVM_PropertyChanged;
         _mainVM.StartRound(); // 実際は遷移アニメーション後にCallする
 
         _mainVM.BetFood(); // デバッグ用。
+    }
+
+    private void _mainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        var vm = (GameDirectorVM)sender;
+        switch(e.PropertyName)
+        {
+            case "CurrentStatus":
+                Debug.Log("Status Changed" + vm.CurrentStatus.ToString());
+                break;
+            case "CurrentPlayerName":
+                if(vm.CurrentStatus == GameDirectorVM.Status.Betting)
+                {
+                    Debug.Log(vm.CurrentPlayerName + "さんは肉を選んでください。");
+                }
+                break;
+        }
     }
 
     // Update is called once per frame
