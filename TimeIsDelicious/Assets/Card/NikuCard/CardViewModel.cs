@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+// CardのViewという扱いに変更する。ステータス等はVMにもっていきたい
 public class CardViewModel: MonoBehaviour {
 
 	public GameObject cardPrefab;
@@ -33,8 +34,8 @@ public class CardViewModel: MonoBehaviour {
 		get { return _agingPoint; }
 	}
 
-    private RuleManager.FoodCard _cardModel;
-    public void setModel(RuleManager.FoodCard model )
+    private FoodCardVM _cardModel;
+    public void setViewModel(FoodCardVM model )
     {
         _cardModel = model;
         _cardModel.PropertyChanged += _cardModel_PropertyChanged;
@@ -42,7 +43,7 @@ public class CardViewModel: MonoBehaviour {
 
     private void _cardModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        var card = sender as RuleManager.FoodCard;
+        var card = sender as FoodCardVM;
         if (e.PropertyName == "Aged")
         {
             if (!card.Rotten)
