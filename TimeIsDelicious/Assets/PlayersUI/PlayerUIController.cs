@@ -4,6 +4,7 @@ using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Player UIのViewという扱い
 public class PlayerUIController : MonoBehaviour {
 
     private GameObject scoreText;
@@ -18,17 +19,25 @@ public class PlayerUIController : MonoBehaviour {
     void Start()
     {
         scoreText = transform.Find("Score").gameObject;
-        SetScore(0);
+        scoreText.GetComponent<Text>().text = "0";
     }
 
-    // Update is called once per frame
-    void Update()
+    private PlayerVM _playerVM;
+    public void setViewModel(PlayerVM model)
     {
+        _playerVM = model;
+        _playerVM.PropertyChanged += _playerVM_PropertyChanged; ;
     }
 
-    public void SetScore(int score)
+    private void _playerVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        scoreText.GetComponent<Text>().text = score.ToString();
+        var player = (PlayerVM)sender;
+        switch(e.PropertyName)
+        {
+            case "TotalEarned":
+                scoreText.GetComponent<Text>().text = player.TotalEarned.ToString();
+                break;
+        }
     }
 
     public void ChangePosision(int posision)

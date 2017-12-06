@@ -57,7 +57,7 @@ public class SystemMenuButton : MonoBehaviour {
         if (info.fullPathHash == animationStateHash["WaitingState"])
         {
             Debug.Log("Clicked/OnWaitingState");
-            gameDirector.Command("Clicked/OnWaitingState");
+            //gameDirector.Command("Clicked/OnWaitingState");
         }
     }
 }
