@@ -8,6 +8,7 @@ public class CardViewModel: MonoBehaviour {
 
 	public GameObject cardPrefab;
 	public GameObject textPrefab;
+	public GameObject poisonEffectPrefab;
 
 	private CardView cv;
 	private GameObject agingPointText;
@@ -57,6 +58,15 @@ public class CardViewModel: MonoBehaviour {
             if(card.Rotten)
             {
                 agingPointText.GetComponent<TextMesh>().text = "×";
+
+				// 毒フェクト
+				// todo: サイズ調整
+				GameObject effect = Instantiate (
+					poisonEffectPrefab,
+					transform.position,
+					Quaternion.identity
+				);
+				StartCoroutine (DeleteEffect (effect, 1));
             }
         }
     }
@@ -110,65 +120,10 @@ public class CardViewModel: MonoBehaviour {
 		}
 
 	}
-	/*
-	private UnityEvent onTap;
-	private string status = "init";
 
-	// Use this for initialization
-	void Start() {
-		if (onTap == null) {
-			onTap = new UnityEvent ();
-		}
-			
-		UnityAction onTapAction = ShowDetail;
-		onTap.AddListener(onTapAction);
-
-		initScale = transform.localScale;
-
-		initPosition = transform.position;
-		//StartCoroutine(DealCardAnimation(initPosition));
+	// 毒フェクトを消す
+	private IEnumerator DeleteEffect (GameObject obj, int deleteTime) {
+		yield return new WaitForSeconds (deleteTime);
+		Destroy (obj);
 	}
-
-
-
-	public void setStatus(string _status) {
-		status = _status;
-	}
-
-	public string getStatus() {
-		return status;
-	}
- 
-	// ----- ここから下はview ? 
-	/*
-
-	//  配る
-	private IEnumerator DealCardAnimation (Vector3 toPosition) {
-
-		startTime = Time.timeSinceLevelLoad;
-		startPosition = transform.position;
-		float duration = 1.0f;    // スライド時間（秒）
-		float minAngle = 0.0F;
-		float maxAngle = 180.0F;
-
-		while((Time.time - startTime) < duration){
-
-			var diff = Time.timeSinceLevelLoad - startTime;
-			var rate = diff / time;
-			var pos = animCurve.Evaluate(rate);
-
-			// 移動
-			transform.position = Vector3.Lerp (startPosition, toPosition, pos);
-
-			// 回転
-			float angle = Mathf.LerpAngle(minAngle, maxAngle, pos);
-			transform.eulerAngles = new Vector3(0, 0, angle);
-
-			yield return 0;        // 1フレーム後、再開
-		}
-
-		transform.position = toPosition;
-		setStatus("dealed");
-	}
-	*/
 }

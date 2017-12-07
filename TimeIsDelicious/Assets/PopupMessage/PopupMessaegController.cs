@@ -10,10 +10,12 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 	private float duration = 0.5f;
 
 	private GameObject msgWindow;
+	private Text msgText;
 
 	private Vector3 initScale = new Vector3 (0f, 0f, 1f);
 	private Vector3 popupScale = new Vector3 (1f, 1f, 1f);
 	private Vector3 popoutScale = new Vector3 (1.2f, 1.2f, 1f);
+
 
 	// Use this for initialization
 	void Start () {
@@ -22,12 +24,12 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 		gameObject.SetActive (false);
 		msgWindow = transform.Find ("MessageWindow").gameObject;
 		msgWindow.GetComponent<RectTransform> ().localScale = initScale;
+		msgText = msgWindow.transform.Find ("Message").gameObject.GetComponent<Text> ();
 	}
 
 	public void Popup(string msg) {
 
 		// メッセージを更新
-		Text msgText = msgWindow.transform.Find ("Message").gameObject.GetComponent<Text> ();
 		msgText.text = msg;
 
 		// ポップップ開始
