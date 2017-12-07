@@ -8,6 +8,8 @@ public class GameDirector : MonoBehaviour
 {
     private GameDirectorVM _mainVM; // ゲーム全体のView Model
 
+	public GameObject popupWindow;
+
     // Use this for initialization
     void Start () {
       
@@ -46,6 +48,8 @@ public class GameDirector : MonoBehaviour
         System.Random rdm = new System.Random();
         int dice = rdm.Next(1, 6);
         Debug.Log("サイコロの結果:" + dice);
+
+		popupWindow.GetComponent<PopupMessaegController> ().Popup("サイコロの結果:" + dice);
 
         _mainVM.AdvanceTime(dice);
     }
