@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Demo : MonoBehaviour {
+public class DiceDemo : MonoBehaviour {
 
 	public GameObject diceController;
 
