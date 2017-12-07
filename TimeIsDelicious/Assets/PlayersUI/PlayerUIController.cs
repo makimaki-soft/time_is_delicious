@@ -4,12 +4,10 @@ using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Player UIのViewという扱い
 public class PlayerUIController : MonoBehaviour {
 
-    [SerializeField]
-    private int score;
     private GameObject scoreText;
-    private GameDirector gameDirector;
     private Animator animator;
 
     void Awake()
@@ -20,38 +18,31 @@ public class PlayerUIController : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        score = 0;
         scoreText = transform.Find("Score").gameObject;
-        gameDirector = GameObject.Find("GameDirector").GetComponent<GameDirector>();
-        // animator = GetComponent<Animator>();
+        scoreText.GetComponent<Text>().text = "0";
+    }
 
-        // Binding 
-        gameDirector.PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
+    private PlayerVM _playerVM;
+    public void setViewModel(PlayerVM model)
+    {
+        _playerVM = model;
+        _playerVM.PropertyChanged += _playerVM_PropertyChanged; ;
+    }
+
+    private void _playerVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    {
+        var player = (PlayerVM)sender;
+        switch(e.PropertyName)
         {
-            var p = (GameDirector)sender;
-            switch (e.PropertyName)
-            {
-                case "Count":
-                    score = p.Count;
-                    break;
-            };
-        };
+            case "TotalEarned":
+                scoreText.GetComponent<Text>().text = player.TotalEarned.ToString();
+                break;
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ChangePosision(int posision)
     {
-        scoreText.GetComponent<Text>().text = score.ToString();
-    }
-
-    public void AddScore()
-    {
-        score++;
-    }
-
-    public void ChangeOrder(int order)
-    {
-        animator.SetInteger("Order", order);
+        animator.SetInteger("Order", posision);
         animator.SetTrigger("ChangeOrder");
     }
 }

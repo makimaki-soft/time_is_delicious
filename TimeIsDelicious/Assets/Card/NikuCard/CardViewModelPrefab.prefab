@@ -53,4 +53,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardPrefab: {fileID: 1052482787352916, guid: 777a2c860cfbf4f1cb9afc95ed473d1b, type: 2}
   textPrefab: {fileID: 1288603520842500, guid: 8306c9925b9ec404c86247029a210443, type: 2}
+  poisonEffectPrefab: {fileID: 1922921950262016, guid: 884d2c110faf3854a9bd7a2f6e076781,
+    type: 2}
   nikuNo: 0
