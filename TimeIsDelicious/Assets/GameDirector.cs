@@ -64,7 +64,7 @@ public class GameDirector : MonoBehaviour
     }
 	private void DebugStopHandler ()
 	{
-		Debug.Log ("Stop Dice");
+		Debug.Log ("Stop Dice: " + Dice.Value (""));
 		Dice.Clear ();
 		Destroy (dc);
 	}
