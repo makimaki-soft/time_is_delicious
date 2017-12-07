@@ -8,8 +8,6 @@ public class GameDirector : MonoBehaviour
 {
     private GameDirectorVM _mainVM; // ゲーム全体のView Model
 
-	public GameObject popupWindow;
-
     // Use this for initialization
     void Start () {
       
@@ -43,11 +41,17 @@ public class GameDirector : MonoBehaviour
 	}
 
     // For Debug
+	public GameObject popupWindow;
+	private DiceController dc;
     public void OnClickForDebug()
     {
         System.Random rdm = new System.Random();
         int dice = rdm.Next(1, 6);
         Debug.Log("サイコロの結果:" + dice);
+
+		dc = GetComponent<DiceController> ();
+		dc.StopDice = DebugStopHandler;
+		dc.Roll ("red");
 
 		popupWindow.GetComponent<PopupMessaegController> ().Popup("サイコロの結果:" + dice);
 
@@ -58,4 +62,10 @@ public class GameDirector : MonoBehaviour
 
         _mainVM.SellFood();
     }
+	private void DebugStopHandler ()
+	{
+		Debug.Log ("Stop Dice: " + Dice.Value (""));
+		Dice.Clear ();
+		Destroy (dc);
+	}
 }
