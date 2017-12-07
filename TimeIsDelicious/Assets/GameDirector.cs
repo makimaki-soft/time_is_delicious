@@ -29,7 +29,7 @@ public class GameDirector : MonoBehaviour
             case "CurrentPlayerName":
                 if(vm.CurrentStatus == GameDirectorVM.Status.Betting)
                 {
-                    Debug.Log(vm.CurrentPlayerName + "さんは肉を選んでください。");
+                    popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
                 }
                 break;
         }
@@ -45,27 +45,20 @@ public class GameDirector : MonoBehaviour
 	private DiceController dc;
     public void OnClickForDebug()
     {
-        System.Random rdm = new System.Random();
-        int dice = rdm.Next(1, 6);
-        Debug.Log("サイコロの結果:" + dice);
-
 		dc = GetComponent<DiceController> ();
 		dc.StopDice = DebugStopHandler;
 		dc.Roll ("red");
-
-		popupWindow.GetComponent<PopupMessaegController> ().Popup("サイコロの結果:" + dice);
-
-        _mainVM.AdvanceTime(dice);
     }
     public void OnClickForDebug2()
     {
-
         _mainVM.SellFood();
     }
 	private void DebugStopHandler ()
 	{
-		Debug.Log ("Stop Dice: " + Dice.Value (""));
+        var dice = Dice.Value("");
+        Debug.Log ("Stop Dice: " + Dice.Value (""));
 		Dice.Clear ();
-		Destroy (dc);
-	}
+        dc.StopDice -= DebugStopHandler;
+        _mainVM.AdvanceTime(dice);
+    }
 }
