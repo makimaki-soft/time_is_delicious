@@ -1,13 +1,23 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 
 public class GameDirectorVM : VMBase {
 
+    //todo : Modelと全く同じ定義。本来VMで持つべき？
     public enum Status
     {
-        Betting
+        NotStarted,         // スタート待ち
+        WaitForRoundStart,  // ラウンド開始待ち
+        Betting,            // 
+        // ループ
+        CastDice,
+        DecisionMaking,
+        Event,
+        Aging,
+        // ループ終わり
     }
 
     private MainModel _singletonMainModel;
@@ -16,7 +26,6 @@ public class GameDirectorVM : VMBase {
     {
         _singletonMainModel = MainModel.Instance;
         _singletonMainModel.PropertyChanged += MainModel_PropertyChanged;
-        _singletonMainModel.StartTimeIsDelicious();
     }
 
     private void MainModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -25,10 +34,8 @@ public class GameDirectorVM : VMBase {
         switch(e.PropertyName)
         {
             case "CurrentStatus":
-                if(mainModel.CurrentStatus == MainModel.Status.Betting)
-                {
-                    CurrentStatus = Status.Betting;
-                }
+                // ステータスを同期
+                CurrentStatus = (Status)Enum.ToObject(typeof(Status), (int)mainModel.CurrentStatus);
                 break;
             case "CurrentPlayer":
                 CurrentPlayerName = mainModel.CurrentPlayer.GUID.ToString(); // tmp
@@ -64,7 +71,10 @@ public class GameDirectorVM : VMBase {
         }
     }
 
-
+    public void StartTimeIsDelicious()
+    {
+        _singletonMainModel.StartTimeIsDelicious();
+    }
     public void StartRound()
     {
         _singletonMainModel.StartTimeIsDeliciousRound();

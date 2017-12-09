@@ -8,14 +8,20 @@ public class GameDirector : MonoBehaviour
 {
     private GameDirectorVM _mainVM; // ゲーム全体のView Model
 
+    private GameObject playerUIWindow;
+
     // Use this for initialization
     void Start () {
       
         _mainVM = new GameDirectorVM();
         _mainVM.PropertyChanged += _mainVM_PropertyChanged;
-        _mainVM.StartRound(); // 実際は遷移アニメーション後にCallする
+      
+        // 監視対象GameObjectを取得
+        playerUIWindow = GameObject.Find("PlayerUIPanel");
 
-        _mainVM.BetFood(); // デバッグ用。
+
+        // ゲームを開始する
+        _mainVM.StartTimeIsDelicious();
     }
 
     private void _mainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -24,15 +30,33 @@ public class GameDirector : MonoBehaviour
         switch(e.PropertyName)
         {
             case "CurrentStatus":
-                Debug.Log("Status Changed" + vm.CurrentStatus.ToString());
+                if (vm.CurrentStatus == GameDirectorVM.Status.WaitForRoundStart)
+                {
+                    // ラウンド開始中のアニメーしょんをまってからStartRound
+                    StartCoroutine(RoundStart());
+                }
                 break;
             case "CurrentPlayerName":
                 if(vm.CurrentStatus == GameDirectorVM.Status.Betting)
                 {
-                    popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
+                    //popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
                 }
                 break;
         }
+    }
+
+    private IEnumerator RoundStart()
+    {
+        // PlyerUIWindowが準備完了したら
+        yield return new WaitUntil(() => {
+            return playerUIWindow.GetComponent<PlayersUIWindowController>().UIRready;
+        });
+
+        // メッセージを表示して、確認されたらStartRound
+        popupWindow.GetComponent<PopupMessaegController>().Popup("ラウンド開始します", () =>
+        {
+            _mainVM.StartRound();
+        });
     }
 
     // Update is called once per frame

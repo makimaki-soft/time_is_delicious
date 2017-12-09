@@ -13,12 +13,39 @@ public class PlayersUIWindowVM : VMBase {
         _singletonMainModel = MainModel.Instance;
         // CurrentFoodCardsプロパティ全体を公開してしまうかは悩みどころ。
         _singletonMainModel.Players.CollectionChanged += Players_CollectionChanged;
+        _singletonMainModel.PropertyChanged += SingletonMainModel_PropertyChanged;
     }
 
     private ObservableCollection<PlayerVM> _playerListVM;
     public ObservableCollection<PlayerVM> PlayerListVM
     {
         get { return _playerListVM; }
+    }
+
+    private int _numberOfPlayers;
+    public int NumberOfPlayers
+    {
+        get { return _numberOfPlayers; }
+        set
+        {
+            if (_numberOfPlayers != value)
+            {
+                _numberOfPlayers = value;
+                NotifyPropertyChanged();
+            }
+
+        }
+    }
+
+    private void SingletonMainModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        var mainModel = sender as MainModel;
+        switch (e.PropertyName)
+        {
+            case "NumberOfPlayers":
+                NumberOfPlayers = mainModel.NumberOfPlayers;
+                break;
+        }
     }
 
     private void Players_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
