@@ -27,7 +27,15 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 		msgText = msgWindow.transform.Find ("Message").gameObject.GetComponent<Text> ();
 	}
 
-	public void Popup(string msg) {
+    public delegate void onConfirm();
+    onConfirm _onConfirm;
+    public void Popup(string msg, onConfirm onConfirmCallback)
+    {
+        _onConfirm = onConfirmCallback;
+        Popup(msg);
+    }
+
+    public void Popup(string msg) {
 
 		// メッセージを更新
 		msgText.text = msg;
@@ -90,5 +98,6 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 		}
 
 		gameObject.SetActive (false);
-	}
+        _onConfirm?.Invoke();
+    }
 }

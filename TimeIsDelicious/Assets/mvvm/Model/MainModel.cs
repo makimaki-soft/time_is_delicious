@@ -16,9 +16,9 @@ public sealed class MainModel : GameComponent {
 
     public enum Status
     {
-        NotStarted,
-        RoundInit,
-        Betting,
+        NotStarted,         // スタート待ち
+        WaitForRoundStart,  // ラウンド開始待ち
+        Betting,            // 
         // ループ
         CastDice,
         DecisionMaking,
@@ -57,6 +57,21 @@ public sealed class MainModel : GameComponent {
         }
     }
 
+    private int _numberOfPlayers;
+    public int NumberOfPlayers
+    {
+        get { return _numberOfPlayers; }
+        set
+        {
+            if (_numberOfPlayers != value)
+            {
+                _numberOfPlayers = value;
+                NotifyPropertyChanged();
+            }
+
+        }
+    }
+
     private ObservableCollection<FoodCard> _currentFoodCards;
     public ObservableCollection<FoodCard> CurrentFoodCards
     {
@@ -79,16 +94,18 @@ public sealed class MainModel : GameComponent {
 
     public void StartTimeIsDelicious()
     {
+        NumberOfPlayers = 4;
         foreach (var player in _timesIsDelicious.Players)
         {
             _players.Add(player);
         }
+        CurrentStatus = Status.WaitForRoundStart;
     }
 
     // ラウンドを開始。
     public void StartTimeIsDeliciousRound()
     {
-        CurrentStatus = Status.RoundInit;
+        // CurrentStatus = Status.RoundInit;
         var cards = _timesIsDelicious.StartRound();
         foreach(var card in cards)
         {

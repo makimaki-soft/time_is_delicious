@@ -40,9 +40,23 @@ public class PlayerUIController : MonoBehaviour {
         }
     }
 
-    public void ChangePosision(int posision)
+    // ここではなく、上位(ListView)側でこれを載せている皿を移動させるべき
+    public void ChangePosision(int posision, onComplete onCompleteCallback)
     {
         animator.SetInteger("Order", posision);
         animator.SetTrigger("ChangeOrder");
+
+        // アニメーション完了後にCallbackを実行
+        StartCoroutine(WaitForAnimationComplete(onCompleteCallback, posision));
+    }
+
+    public delegate void onComplete(string msg);
+    private IEnumerator WaitForAnimationComplete(onComplete callback, int position)
+    {
+        yield return new WaitUntil(() => {
+            return animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f;
+        });
+
+        callback(position.ToString());
     }
 }
