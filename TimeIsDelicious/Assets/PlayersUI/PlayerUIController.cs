@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ using UnityEngine.UI;
 public class PlayerUIController : MonoBehaviour {
 
     private GameObject scoreText;
+    private GameObject CharactorImage;
     private Animator animator;
 
     void Awake()
@@ -20,13 +22,37 @@ public class PlayerUIController : MonoBehaviour {
     {
         scoreText = transform.Find("Score").gameObject;
         scoreText.GetComponent<Text>().text = "0";
+
+        CharactorImage = transform.Find("CharaImage").gameObject;
     }
 
     private PlayerVM _playerVM;
     public void setViewModel(PlayerVM model)
     {
         _playerVM = model;
-        _playerVM.PropertyChanged += _playerVM_PropertyChanged; ;
+        _playerVM.PropertyChanged += _playerVM_PropertyChanged;
+        _playerVM.Bets.CollectionChanged += Bets_CollectionChanged;
+    }
+
+    private void Bets_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add:
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                foreach (var item in e.OldItems)
+                {
+                    var card = (PlayerVM.FoodCardStatus)item;
+                    if(card.status == PlayerVM.Status.Rotten)
+                    {
+                        // 腐ったことにより手放した
+                        CharactorImage.GetComponent<Faces>().Sad(2);
+                    }
+                }
+                
+                break;
+        }
     }
 
     private void _playerVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -36,6 +62,7 @@ public class PlayerUIController : MonoBehaviour {
         {
             case "TotalEarned":
                 scoreText.GetComponent<Text>().text = player.TotalEarned.ToString();
+                CharactorImage.GetComponent<Faces>().Smile(2); // 得点が上がったら笑う
                 break;
         }
     }

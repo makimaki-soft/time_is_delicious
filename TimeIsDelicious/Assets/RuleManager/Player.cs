@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
@@ -27,11 +28,17 @@ namespace RuleManager
             }
         }
 
-        private List<FoodCard> _bets;
-        public List<FoodCard> Bets
+        private ObservableCollection<FoodCard> _bets;
+        public ObservableCollection<FoodCard> Bets
         {
             get { return _bets; }
         }
+
+        //private List<FoodCard> _bets;
+        //public List<FoodCard> Bets
+        //{
+         //   get { return _bets; }
+        //}
 
         public void Bet(FoodCard card)
         {
@@ -57,10 +64,10 @@ namespace RuleManager
             switch (e.PropertyName)
             {
                 case "Rotten":
-                    if (card.Rotten == true)
+                    if (card.Rotten == true && _bets.Contains(card))
                     {
-                        var rotten = _bets.Find(x => x.GUID == card.GUID);
-                        _bets.Remove(rotten);
+                        // var rotten = _bets.Find(x => x.GUID == card.GUID);
+                        _bets.Remove(card);
                         card.PropertyChanged -= OnFoodCardPropertyChanged;
                     }
                     break;
@@ -70,7 +77,7 @@ namespace RuleManager
         public Player(int i)
         {
             _id = i;
-            _bets = new List<FoodCard>();
+            _bets = new ObservableCollection<FoodCard>();
         }
     }
 }

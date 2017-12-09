@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using UnityEngine;
 
 public class GameDirectorVM : VMBase {
 
@@ -36,6 +35,7 @@ public class GameDirectorVM : VMBase {
             case "CurrentStatus":
                 // ステータスを同期
                 CurrentStatus = (Status)Enum.ToObject(typeof(Status), (int)mainModel.CurrentStatus);
+                UnityEngine.Debug.Log(CurrentStatus);
                 break;
             case "CurrentPlayer":
                 CurrentPlayerName = mainModel.CurrentPlayer.GUID.ToString(); // tmp
