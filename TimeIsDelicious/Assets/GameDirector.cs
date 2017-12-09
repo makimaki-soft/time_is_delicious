@@ -32,14 +32,16 @@ public class GameDirector : MonoBehaviour
             case "CurrentStatus":
                 if (vm.CurrentStatus == GameDirectorVM.Status.WaitForRoundStart)
                 {
-                    // ラウンド開始中のアニメーしょんをまってからStartRound
+                    // ラウンド開始中のアニメーションをまってからStartRound
+                    Debug.Log("StartCoroutine(RoundStart())");
                     StartCoroutine(RoundStart());
                 }
                 break;
             case "CurrentPlayerName":
                 if(vm.CurrentStatus == GameDirectorVM.Status.Betting)
                 {
-                    //popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
+                    popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
+                    _mainVM.BetFood(); // For Debug
                 }
                 break;
         }
@@ -83,6 +85,6 @@ public class GameDirector : MonoBehaviour
         Debug.Log ("Stop Dice: " + Dice.Value (""));
 		Dice.Clear ();
         dc.StopDice -= DebugStopHandler;
-        _mainVM.AdvanceTime(dice);
+        _mainVM.AdvanceTime(dice*10);
     }
 }

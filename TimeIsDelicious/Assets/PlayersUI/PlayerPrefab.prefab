@@ -38,6 +38,7 @@ GameObject:
   - component: {fileID: 224291545345072776}
   - component: {fileID: 222619008232182336}
   - component: {fileID: 114653695572446174}
+  - component: {fileID: 114528405002624866}
   m_Layer: 5
   m_Name: CharaImage
   m_TagString: Untagged
@@ -125,6 +126,21 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114528405002624866
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1581016859218854}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c03c5bbf0aa2704db2d48d85b7bd705, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SmileSprite: {fileID: 0}
+  SadSprite: {fileID: 0}
+  WorriedSprite: {fileID: 0}
+  State: 0
 --- !u!114 &114558217338382346
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -190,7 +206,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f3ca2f7b6d46304d8c11629ff7b79ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 0
 --- !u!114 &114864293945512714
 MonoBehaviour:
   m_ObjectHideFlags: 1

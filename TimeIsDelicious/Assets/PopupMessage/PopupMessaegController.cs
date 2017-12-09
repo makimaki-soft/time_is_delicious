@@ -99,5 +99,6 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 
 		gameObject.SetActive (false);
         _onConfirm?.Invoke();
+        _onConfirm = null;
     }
 }

@@ -122,12 +122,21 @@ public sealed class MainModel : GameComponent {
 
     public void SellCurrentPlayersFood()
     {
-        CurrentPlayer.Sell(_currentFoodCards[0]); // デバッグ用実装
+        // CurrentPlayer.Sell(_currentFoodCards[0]); // デバッグ用実装
+        foreach (var p in _players)
+        {
+            p.Sell(_currentFoodCards[0]);
+        }
     }
 
     public void BetFood()
     {
-        CurrentPlayer.Bet(_currentFoodCards[0]); // デバッグ用実装
+        // CurrentPlayer.Bet(_currentFoodCards[0]); // デバッグ用実装
+
+        foreach(var p in _players)
+        {
+            p.Bet(_currentFoodCards[0]);
+        }
     }
 
 }
