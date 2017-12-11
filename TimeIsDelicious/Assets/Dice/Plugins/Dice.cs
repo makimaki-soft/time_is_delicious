@@ -293,7 +293,7 @@ public class Dice : MonoBehaviour {
 				// apply the force impuls
                 die.GetComponent<Rigidbody>().AddForce((Vector3) rDie.force, ForceMode.Impulse);
 				// apply a random torque
-                die.GetComponent<Rigidbody>().AddTorque(new Vector3(-50 * Random.value * die.transform.localScale.magnitude, -50 * Random.value * die.transform.localScale.magnitude, -50 * Random.value * die.transform.localScale.magnitude), ForceMode.Impulse);
+                die.GetComponent<Rigidbody>().AddTorque(new Vector3(-500 * Random.value * die.transform.localScale.magnitude, -500 * Random.value * die.transform.localScale.magnitude, -500 * Random.value * die.transform.localScale.magnitude), ForceMode.Impulse);
 				// add die to rollingDice
                 rollingDice.Add(rDie);
 				// remove the die from the queue

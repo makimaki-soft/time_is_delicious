@@ -27,8 +27,10 @@ public class DiceController : MonoBehaviour {
 
 	// dertermine random rolling force
 	private Vector3 Force() {
-		Vector3 rollTarget = Vector3.zero + new Vector3(2 + 7 * Random.value, .5F + 4 * Random.value, -2 - 3 * Random.value);
-		return Vector3.Lerp(spawnPoint.transform.position, rollTarget, 1).normalized * (-35 - Random.value * 20);
+		//Vector3 rollTarget = Vector3.zero + new Vector3(2 + 7 * Random.value, .5F + 4 * Random.value, -2 - 3 * Random.value);
+		//return Vector3.Lerp(spawnPoint.transform.position, rollTarget, 1).normalized * (-35 - Random.value * 20);
+		Vector3 rollTarget = Vector3.zero + new Vector3(100 * Random.value, 100 * Random.value, 100 * Random.value);
+		return spawnPoint.transform.forward * 750;
 	}
 
 	/*
