@@ -1,0 +1,44 @@
+{
+	"events" : [
+		{
+			"temperature" : 5,
+			"humidity" : 5,
+			"wind" : 60
+		},
+		{
+			"temperature" : 80,
+			"humidity" : 80,
+			"wind" : 80
+		},
+		{
+			"temperature" : 40,
+			"humidity" : 60,
+			"wind" : 100
+		},
+		{
+			"temperature" : 50,
+			"humidity" : 50,
+			"wind" : 50
+		},
+		{
+			"temperature" : 20,
+			"humidity" : 100,
+			"wind" : 50
+		},
+		{
+			"temperature" : 100,
+			"humidity" : 20,
+			"wind" : 0
+		},
+		{
+			"temperature" : 95,
+			"humidity" : 25,
+			"wind" : 35
+		},
+		{
+			"temperature" : 70,
+			"humidity" : 30,
+			"wind" : 70
+		}
+	]
+}

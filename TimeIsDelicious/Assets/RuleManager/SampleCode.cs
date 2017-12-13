@@ -68,7 +68,7 @@ namespace RuleManager
                     }
                 }
 
-                timeIsDelicious.AdvanceTime(dice);
+                // timeIsDelicious.AdvanceTime(dice);
             }
 
         }

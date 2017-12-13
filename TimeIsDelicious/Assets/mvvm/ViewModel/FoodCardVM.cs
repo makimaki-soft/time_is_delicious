@@ -53,6 +53,8 @@ public class FoodCardVM : VMBase {
         }
     }
 
+    public IReadOnlyList<PriceTable> PriceTable { get; }
+
     private FoodCard _foodCardModel;
     public FoodCardVM(FoodCard model)
     {
@@ -61,6 +63,8 @@ public class FoodCardVM : VMBase {
         _price = 0;
         _rotten = false;
         _foodCardModel = model;
+        PriceTable = model.PriceTable;
+
         _foodCardModel.PropertyChanged += _foodCardModel_PropertyChanged;
     }
 

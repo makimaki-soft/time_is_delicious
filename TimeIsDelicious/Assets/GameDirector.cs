@@ -85,6 +85,6 @@ public class GameDirector : MonoBehaviour
         Debug.Log ("Stop Dice: " + Dice.Value (""));
 		Dice.Clear ();
         dc.StopDice -= DebugStopHandler;
-        _mainVM.AdvanceTime(dice*10);
+        _mainVM.AdvanceTime(dice);
     }
 }

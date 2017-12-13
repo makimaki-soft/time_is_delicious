@@ -72,6 +72,20 @@ public sealed class MainModel : GameComponent {
         }
     }
 
+    private EventCard _currentEventCard;
+    public EventCard CurrentEventCard
+    {
+        get { return _currentEventCard; }
+        private set
+        {
+            if (_currentEventCard != value)
+            {
+                _currentEventCard = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
     private ObservableCollection<FoodCard> _currentFoodCards;
     public ObservableCollection<FoodCard> CurrentFoodCards
     {
@@ -113,11 +127,15 @@ public sealed class MainModel : GameComponent {
         }
         CurrentStatus = Status.Betting;
         CurrentPlayer = _players[0];
+
+        _currentEventCard = _timesIsDelicious.OpenEventCard(); // Debug用
     }
 
     public void AdvanceTime(int i)
     {
-        _timesIsDelicious.AdvanceTime(i);
+        EventCardOpen(); // デバッグ用。とりあえずサイコロのたびにイベントカードを変えてみる
+
+        _timesIsDelicious.AdvanceTime(i, _currentEventCard);
     }
 
     public void SellCurrentPlayersFood()
@@ -139,4 +157,8 @@ public sealed class MainModel : GameComponent {
         }
     }
 
+    public void EventCardOpen()
+    {
+        CurrentEventCard = _timesIsDelicious.OpenEventCard();
+    }
 }
