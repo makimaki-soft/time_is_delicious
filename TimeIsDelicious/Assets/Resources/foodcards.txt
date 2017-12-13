@@ -1,0 +1,234 @@
+{
+	"price_template" : [
+		{
+			"id" : 0,
+			"price_table" : [
+				{
+					"min" : 0,
+					"max" : 8,
+					"price" : 5
+				},
+				{
+					"min" : 9,
+					"max" : 20,
+					"price" : 11
+				},
+				{
+					"min" : 21,
+					"max" : 41,
+					"price" : 17
+				},
+				{
+					"min" : 42,
+					"max" : 50,
+					"price" : 30
+				}
+			]
+		},
+		{
+			"id" : 1,
+			"price_table" : [
+				{
+					"min" : 0,
+					"max" : 5,
+					"price" : 0
+				},
+				{
+					"min" : 6,
+					"max" : 20,
+					"price" : 10
+				},
+				{
+					"min" : 21,
+					"max" : 42,
+					"price" : 15
+				},
+				{
+					"min" : 43,
+					"max" : 50,
+					"price" : 30
+				}
+			]
+		},
+		{
+			"id" : 2,
+			"price_table" : [
+				{
+					"min" : 0,
+					"max" : 10,
+					"price" : 10
+				},
+				{
+					"min" : 10,
+					"max" : 25,
+					"price" : 12
+				},
+				{
+					"min" : 26,
+					"max" : 40,
+					"price" : 15
+				},
+				{
+					"min" : 41,
+					"max" : 50,
+					"price" : 25
+				}
+			]
+		},
+		{
+			"id" : 3,
+			"price_table" : [
+				{
+					"min" : 0,
+					"max" : 20,
+					"price" : 0
+				},
+				{
+					"min" : 21,
+					"max" : 40,
+					"price" : 5
+				},
+				{
+					"min" : 41,
+					"max" : 45,
+					"price" : 20
+				},
+				{
+					"min" : 46,
+					"max" : 50,
+					"price" : 60
+				}
+			]
+		},
+		{
+			"id" : 4,
+			"price_table" : [
+				{
+					"min" : 0,
+					"max" : 9,
+					"price" : 4
+				},
+				{
+					"min" : 10,
+					"max" : 33,
+					"price" : 15
+				},
+				{
+					"min" : 34,
+					"max" : 42,
+					"price" : 32
+				},
+				{
+					"min" : 43,
+					"max" : 50,
+					"price" : 40
+				}
+			]
+		}
+	],
+	"food_cards" : [
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 0,
+			"charactor_table" : [
+				{
+					"type" : "humid",
+					"threshold" : 80,
+					"scale" : 3
+				}
+			]
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 0,
+			"charactor_table" : [
+				{
+					"type" : "wind",
+					"threshold" : 50,
+					"scale" : 2
+				}
+			]
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 1,
+			"charactor_table" : [
+				{
+					"type" : "wind",
+					"threshold" : 20,
+					"scale" : 2
+				}
+			]
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 1,
+			"charactor_table" : [
+				{
+					"type" : "temperature",
+					"threshold" : 20,
+					"scale" : 2
+				}
+			]
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 2,
+			"charactor_table" : [
+				{
+					"type" : "humid",
+					"threshold" : 50,
+					"scale" : 2
+				}
+			]
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 2
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 3,
+			"charactor_table" : [
+				{
+					"type" : "wind",
+					"threshold" : 50,
+					"scale" : 2
+				}
+			]
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 3,
+			"charactor_table" : [
+				{
+					"type" : "temperature",
+					"threshold" : 50,
+					"scale" : 2
+				}
+			]
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 4,
+			"charactor_table" : [
+				{
+					"type" : "wind",
+					"threshold" : 25,
+					"scale" : 2
+				}
+			]
+		},
+		{
+			"rotten" : 50,
+			"price_tempate_id" : 4,
+			"charactor_table" : [
+				{
+					"type" : "humid",
+					"threshold" : 50,
+					"scale" : 2
+				}
+			]
+		}
+	]
+}

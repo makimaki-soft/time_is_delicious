@@ -34,12 +34,6 @@ namespace RuleManager
             get { return _bets; }
         }
 
-        //private List<FoodCard> _bets;
-        //public List<FoodCard> Bets
-        //{
-         //   get { return _bets; }
-        //}
-
         public void Bet(FoodCard card)
         {
             _bets.Add(card);
