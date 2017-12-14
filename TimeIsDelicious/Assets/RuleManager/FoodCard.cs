@@ -1,5 +1,21 @@
-﻿namespace RuleManager
+﻿using System.Collections.Generic;
+
+namespace RuleManager
 {
+    public class PriceTable
+    {
+        public int min;
+        public int max;
+        public int price;
+    }
+
+    public class CharactorTable
+    {
+        public EventType type;
+        public int threshold;
+        public int scale;
+    }
+
     public class FoodCard : GameComponent
     {
         private int _aged;
@@ -19,7 +35,7 @@
                     }
                     else
                     {
-                        Price = _aged;
+                        Price = AgedToPrice(_aged);
                     }
                 }
             }
@@ -59,12 +75,51 @@
             }
         }
 
-        public FoodCard()
+        private readonly List<PriceTable> _priceTable;
+        public IReadOnlyList<PriceTable> PriceTable
+        {
+            get { return _priceTable.AsReadOnly(); }
+        }
+        private int AgedToPrice(int aged)
+        {
+            foreach( var tbl in _priceTable )
+            {
+                if( tbl.min <= aged && aged <= tbl.max)
+                {
+                    return tbl.price;
+                }
+            }
+            return 0;
+        }
+
+        private readonly List<CharactorTable> _charactorTable;
+        public IReadOnlyList<CharactorTable> CharactorTable
+        {
+            get { return _charactorTable.AsReadOnly(); }
+        }
+
+        public void Aging(int days, EventCard eventCard)
+        {
+            int scale = 1;
+            foreach( var ch in _charactorTable)
+            {
+                var val = eventCard.Weather[ch.type];
+                if(val >= ch.threshold)
+                {
+                    scale *= ch.scale;
+                }
+            }
+            Aged += days * scale;
+        }
+
+        public FoodCard(List<PriceTable> priceTable, List<CharactorTable> charactorTable, int maxAged = 50)
         {
             _aged = 0;
             _maxAged = 50;
             _price = 0;
             _rotten = false;
+            _priceTable = priceTable;
+            _charactorTable = charactorTable;
         }
     }
 }

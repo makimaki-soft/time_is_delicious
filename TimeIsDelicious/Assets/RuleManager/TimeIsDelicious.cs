@@ -7,6 +7,9 @@ namespace RuleManager
         private List<FoodCard> _foodCardList;
         private List<FoodCard> _foodCardOnRound;
 
+        private List<EventCard> _eventCardList;
+        private int _numEventCardOpend;
+
         private List<Player> _players;
         public List<Player> Players
         {
@@ -15,11 +18,13 @@ namespace RuleManager
 
         public TimeIsDelicious ()
         {
-            _foodCardList = new List<FoodCard>();
-            for(int i=0; i<50; i++)
-            {
-                _foodCardList.Add(new FoodCard());
-            }
+
+            _foodCardList = TIDJsonReader.Parser.ReadFoodCards();
+            _foodCardList.Shuffle();
+
+            _eventCardList = TIDJsonReader.Parser.ReadEventCards();
+            _eventCardList.Shuffle();
+            _numEventCardOpend = 0;
 
             _players = new List<Player>();
             for (int i=0; i<4; i++)
@@ -34,12 +39,17 @@ namespace RuleManager
             return _foodCardOnRound;
         }
 
-        public void AdvanceTime(int time)
+        public void AdvanceTime(int time, EventCard eventCard)
         {
             foreach(var card in _foodCardOnRound)
             {
-                card.Aged += time;
+                card.Aging(time, eventCard);
             }
+        }
+
+        public EventCard OpenEventCard()
+        {
+            return _eventCardList[_numEventCardOpend++%_eventCardList.Count];
         }
     }
 }
