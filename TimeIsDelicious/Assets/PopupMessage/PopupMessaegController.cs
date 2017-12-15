@@ -46,10 +46,10 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 	}
 
 	private IEnumerator StartPopup() {
-		float startTime = Time.time;
+		float startTime = Time.timeSinceLevelLoad;
 
 
-		while((Time.time - startTime) < duration){
+		while((Time.timeSinceLevelLoad - startTime) < duration){
 
 			var diff = Time.timeSinceLevelLoad - startTime;
 			var rate = diff / duration;
@@ -71,9 +71,9 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 	}
 
 	private IEnumerator StartPopout() {
-		float startTime = Time.time;
+		float startTime = Time.timeSinceLevelLoad;
 
-		while((Time.time - startTime) < duration/5){
+		while((Time.timeSinceLevelLoad - startTime) < duration/5){
 
 			var diff = Time.timeSinceLevelLoad - startTime;
 			var rate = diff / duration;
@@ -85,7 +85,7 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 			yield return 0;        // 1フレーム後、再開
 		}
 
-		while((Time.time - startTime) < duration){
+		while((Time.timeSinceLevelLoad - startTime) < duration){
 
 			var diff = Time.timeSinceLevelLoad - startTime;
 			var rate = diff / duration;
