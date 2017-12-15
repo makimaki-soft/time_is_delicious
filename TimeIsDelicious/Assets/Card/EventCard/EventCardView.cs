@@ -67,7 +67,7 @@ public class EventCardView : MonoBehaviour, IPointerClickHandler {
 		float startTime = Time.timeSinceLevelLoad;
 		float duration = 1.0f;    // スライド時間（秒）
 
-		while((Time.time - startTime) < duration){
+		while((Time.timeSinceLevelLoad - startTime) < duration){
 
 			var diff = Time.timeSinceLevelLoad - startTime;
 			var rate = diff / time;
@@ -93,7 +93,7 @@ public class EventCardView : MonoBehaviour, IPointerClickHandler {
 		Vector3 startPosition = transform.position;
 		Vector3 startRotation = transform.eulerAngles;
 
-		while((Time.time - startTime) < duration){
+		while((Time.timeSinceLevelLoad - startTime) < duration){
 
 			var diff = Time.timeSinceLevelLoad - startTime;
 			var rate = diff / time;
