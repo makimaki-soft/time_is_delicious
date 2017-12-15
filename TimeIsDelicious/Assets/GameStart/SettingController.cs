@@ -37,10 +37,14 @@ public class SettingController : MonoBehaviour {
 		switch (obj.name)
 		{
 		case "player2":
-			SetColor (obj);
+			if (!selected (player3.GetComponent<Image> ().color) &&
+			    !selected (player4.GetComponent<Image> ().color)) {
+				SetColor (obj);
+			}
 			break;
 		case "player3":
-			if (selected(player2.GetComponent<Image> ().color)){
+			if (selected(player2.GetComponent<Image> ().color) &&
+				!selected (player4.GetComponent<Image> ().color)){
 				SetColor (obj); 
 			}
 			break;
