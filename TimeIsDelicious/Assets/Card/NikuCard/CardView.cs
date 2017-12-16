@@ -13,9 +13,17 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 	private Vector3 initialScale;
 	private Vector3 initialRotation;
 
+	private GameObject logo1;
+	private GameObject logo2;
+
 	void Start() {
-		//initialPosition = transform.position;
-		//initialRotation = transform.eulerAngles;
+		logo1 = transform.Find ("Logo1").gameObject;
+		logo2 = transform.Find ("Logo2").gameObject;
+
+		logo1.SetActive (false);
+		logo2.SetActive (false);
+
+		RemoveLogo (1);
 	}
 
 	public void OnPointerClick(PointerEventData data) {
@@ -115,4 +123,16 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 	}
 
 
+	public void SetLogo(int _playerId) {
+		if (!logo1.activeSelf) {
+			// logo1 にセット
+		} else {
+			// logo2 にセット
+		}
+	}
+
+	public void RemoveLogo(int _playerId) {
+		Texture tex1 = logo1.GetComponent<Renderer> ().material.GetTexture ("_MainTex");
+		Debug.Log (tex1.name);
+	}
 }
