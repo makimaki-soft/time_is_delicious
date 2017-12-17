@@ -37,6 +37,7 @@ namespace RuleManager
         public void Bet(FoodCard card)
         {
             _bets.Add(card);
+            card.SetBetPlayer(this);
             card.PropertyChanged += OnFoodCardPropertyChanged;
         }
 
