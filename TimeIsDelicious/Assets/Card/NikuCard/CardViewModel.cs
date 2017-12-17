@@ -114,16 +114,7 @@ public class CardViewModel: MonoBehaviour {
 
 	public void OnClick() {
 		Debug.Log("click card from view:" + state);
-
-		agingPoint++;
-		agingPointText.GetComponent<TextMesh> ().text = agingPoint.ToString();
-		agingPointText.SetActive (false);
-	
-		cardDetailPanel.GetComponent<CardDetailPanelController> ().Open (ShowAgingPoint);
-	}
-
-	private void ShowAgingPoint() {
-		agingPointText.SetActive (true);
+		cardDetailPanel.GetComponent<CardDetailPanelController> ().Open ();
 	}
 
 	// 毒フェクトを消す
