@@ -11,8 +11,8 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 
 	private Image _cardImage;
 	private Text _cardName;
-	private Image _logo1;
-	private Image _logo2;
+	private GameObject _logo1;
+	private GameObject _logo2;
 	private GameObject _betButton;
 	private GameObject _sellButton;
 
@@ -33,8 +33,10 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		GameObject basePanel = transform.Find ("BasePanel").gameObject;
 		_cardImage = basePanel.transform.Find ("CardImage").GetComponent<Image> ();
 
-		_logo1 = basePanel.transform.Find ("Logo1").GetComponent<Image> ();
-		_logo2 = basePanel.transform.Find ("Logo2").GetComponent<Image> ();
+		_logo1 = basePanel.transform.Find ("Logo1").gameObject;
+		_logo2 = basePanel.transform.Find ("Logo2").gameObject;
+		_logo1.SetActive (false);
+		_logo2.SetActive (false);
 
 		_betButton = basePanel.transform.Find ("BetButton").gameObject;
 		_sellButton = basePanel.transform.Find ("SellButton").gameObject;
