@@ -18,6 +18,24 @@ namespace RuleManager
 
     public class FoodCard : GameComponent
     {
+        private readonly int _id;
+        public int ID
+        {
+            get { return _id; }
+        }
+
+        private readonly string _name;
+        public string Name
+        {
+            get { return _name; }
+        }
+
+        private readonly string _description;
+        public string Description
+        {
+            get { return _description; }
+        }
+
         private int _aged;
         public int Aged
         {
@@ -112,10 +130,13 @@ namespace RuleManager
             Aged += days * scale;
         }
 
-        public FoodCard(List<PriceTable> priceTable, List<CharactorTable> charactorTable, int maxAged = 50)
+        public FoodCard(int ID, string Name, string Decription, List<PriceTable> priceTable, List<CharactorTable> charactorTable, int maxAged = 50)
         {
+            _id = ID;
+            _name = Name;
+            _description = Decription;
             _aged = 0;
-            _maxAged = 50;
+            _maxAged = maxAged;
             _price = 0;
             _rotten = false;
             _priceTable = priceTable;

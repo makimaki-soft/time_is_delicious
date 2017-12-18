@@ -113,7 +113,7 @@ public class CardViewModel: MonoBehaviour {
 	}
 
 	public void OnClick() {
-		Debug.Log("click card from view:" + state);
+		Debug.Log("click card " + _cardModel.Name + " from view:" + state);
 		cardDetailPanel.GetComponent<CardDetailPanelController> ().Open ();
 	}
 
