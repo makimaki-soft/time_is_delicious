@@ -11,7 +11,9 @@ public class CardViewModel: MonoBehaviour {
 	public GameObject poisonEffectPrefab;
 
 	private CardView cv;
+	private GameObject cardDetailPanel;
 	private GameObject agingPointText;
+
 
 	public int nikuNo = 1;
 
@@ -76,6 +78,10 @@ public class CardViewModel: MonoBehaviour {
 		Vector3 deckPosition = GameObject.Find ("MeetDeck").transform.position;
 		Debug.Log (deckPosition);
 
+		GameObject canvas = GameObject.Find ("UICanvas");
+		cardDetailPanel = canvas.transform.Find ("CardDetailPanel").gameObject;
+		Debug.Log ("start: " + cardDetailPanel);
+
 		// 肉カードを生成
 		GameObject card = (GameObject)Instantiate(
 			cardPrefab,
@@ -84,10 +90,12 @@ public class CardViewModel: MonoBehaviour {
 		);
 
 		Debug.Log (nikuNo);
+		// 表面のテクスチャを選択
 		string nikuImgName = "niku_" + nikuNo.ToString("D3");
 		Texture nikuTexture = (Texture)Resources.Load (nikuImgName);
 		card.GetComponent<Renderer> ().material.SetTexture("_FrontTex", nikuTexture);
 
+		// イベントハンドラ設定
 		cv = card.GetComponent<CardView> ();
 		cv.vm = this;
 		cv.onClick = this.OnClick;
@@ -106,19 +114,7 @@ public class CardViewModel: MonoBehaviour {
 
 	public void OnClick() {
 		Debug.Log("click card from view:" + state);
-
-		if (state == Status.Index) {
-			agingPoint++;
-			agingPointText.GetComponent<TextMesh> ().text = agingPoint.ToString();
-
-			agingPointText.SetActive (false);
-			cv.ShowDetail ();
-		} else if (state == Status.Detail) {
-			state = Status.Animating;
-			cv.ReturnIndex ();
-			agingPointText.SetActive (true);
-		}
-
+		cardDetailPanel.GetComponent<CardDetailPanelController> ().Open ();
 	}
 
 	// 毒フェクトを消す

@@ -61,8 +61,8 @@ public class PlayerUIController : MonoBehaviour {
         switch(e.PropertyName)
         {
             case "TotalEarned":
-                scoreText.GetComponent<Text>().text = player.TotalEarned.ToString();
                 CharactorImage.GetComponent<Faces>().Smile(2); // 得点が上がったら笑う
+				StartCoroutine(CountUp(player.TotalEarned));
                 break;
         }
     }
@@ -86,4 +86,19 @@ public class PlayerUIController : MonoBehaviour {
 
         callback(position.ToString());
     }
+
+	// スコアを1づつ増やす
+	private IEnumerator CountUp(int score) {
+		Debug.Log ("count up: " + score);
+		float startTime = Time.timeSinceLevelLoad;
+
+		int cScore = int.Parse (scoreText.GetComponent<Text> ().text);
+		int i = cScore;
+		while((Time.timeSinceLevelLoad - startTime) < 2f){
+			int toScore = i < score ? cScore + i : score;
+			i++;
+			scoreText.GetComponent<Text> ().text = toScore.ToString ();
+			yield return new WaitForSeconds (0.05f);
+		}
+	}
 }
