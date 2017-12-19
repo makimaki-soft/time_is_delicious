@@ -113,8 +113,17 @@ public class Die : MonoBehaviour {
 
     void Update()
     {
-		// determine the value is the die is not rolling
-		if (!rolling && localHit) {
+
+        if (rolling)
+        {
+            var newVelocity = GetComponent<Rigidbody>().velocity;
+            newVelocity.x *= 0.99f;
+            newVelocity.z *= 0.99f;
+            GetComponent<Rigidbody>().velocity = newVelocity;
+        }
+
+        // determine the value is the die is not rolling
+        if (!rolling && localHit) {
 			StopCoroutine ("StopJudge");
 			GetValue ();
 		}
