@@ -29,6 +29,9 @@ namespace TIDJsonReader
     [System.Serializable]
     public class FoodCard
     {
+        public int id;
+        public string name;
+        public string description;
         public int rotten;
         public int price_tempate_id;
         public PriceTable[] price_table;
@@ -114,7 +117,7 @@ namespace TIDJsonReader
                         charactorList.Add(rmCharactorTable);
                     }
                 }
-                foodCardList.Add(new RuleManager.FoodCard(priceTableList, charactorList, foodCard.rotten));
+                foodCardList.Add(new RuleManager.FoodCard(foodCard.id, foodCard.name, foodCard.description, priceTableList, charactorList, foodCard.rotten));
             }
 
             return foodCardList;

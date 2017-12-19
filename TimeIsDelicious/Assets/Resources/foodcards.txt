@@ -1,4 +1,4 @@
-{
+﻿{
 	"price_template" : [
 		{
 			"id" : 0,
@@ -128,6 +128,9 @@
 	],
 	"food_cards" : [
 		{
+			"id" : 0,
+			"name" : "名前0",
+			"description" : "説明0",
 			"rotten" : 50,
 			"price_tempate_id" : 0,
 			"charactor_table" : [
@@ -139,6 +142,9 @@
 			]
 		},
 		{
+			"id" : 1,
+			"name" : "名前1",
+			"description" : "説明1",
 			"rotten" : 50,
 			"price_tempate_id" : 0,
 			"charactor_table" : [
@@ -150,6 +156,9 @@
 			]
 		},
 		{
+			"id" : 2,
+			"name" : "名前2",
+			"description" : "説明2",
 			"rotten" : 50,
 			"price_tempate_id" : 1,
 			"charactor_table" : [
@@ -161,6 +170,9 @@
 			]
 		},
 		{
+			"id" : 3,
+			"name" : "名前3",
+			"description" : "説明3",
 			"rotten" : 50,
 			"price_tempate_id" : 1,
 			"charactor_table" : [
@@ -172,6 +184,9 @@
 			]
 		},
 		{
+			"id" : 4,
+			"name" : "名前4",
+			"description" : "説明4",
 			"rotten" : 50,
 			"price_tempate_id" : 2,
 			"charactor_table" : [
@@ -183,10 +198,16 @@
 			]
 		},
 		{
+			"id" : 5,
+			"name" : "名前5",
+			"description" : "説明5",
 			"rotten" : 50,
 			"price_tempate_id" : 2
 		},
 		{
+			"id" : 6,
+			"name" : "名前6",
+			"description" : "説明6",
 			"rotten" : 50,
 			"price_tempate_id" : 3,
 			"charactor_table" : [
@@ -198,6 +219,9 @@
 			]
 		},
 		{
+			"id" : 7,
+			"name" : "名前7",
+			"description" : "説明7",
 			"rotten" : 50,
 			"price_tempate_id" : 3,
 			"charactor_table" : [
@@ -209,6 +233,9 @@
 			]
 		},
 		{
+			"id" : 8,
+			"name" : "名前8",
+			"description" : "説明8",
 			"rotten" : 50,
 			"price_tempate_id" : 4,
 			"charactor_table" : [
@@ -220,6 +247,9 @@
 			]
 		},
 		{
+			"id" : 9,
+			"name" : "名前9",
+			"description" : "説明9",
 			"rotten" : 50,
 			"price_tempate_id" : 4,
 			"charactor_table" : [

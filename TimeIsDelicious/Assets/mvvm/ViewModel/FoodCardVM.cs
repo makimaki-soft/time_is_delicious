@@ -5,6 +5,25 @@ using System.ComponentModel;
 
 public class FoodCardVM : VMBase {
 
+    private readonly int _id;
+    public int ID
+    {
+        get { return _id; }
+    }
+
+    private readonly string _name;
+    public string Name
+    {
+        get { return _name; }
+    }
+
+    private readonly string _description;
+    public string Description
+    {
+        get { return _description; }
+    }
+
+
     private int _aged;
     public int Aged
     {
@@ -54,16 +73,21 @@ public class FoodCardVM : VMBase {
     }
 
     public IReadOnlyList<PriceTable> PriceTable { get; }
+    public IReadOnlyList<CharactorTable> CharactorTable { get; }
 
     private FoodCard _foodCardModel;
     public FoodCardVM(FoodCard model)
     {
-        _aged = 0;
-        _maxAged = 50;
-        _price = 0;
-        _rotten = false;
+        _id = model.ID;
+        _name = model.Name;
+        _description = model.Description;
+        _aged = model.Aged;
+        _maxAged = model.MaxAged;
+        _price = model.Price;
+        _rotten = model.Rotten;
         _foodCardModel = model;
         PriceTable = model.PriceTable;
+        CharactorTable = model.CharactorTable;
 
         _foodCardModel.PropertyChanged += _foodCardModel_PropertyChanged;
     }
