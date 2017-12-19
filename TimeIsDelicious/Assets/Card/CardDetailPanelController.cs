@@ -11,6 +11,9 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 
 	private Image _cardImage;
 	private Text _cardName;
+	private Text _cardDes;
+	private Text _agingPointText;
+	private Text _sellPointText;
 	private GameObject _logo1;
 	private GameObject _logo2;
 	private GameObject _betButton;
@@ -32,6 +35,13 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 
 		GameObject basePanel = transform.Find ("BasePanel").gameObject;
 		_cardImage = basePanel.transform.Find ("CardImage").GetComponent<Image> ();
+
+		GameObject descriptionPanel = basePanel.transform.Find ("DescriptionPanel").gameObject;
+		_cardName = descriptionPanel.transform.Find ("CardNameText").GetComponent<Text> ();
+		_cardDes = descriptionPanel.transform.Find ("CardDescriptionText").GetComponent<Text> ();
+
+		_agingPointText = basePanel.transform.Find ("AgingPointText").GetComponent<Text> ();
+		_sellPointText = basePanel.transform.Find ("SellPointText").GetComponent<Text> ();
 
 		_logo1 = basePanel.transform.Find ("Logo1").gameObject;
 		_logo2 = basePanel.transform.Find ("Logo2").gameObject;
@@ -56,11 +66,16 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		Close ();
 	}
 
-	public void Open(callBackClose _funcClose = null,
+	public void Open(FoodCardVM _food,
+		callBackClose _funcClose = null,
 		callBackBet _funcBet = null,
 		callBackSell _funcSell = null) {
 
-		// todo データをセットする
+		_cardName.text = _food.Name;
+		_cardDes.text = _food.Description;
+		_agingPointText.text = _food.Aged.ToString () + "/" + _food.MaxAged.ToString ();
+		_sellPointText.text = _food.Price.ToString ();
+		// todo ロゴの設定, ボタンの表示制御
 
 		_callBackClose = _funcClose;
 		_callBackBet = _funcBet;

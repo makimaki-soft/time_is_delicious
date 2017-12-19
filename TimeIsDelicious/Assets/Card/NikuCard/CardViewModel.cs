@@ -114,7 +114,7 @@ public class CardViewModel: MonoBehaviour {
 
 	public void OnClick() {
 		Debug.Log("click card " + _cardModel.Name + " from view:" + state);
-		cardDetailPanel.GetComponent<CardDetailPanelController> ().Open ();
+		cardDetailPanel.GetComponent<CardDetailPanelController> ().Open (_cardModel);
 	}
 
 	// 毒フェクトを消す

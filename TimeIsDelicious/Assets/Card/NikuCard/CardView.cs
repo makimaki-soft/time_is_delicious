@@ -122,7 +122,6 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 
 	}
 
-
 	public void SetLogo(int _playerId) {
 		if (!logo1.activeSelf) {
 			// logo1 にセット
