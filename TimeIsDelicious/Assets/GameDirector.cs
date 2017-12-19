@@ -41,7 +41,7 @@ public class GameDirector : MonoBehaviour
                 if(vm.CurrentStatus == GameDirectorVM.Status.Betting)
                 {
                     popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
-                    _mainVM.BetFood(); // For Debug
+                    // _mainVM.BetFood(); // For Debug
                 }
                 break;
         }

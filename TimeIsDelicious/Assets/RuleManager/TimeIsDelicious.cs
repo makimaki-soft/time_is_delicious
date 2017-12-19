@@ -4,6 +4,8 @@ namespace RuleManager
 {
     class TimeIsDelicious
     {
+        static string[] Names = new string[4] { "鈴木精肉店", "マザーミート", "王丸農場" , "Chouette"};
+
         private List<FoodCard> _foodCardList;
         private List<FoodCard> _foodCardOnRound;
 
@@ -29,7 +31,7 @@ namespace RuleManager
             _players = new List<Player>();
             for (int i=0; i<4; i++)
             {
-                _players.Add(new Player(i));
+                _players.Add(new Player(i, Names[i]));
             }
         }
 

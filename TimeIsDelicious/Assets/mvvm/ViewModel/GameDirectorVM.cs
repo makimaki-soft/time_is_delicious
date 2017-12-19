@@ -38,7 +38,7 @@ public class GameDirectorVM : VMBase {
                 UnityEngine.Debug.Log(CurrentStatus);
                 break;
             case "CurrentPlayer":
-                CurrentPlayerName = mainModel.CurrentPlayer.GUID.ToString(); // tmp
+                CurrentPlayerName = mainModel.CurrentPlayer.Name; // tmp
                 break;
         }
     }
@@ -88,11 +88,11 @@ public class GameDirectorVM : VMBase {
 
     public void SellFood()
     {
-        _singletonMainModel.SellCurrentPlayersFood();
+        // _singletonMainModel.SellCurrentPlayersFood();
     }
 
     public void BetFood()
     {
-        _singletonMainModel.BetFood();
+        // _singletonMainModel.BetFood(null);
     }
 }
