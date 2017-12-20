@@ -29,6 +29,36 @@ public sealed class MainModel : GameComponent {
         // ループ終わり
     }
 
+    // ターン数
+    private int _turnCount;
+    public int TurnCount
+    {
+        get { return _turnCount; }
+        private set
+        {
+            if (_turnCount != value)
+            {
+                _turnCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    // ラウンド数
+    private int _roundCount;
+    public int RoundCount
+    {
+        get { return _roundCount; }
+        private set
+        {
+            if (_roundCount != value)
+            {
+                _roundCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
     private TimeIsDelicious _timesIsDelicious;
 
     private Status _currentStatus;
@@ -102,6 +132,9 @@ public sealed class MainModel : GameComponent {
 
     private MainModel()
     {
+        _turnCount = 0;
+        _roundCount = 0;
+
         _timesIsDelicious = new TimeIsDelicious();
         _currentFoodCards = new ObservableCollection<FoodCard>();
         _players = new ObservableCollection<Player>();
@@ -111,6 +144,8 @@ public sealed class MainModel : GameComponent {
     // ゲームスタート
     public void StartTimeIsDelicious()
     {
+        TurnCount = 0;
+        RoundCount = 0;
         NumberOfPlayers = 4;
         foreach (var player in _timesIsDelicious.Players)
         {
@@ -121,17 +156,19 @@ public sealed class MainModel : GameComponent {
 
     // ラウンドを開始
     private int _currentPlayerIndex;
-    private int _turnCount;
+    private int _betTurnCount;
     public void StartTimeIsDeliciousRound()
     {
         // CurrentStatus = Status.RoundInit;
         _currentPlayerIndex = 0;
-        _turnCount = 0;
+        _betTurnCount = 0;
         var cards = _timesIsDelicious.StartRound();
         foreach(var card in cards)
         {
             _currentFoodCards.Add(card);
         }
+        RoundCount += 1;
+        TurnCount = 1;
         CurrentStatus = Status.Betting; // 賭けフェイズに移行
         CurrentPlayer = _players[_currentPlayerIndex];    // 最初のプレイヤーに設定
 
@@ -141,8 +178,18 @@ public sealed class MainModel : GameComponent {
     public void AdvanceTime(int i)
     {
         _timesIsDelicious.AdvanceTime(i, _currentEventCard);
-
-        CurrentStatus = Status.WaitForRoundStart; // ラウンド開始待ちに移行
+        if(TurnCount==10)
+        {
+            _currentPlayerIndex = 0;
+            CurrentStatus = Status.WaitForRoundStart; // ラウンド開始待ちに移行
+        }
+        else
+        {
+            TurnCount += 1;
+            CurrentStatus = Status.CastDice;
+            _currentPlayerIndex = 0;
+            CurrentPlayer = _players[_currentPlayerIndex];    // 最初のプレイヤーに設定
+        }
     }
 
     public void SellFood(FoodCard card)
@@ -154,8 +201,8 @@ public sealed class MainModel : GameComponent {
         if (_currentPlayerIndex > NumberOfPlayers)
         {
             _currentPlayerIndex = 0;
-            _turnCount++;
-            if (_turnCount >= 2)
+            _betTurnCount++;
+            if (_betTurnCount >= 2)
             {
                 CurrentStatus = Status.Event; // イベントに移行
                 _currentPlayerIndex = 0;
@@ -175,8 +222,8 @@ public sealed class MainModel : GameComponent {
         if(_currentPlayerIndex > NumberOfPlayers)
         {
             _currentPlayerIndex = 0;
-            _turnCount++;
-            if(_turnCount >= 2)
+            _betTurnCount++;
+            if(_betTurnCount >= 2)
             {
                 CurrentStatus = Status.CastDice; // ダイスに移行
                 _currentPlayerIndex = 0;
