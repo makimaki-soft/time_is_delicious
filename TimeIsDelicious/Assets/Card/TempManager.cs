@@ -38,7 +38,6 @@ public class TempManager : MonoBehaviour
                         new Vector3(-100 + 30 * i, 11, 0),
                         Quaternion.identity
                     );
-                    cardview.GetComponent<CardViewModel>().nikuNo = i + 1;
                     cardview.GetComponent<CardViewModel>().setViewModel(foodCardVM);
                     _foodCardViewList.Add(cardview);
                 }

@@ -81,10 +81,18 @@ public class GameDirector : MonoBehaviour
     }
 	private void DebugStopHandler ()
 	{
+		GetComponent<EventCardController> ().DrawEventCard (
+			() => {
+				DebugDiceClean();
+			});
+
         var dice = Dice.Value("");
         Debug.Log ("Stop Dice: " + Dice.Value (""));
-		Dice.Clear ();
-        dc.StopDice -= DebugStopHandler;
         _mainVM.AdvanceTime(dice);
     }
+
+	private void DebugDiceClean () {
+		Dice.Clear ();
+		dc.StopDice -= DebugStopHandler;
+	}
 }

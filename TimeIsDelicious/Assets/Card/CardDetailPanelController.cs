@@ -66,16 +66,31 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		Close ();
 	}
 
-	public void Open(FoodCardVM _food,
+	public void OpenNiku(FoodCardVM _food,
 		callBackClose _funcClose = null,
 		callBackBet _funcBet = null,
 		callBackSell _funcSell = null) {
+
+		string nikuImgName = "Niku/card" +  _food.ID.ToString();
+		Sprite image = Resources.Load<Sprite> (nikuImgName);
+		_cardImage.sprite = image;
 
 		_cardName.text = _food.Name;
 		_cardDes.text = _food.Description;
 		_agingPointText.text = _food.Aged.ToString () + "/" + _food.MaxAged.ToString ();
 		_sellPointText.text = _food.Price.ToString ();
 		// todo ロゴの設定, ボタンの表示制御
+
+		_callBackClose = _funcClose;
+		_callBackBet = _funcBet;
+		_callBackSell = _funcSell;
+		gameObject.SetActive (true);
+	}
+
+	public void OpenEvent(
+		callBackClose _funcClose = null,
+		callBackBet _funcBet = null,
+		callBackSell _funcSell = null) {
 
 		_callBackClose = _funcClose;
 		_callBackBet = _funcBet;

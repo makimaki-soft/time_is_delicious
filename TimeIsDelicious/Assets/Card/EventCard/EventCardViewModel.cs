@@ -36,7 +36,7 @@ public class EventCardViewModel : MonoBehaviour {
 			Quaternion.identity
 		);
 			
-		string eventImgName = "event_" + eventNo.ToString("D3");
+		string eventImgName = "Event/event0";
 		Texture eventTexture = (Texture)Resources.Load (eventImgName);
 		card.GetComponent<Renderer> ().material.SetTexture("_FrontTex", eventTexture);
 
