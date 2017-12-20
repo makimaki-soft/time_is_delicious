@@ -38,7 +38,13 @@ public class GameDirectorVM : VMBase {
                 UnityEngine.Debug.Log(CurrentStatus);
                 break;
             case "CurrentPlayer":
-                CurrentPlayerName = mainModel.CurrentPlayer.GUID.ToString(); // tmp
+                CurrentPlayerName = mainModel.CurrentPlayer.Name; // tmp
+                break;
+            case "TurnCount":
+                TurnCount = mainModel.TurnCount;
+                break;
+            case "RoundCount":
+                RoundCount = mainModel.RoundCount;
                 break;
         }
     }
@@ -52,6 +58,36 @@ public class GameDirectorVM : VMBase {
             if(_currentStatus != value)
             {
                 _currentStatus = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    // ターン数
+    private int _turnCount;
+    public int TurnCount
+    {
+        get { return _turnCount; }
+        private set
+        {
+            if (_turnCount != value)
+            {
+                _turnCount = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    // ラウンド数
+    private int _roundCount;
+    public int RoundCount
+    {
+        get { return _roundCount; }
+        private set
+        {
+            if (_roundCount != value)
+            {
+                _roundCount = value;
                 NotifyPropertyChanged();
             }
         }
@@ -88,11 +124,11 @@ public class GameDirectorVM : VMBase {
 
     public void SellFood()
     {
-        _singletonMainModel.SellCurrentPlayersFood();
+        // _singletonMainModel.SellCurrentPlayersFood();
     }
 
     public void BetFood()
     {
-        _singletonMainModel.BetFood();
+        // _singletonMainModel.BetFood(null);
     }
 }

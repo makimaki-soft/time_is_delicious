@@ -105,21 +105,21 @@
 			"price_table" : [
 				{
 					"min" : 0,
-					"max" : 9,
-					"price" : 4
+					"max" : 10,
+					"price" : 0
 				},
 				{
-					"min" : 10,
-					"max" : 33,
-					"price" : 15
+					"min" : 11,
+					"max" : 30,
+					"price" : 8
 				},
 				{
-					"min" : 34,
-					"max" : 42,
-					"price" : 32
+					"min" : 31,
+					"max" : 44,
+					"price" : 20
 				},
 				{
-					"min" : 43,
+					"min" : 45,
 					"max" : 50,
 					"price" : 40
 				}

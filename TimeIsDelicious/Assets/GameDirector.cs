@@ -10,9 +10,17 @@ public class GameDirector : MonoBehaviour
 
     private GameObject playerUIWindow;
 
+    public int TurnCount { get; private set; }
+    public int RoundCount { get; private set; }
+    public GameDirectorVM.Status Status { get; private set; }
+    public string CurrentPlayerName { get; private set; }
+
     // Use this for initialization
     void Start () {
-      
+
+        TurnCount = 0;
+        RoundCount = 0;
+
         _mainVM = new GameDirectorVM();
         _mainVM.PropertyChanged += _mainVM_PropertyChanged;
       
@@ -30,6 +38,7 @@ public class GameDirector : MonoBehaviour
         switch(e.PropertyName)
         {
             case "CurrentStatus":
+                Status = vm.CurrentStatus;
                 if (vm.CurrentStatus == GameDirectorVM.Status.WaitForRoundStart)
                 {
                     // ラウンド開始中のアニメーションをまってからStartRound
@@ -38,11 +47,17 @@ public class GameDirector : MonoBehaviour
                 }
                 break;
             case "CurrentPlayerName":
-                if(vm.CurrentStatus == GameDirectorVM.Status.Betting)
+                CurrentPlayerName = vm.CurrentPlayerName;
+                if (vm.CurrentStatus == GameDirectorVM.Status.Betting)
                 {
                     popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
-                    _mainVM.BetFood(); // For Debug
                 }
+                break;
+            case "TurnCount":
+                TurnCount = vm.TurnCount;
+                break;
+            case "RoundCount":
+                RoundCount = vm.RoundCount;
                 break;
         }
     }

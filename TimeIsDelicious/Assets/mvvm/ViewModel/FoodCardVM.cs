@@ -72,6 +72,16 @@ public class FoodCardVM : VMBase {
         }
     }
 
+    public bool CanBet
+    {
+        get { return _foodCardModel.CanBet; }
+    }
+
+    public IReadOnlyList<string> NamesWhoBet
+    {
+        get { return _foodCardModel.NamesWhoBet; }
+    }
+
     public IReadOnlyList<PriceTable> PriceTable { get; }
     public IReadOnlyList<CharactorTable> CharactorTable { get; }
 
@@ -107,5 +117,15 @@ public class FoodCardVM : VMBase {
                 Rotten = card.Rotten;
                 break;
         }
+    }
+
+    public void BetByCurrentPlayer()
+    {
+        MainModel.Instance.BetFood(_foodCardModel);
+    }
+
+    public void SellByCurrentPlayer()
+    {
+        MainModel.Instance.SellFood(_foodCardModel);
     }
 }

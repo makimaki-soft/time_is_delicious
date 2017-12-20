@@ -130,6 +130,32 @@ namespace RuleManager
             Aged += days * scale;
         }
 
+        private readonly int MaxBet = 2;
+        private List<Player> _betPlayersList;
+        public void SetBetPlayer(Player player)
+        {
+            _betPlayersList.Add(player);
+        }
+
+        // その肉に賭けられるかどうか
+        public bool CanBet
+        {
+            get { return _betPlayersList.Count < MaxBet; }
+        }
+
+        public IReadOnlyList<string> NamesWhoBet
+        {
+            get
+            {
+                List<string> ret = new List<string>();
+                foreach( var player in _betPlayersList)
+                {
+                    ret.Add(player.Name);
+                }
+                return ret.AsReadOnly();
+            }
+        }
+
         public FoodCard(int ID, string Name, string Decription, List<PriceTable> priceTable, List<CharactorTable> charactorTable, int maxAged = 50)
         {
             _id = ID;
@@ -141,6 +167,7 @@ namespace RuleManager
             _rotten = false;
             _priceTable = priceTable;
             _charactorTable = charactorTable;
+            _betPlayersList = new List<Player>();
         }
     }
 }

@@ -114,7 +114,12 @@ public class CardViewModel: MonoBehaviour {
 
 	public void OnClick() {
 		Debug.Log("click card " + _cardModel.Name + " from view:" + state);
-		cardDetailPanel.GetComponent<CardDetailPanelController> ().Open (_cardModel);
+        foreach( var name in _cardModel.NamesWhoBet )
+        {
+            Debug.Log("Bet by " + name);
+        }
+
+        cardDetailPanel.GetComponent<CardDetailPanelController> ().Open (_cardModel);
 	}
 
 	// 毒フェクトを消す
