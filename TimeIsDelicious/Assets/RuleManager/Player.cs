@@ -14,6 +14,12 @@ namespace RuleManager
             get { return _id; }
         }
 
+        private readonly string _name;
+        public string Name
+        {
+            get { return _name; }
+        }
+
         private int _totalEarned;
         public int TotalEarned
         {
@@ -37,6 +43,7 @@ namespace RuleManager
         public void Bet(FoodCard card)
         {
             _bets.Add(card);
+            card.SetBetPlayer(this);
             card.PropertyChanged += OnFoodCardPropertyChanged;
         }
 
@@ -68,9 +75,10 @@ namespace RuleManager
             }
         }
 
-        public Player(int i)
+        public Player(int id, string name)
         {
-            _id = i;
+            _id = id;
+            _name = name;
             _bets = new ObservableCollection<FoodCard>();
         }
     }

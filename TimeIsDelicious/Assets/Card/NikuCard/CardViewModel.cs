@@ -17,7 +17,7 @@ public class CardViewModel: MonoBehaviour {
 	// ステータス
 	public enum Status {
 		Init,     // 配布直後
-		Index,    // 机の上  
+		Index,    // 机の上
 		Detail,   // 詳細表示
 		Animating // アニメーション中
 	}
@@ -85,7 +85,7 @@ public class CardViewModel: MonoBehaviour {
 			deckPosition,
 			Quaternion.identity
 		);
-			
+
 		// 表面のテクスチャを選択
 		string nikuImgName = "Niku/card" +  _cardModel.ID.ToString();
 		Texture nikuTexture = (Texture)Resources.Load (nikuImgName);
@@ -110,7 +110,12 @@ public class CardViewModel: MonoBehaviour {
 
 	public void OnClick() {
 		Debug.Log("click card " + _cardModel.Name + " from view:" + state);
-		cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenNiku (_cardModel);
+        foreach( var name in _cardModel.NamesWhoBet )
+        {
+            Debug.Log("Bet by " + name);
+        }
+
+        cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenNiku (_cardModel);
 	}
 
 	// 毒フェクトを消す
