@@ -23,7 +23,6 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 		logo1.SetActive (false);
 		logo2.SetActive (false);
 
-		RemoveLogo (1);
 	}
 
 	public void OnPointerClick(PointerEventData data) {
@@ -122,16 +121,50 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 
 	}
 
-	public void SetLogo(int _playerId) {
+	public void SetLogo(string _pName) {
+		
 		if (!logo1.activeSelf) {
 			// logo1 にセット
+			logo1.GetComponent<Renderer> ().material.SetTexture("_MainTex", getLogoTexture(_pName));
+			logo1.SetActive (true);
 		} else {
 			// logo2 にセット
+			logo2.GetComponent<Renderer> ().material.SetTexture("_MainTex", getLogoTexture(_pName));
+			logo2.SetActive (true);
 		}
 	}
 
-	public void RemoveLogo(int _playerId) {
+	public void RemoveLogo(string _pName) {
 		Texture tex1 = logo1.GetComponent<Renderer> ().material.GetTexture ("_MainTex");
+		Texture tex2 = logo2.GetComponent<Renderer> ().material.GetTexture ("_MainTex");
 		Debug.Log (tex1.name);
+		if (_pName == tex1.name) {
+			logo1.SetActive (false);
+		}
+
+		if (_pName == tex2.name) {
+			logo2.SetActive (false);
+		}
+	}
+
+	private Texture getLogoTexture(string _pName) {
+
+		string imageName = "";
+		switch (_pName) {
+		case "鈴木精肉店":
+			imageName = "logo/szks";
+			break;
+		case "マザーミート":
+			imageName = "logo/mm";
+			break;
+		case "王丸農場":
+			imageName = "logo/ohmaru";
+			break;
+		case "Chouette":
+			imageName = "logo/chouette";
+			break;
+		}
+
+		return (Texture)Resources.Load (imageName);
 	}
 }
