@@ -14,13 +14,10 @@ public class CardViewModel: MonoBehaviour {
 	private GameObject cardDetailPanel;
 	private GameObject agingPointText;
 
-
-	public int nikuNo = 1;
-
 	// ステータス
 	public enum Status {
 		Init,     // 配布直後
-		Index,    // 机の上  
+		Index,    // 机の上
 		Detail,   // 詳細表示
 		Animating // アニメーション中
 	}
@@ -89,9 +86,8 @@ public class CardViewModel: MonoBehaviour {
 			Quaternion.identity
 		);
 
-		Debug.Log (nikuNo);
 		// 表面のテクスチャを選択
-		string nikuImgName = "niku_" + nikuNo.ToString("D3");
+		string nikuImgName = "Niku/card" +  _cardModel.ID.ToString();
 		Texture nikuTexture = (Texture)Resources.Load (nikuImgName);
 		card.GetComponent<Renderer> ().material.SetTexture("_FrontTex", nikuTexture);
 
@@ -119,7 +115,12 @@ public class CardViewModel: MonoBehaviour {
             Debug.Log("Bet by " + name);
         }
 
-        cardDetailPanel.GetComponent<CardDetailPanelController> ().Open (_cardModel);
+        cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenNiku (
+			_cardModel,
+			null,
+			_cardModel.BetByCurrentPlayer,
+			_cardModel.SellByCurrentPlayer
+		);
 	}
 
 	// 毒フェクトを消す

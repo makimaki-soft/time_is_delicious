@@ -219,7 +219,7 @@ public sealed class MainModel : GameComponent {
         CurrentPlayer.Bet(targetCard);
 
         _currentPlayerIndex++;
-        if(_currentPlayerIndex > NumberOfPlayers)
+        if(_currentPlayerIndex >= NumberOfPlayers)
         {
             _currentPlayerIndex = 0;
             _betTurnCount++;

@@ -11,13 +11,18 @@ public class DiceController : MonoBehaviour {
 
 	private GameObject dice;
 
+	private bool _stopedDice;
+
 	// Use this for initialization
 	void Start () {
+		
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (!Dice.rolling) {
+		if (!Dice.rolling && !_stopedDice) {
+			_stopedDice = true;
+			Debug.Log ("Dice is :" + _stopedDice);
 			if (StopDice != null) {
 				Debug.Log (Dice.Value (""));
 				StopDice ();
@@ -37,6 +42,7 @@ public class DiceController : MonoBehaviour {
 	 * color: "red", "green", "blue", "yellow", "white", "black"
 	 */
 	public void Roll (string color) {
+		_stopedDice = false;
 		Dice.Roll("1d6", "d6-red", spawnPoint.transform.position, Force());
 	}
 		
