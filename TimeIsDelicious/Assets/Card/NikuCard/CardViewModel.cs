@@ -6,6 +6,8 @@ using UnityEngine.Events;
 // CardのViewという扱いに変更する。ステータス等はVMにもっていきたい
 public class CardViewModel: MonoBehaviour {
 
+	private GameDirector _gd;
+
 	public GameObject cardPrefab;
 	public GameObject textPrefab;
 	public GameObject poisonEffectPrefab;
@@ -72,6 +74,8 @@ public class CardViewModel: MonoBehaviour {
 
     void Start () {
 
+		_gd = GameObject.Find("GameDirector").GetComponent<GameDirector>();
+
 		Vector3 deckPosition = GameObject.Find ("MeetDeck").transform.position;
 		Debug.Log (deckPosition);
 
@@ -87,7 +91,7 @@ public class CardViewModel: MonoBehaviour {
 		);
 
 		// 表面のテクスチャを選択
-		string nikuImgName = "Niku/card" +  _cardModel.ID.ToString();
+		string nikuImgName = "Niku/card" +  _cardModel.ID.ToString() + "_abst";
 		Texture nikuTexture = (Texture)Resources.Load (nikuImgName);
 		card.GetComponent<Renderer> ().material.SetTexture("_FrontTex", nikuTexture);
 
@@ -118,8 +122,14 @@ public class CardViewModel: MonoBehaviour {
         cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenNiku (
 			_cardModel,
 			null,
-			_cardModel.BetByCurrentPlayer,
-			_cardModel.SellByCurrentPlayer
+			() => {
+				cv.SetLogo(_gd.CurrentPlayerName);
+				_cardModel.BetByCurrentPlayer();
+			},
+			() => {
+				cv.RemoveLogo(_gd.CurrentPlayerName);
+				_cardModel.SellByCurrentPlayer();
+			}
 		);
 	}
 

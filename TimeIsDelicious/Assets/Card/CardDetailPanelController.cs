@@ -171,7 +171,7 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 			break;
 		}
 
-		return Resources.Load<Sprite> (imageName);;
+		return Resources.Load<Sprite> (imageName);
 	}
 
 	private void Clear() {
