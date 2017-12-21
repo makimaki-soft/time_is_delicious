@@ -115,7 +115,12 @@ public class CardViewModel: MonoBehaviour {
             Debug.Log("Bet by " + name);
         }
 
-        cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenNiku (_cardModel);
+        cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenNiku (
+			_cardModel,
+			null,
+			_cardModel.BetByCurrentPlayer,
+			_cardModel.SellByCurrentPlayer
+		);
 	}
 
 	// 毒フェクトを消す
