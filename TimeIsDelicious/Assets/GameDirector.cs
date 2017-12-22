@@ -104,6 +104,7 @@ public class GameDirector : MonoBehaviour
         var dice = Dice.Value("");
         Debug.Log ("Stop Dice: " + Dice.Value (""));
         _mainVM.AdvanceTime(dice);
+		_mainVM.NotifyDiceCasted ();
     }
 
 	private void DebugDiceClean () {

@@ -21,9 +21,9 @@ GameObject:
   - component: {fileID: 4154753909927284}
   - component: {fileID: 23836124277764440}
   - component: {fileID: 102044392919054796}
-  - component: {fileID: 114783505715804664}
+  - component: {fileID: 114444472265807352}
   m_Layer: 0
-  m_Name: AgingPointTextPrefab
+  m_Name: TextPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83,7 +83,7 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1288603520842500}
-  m_Text: 20
+  m_Text: 100
   m_OffsetZ: 0
   m_CharacterSize: 0.2
   m_LineSpacing: 1
@@ -97,7 +97,7 @@ TextMesh:
   m_Color:
     serializedVersion: 2
     rgba: 4294967295
---- !u!114 &114783505715804664
+--- !u!114 &114444472265807352
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -105,6 +105,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1288603520842500}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bae53ff6ee1271b4588c58859932eb3a, type: 3}
+  m_Script: {fileID: 11500000, guid: dee7f62222c033945af7deffd9f243d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fontScale: 1
