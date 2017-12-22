@@ -131,4 +131,9 @@ public class GameDirectorVM : VMBase {
     {
         // _singletonMainModel.BetFood(null);
     }
+
+	public void NotifyDiceCasted()
+	{
+		_singletonMainModel.NotifyDiceCasted ();
+	}
 }

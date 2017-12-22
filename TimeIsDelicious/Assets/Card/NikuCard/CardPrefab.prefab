@@ -78,7 +78,7 @@ GameObject:
   - component: {fileID: 102628786720232410}
   - component: {fileID: 114785853117213434}
   m_Layer: 0
-  m_Name: AginPointText
+  m_Name: AgedPointText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -432,7 +432,7 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1645848710253936}
-  m_Text: 20/50
+  m_Text: 0/50
   m_OffsetZ: 0
   m_CharacterSize: 0.256
   m_LineSpacing: 1
