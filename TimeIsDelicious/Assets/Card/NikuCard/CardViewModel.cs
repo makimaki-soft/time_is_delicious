@@ -9,12 +9,10 @@ public class CardViewModel: MonoBehaviour {
 	private GameDirector _gd;
 
 	public GameObject cardPrefab;
-	public GameObject textPrefab;
 	public GameObject poisonEffectPrefab;
 
 	private CardView cv;
 	private GameObject cardDetailPanel;
-	private GameObject agingPointText;
 
 	// ステータス
 	public enum Status {
@@ -51,14 +49,14 @@ public class CardViewModel: MonoBehaviour {
             if (!card.Rotten)
             {
                 agingPoint = card.Aged;
-                agingPointText.GetComponent<TextMesh>().text = agingPoint.ToString();
+				cv.UpdateAgedPontText (agingPoint.ToString ());
             }
         }
         else if (e.PropertyName == "Rotten")
         {
             if(card.Rotten)
             {
-                agingPointText.GetComponent<TextMesh>().text = "×";
+				cv.UpdateAgedPontText ("X");
 
 				// 毒フェクト
 				// todo: サイズ調整
@@ -102,14 +100,6 @@ public class CardViewModel: MonoBehaviour {
 
 		state = Status.Init; // 初期状態
 		cv.Deal(transform.position);
-
-		// 熟成度用テキストオブジェクトを生成
-		agingPointText = (GameObject)Instantiate(
-			textPrefab,
-			transform.position,
-			Quaternion.identity
-		);
-		agingPointText.GetComponent<TextMesh> ().text = agingPoint.ToString();
 	}
 
 	public void OnClick() {

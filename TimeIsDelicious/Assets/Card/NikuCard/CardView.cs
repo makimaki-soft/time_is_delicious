@@ -16,13 +16,25 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 	private GameObject logo1;
 	private GameObject logo2;
 
+	private GameObject agedPointText;
+	private GameObject sellPointText;
+
 	void Start() {
 		logo1 = transform.Find ("Logo1").gameObject;
 		logo2 = transform.Find ("Logo2").gameObject;
-
 		logo1.SetActive (false);
 		logo2.SetActive (false);
 
+		agedPointText = transform.Find ("AgedPointText").gameObject;
+		sellPointText = transform.Find ("SellPointText").gameObject;
+	}
+
+	public void UpdateAgedPontText(string _agedPoint) {
+		agedPointText.GetComponent<TextMesh> ().text = _agedPoint + "/50";
+	}
+
+	public void UpdateSellPontText(string _sellPoint) {
+		sellPointText.GetComponent<TextMesh> ().text = _sellPoint + "pt";
 	}
 
 	public void OnPointerClick(PointerEventData data) {
@@ -50,6 +62,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 		vm.state = CardViewModel.Status.Index;
 	}
 
+	/*
 	public void ShowDetail() {
 		vm.state = CardViewModel.Status.Animating;  // 状態をアニメーション中に変更
 		StartCoroutine(MoveAnimation(
@@ -67,6 +80,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 		));
 		vm.state = CardViewModel.Status.Index;
 	}
+	*/
 
 	/*
 	 * カードを配るアニメーション
@@ -94,6 +108,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 	/*
 	 * カードを詳細表示したりもどしたり 
 	 */
+	/*
 	private IEnumerator MoveAnimation (Vector3 endPosition, Vector3 endRotaion) {
 
 		float startTime = Time.timeSinceLevelLoad;
@@ -120,6 +135,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 		transform.position = endPosition;
 
 	}
+	*/
 
 	public void SetLogo(string _pName) {
 		
