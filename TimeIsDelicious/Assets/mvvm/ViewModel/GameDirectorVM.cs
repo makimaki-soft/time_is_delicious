@@ -10,12 +10,13 @@ public class GameDirectorVM : VMBase {
     {
         NotStarted,         // スタート待ち
         WaitForRoundStart,  // ラウンド開始待ち
-        Betting,            // 
+        Betting,            // 賭け中
         // ループ
-        CastDice,
-        DecisionMaking,
-        Event,
-        Aging,
+        CastDice,           // サイコロ待ち
+        DecisionMaking,     // 売る・熟成判断待ち
+        Event,              // イベントカードオープン待ち
+        Aging,              // 熟成待ち
+        NextTurn,           // 次のターンへの移行待ち
         // ループ終わり
     }
 
@@ -120,6 +121,16 @@ public class GameDirectorVM : VMBase {
     {
         // todo エラーチェック
         _singletonMainModel.AdvanceTime(i);
+    }
+
+    public void EventCardOpen()
+    {
+        _singletonMainModel.EventCardOpen();
+    }
+
+    public void GoNextTurn()
+    {
+        _singletonMainModel.GoNextTurn();
     }
 
     public void SellFood()

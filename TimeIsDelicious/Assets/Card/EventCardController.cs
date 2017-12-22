@@ -14,14 +14,43 @@ public class EventCardController : MonoBehaviour {
 	public delegate void callBackClose();
 	private callBackClose _callBackClose;
 
-	// Use this for initialization
-	void Start () {
+    private EventCardVM _vm;
+    class EventValues
+    {
+        public int Temperature;
+        public int Humidity;
+        public int Wind;
+    };
+    EventValues _eventValues;
+
+    // Use this for initialization
+    void Start () {
 		GameObject canvas = GameObject.Find ("UICanvas");
 		cardDetailPanel = canvas.transform.Find ("CardDetailPanel").gameObject;
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        _vm = new EventCardVM();
+        _eventValues = new EventValues();
+        _vm.PropertyChanged += _vm_PropertyChanged;
+    }
+
+    private void _vm_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        var vm = (EventCardVM)sender;
+        switch(e.PropertyName)
+        {
+            case "Temperature":
+                _eventValues.Temperature = vm.Temperature;
+                break;
+            case "Humidity":
+                _eventValues.Humidity = vm.Humidity;
+                break;
+            case "Wind":
+                _eventValues.Wind = vm.Wind;
+                break;
+        }
+    }
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 
@@ -42,6 +71,7 @@ public class EventCardController : MonoBehaviour {
 		);
 		currentEventCard = cardvm;
 		cardvm.GetComponent<EventCardViewModel> ().eventNo= 1;
+        Debug.Log("現在のイベント/気温" + _eventValues.Temperature + "/湿度" + _eventValues.Humidity + "/風" + _eventValues.Wind);
 
 		StartCoroutine (OpenEventDetail (_funcClose));
 	}

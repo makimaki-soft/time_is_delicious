@@ -25,4 +25,8 @@ public class PassBtnController : MonoBehaviour {
 		}
 	}
 
+    public void Pass()
+    {
+        MainModel.Instance.Pass();
+    }
 }

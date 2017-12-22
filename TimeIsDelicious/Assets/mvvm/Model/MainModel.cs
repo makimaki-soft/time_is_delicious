@@ -22,10 +22,11 @@ public sealed class MainModel : GameComponent {
         WaitForRoundStart,  // ラウンド開始待ち
         Betting,            // 賭け中
         // ループ
-        CastDice,
-        DecisionMaking,
-        Event,
-        Aging,
+        CastDice,           // サイコロ待ち
+        DecisionMaking,     // 売る・熟成判断待ち
+        Event,              // イベントカードオープン待ち
+        Aging,              // 熟成待ち
+        NextTurn,           // 次のターンへの移行待ち
         // ループ終わり
     }
 
@@ -178,8 +179,14 @@ public sealed class MainModel : GameComponent {
     public void AdvanceTime(int i)
     {
         _timesIsDelicious.AdvanceTime(i, _currentEventCard);
-        if(TurnCount==10)
+        CurrentStatus = Status.NextTurn;
+    }
+
+    public void GoNextTurn()
+    {
+        if (TurnCount == 10)
         {
+            TurnCount = 0;
             _currentPlayerIndex = 0;
             CurrentStatus = Status.WaitForRoundStart; // ラウンド開始待ちに移行
         }
@@ -198,7 +205,24 @@ public sealed class MainModel : GameComponent {
         CurrentPlayer.Sell(targetCard);
 
         _currentPlayerIndex++;
-        if (_currentPlayerIndex > NumberOfPlayers)
+        if (_currentPlayerIndex >= NumberOfPlayers)
+        {
+            _currentPlayerIndex = 0;
+            _betTurnCount++;
+            if (_betTurnCount >= 2)
+            {
+                CurrentStatus = Status.Event; // イベント待ちに移行
+                _currentPlayerIndex = 0;
+                return;
+            }
+        }
+        CurrentPlayer = _players[_currentPlayerIndex];    // 次のプレイヤーに設定
+    }
+
+    public void Pass()
+    {
+        _currentPlayerIndex++;
+        if (_currentPlayerIndex >= NumberOfPlayers)
         {
             _currentPlayerIndex = 0;
             _betTurnCount++;
@@ -237,6 +261,7 @@ public sealed class MainModel : GameComponent {
     public void EventCardOpen()
     {
         CurrentEventCard = _timesIsDelicious.OpenEventCard();
+        CurrentStatus = Status.Aging; // 熟成待ちに移行
     }
 
     // さいころを振ったことを通知(ステータスを変えるだけ)
