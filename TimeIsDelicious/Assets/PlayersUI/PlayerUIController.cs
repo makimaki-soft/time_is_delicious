@@ -11,6 +11,7 @@ public class PlayerUIController : MonoBehaviour {
     private GameObject scoreText;
     private GameObject CharactorImage;
     private Animator animator;
+    public int PlayerID { get; private set; }
 
     void Awake()
     {
@@ -30,6 +31,7 @@ public class PlayerUIController : MonoBehaviour {
     public void setViewModel(PlayerVM model)
     {
         _playerVM = model;
+        PlayerID = model.ID;
         _playerVM.PropertyChanged += _playerVM_PropertyChanged;
         _playerVM.Bets.CollectionChanged += Bets_CollectionChanged;
     }
