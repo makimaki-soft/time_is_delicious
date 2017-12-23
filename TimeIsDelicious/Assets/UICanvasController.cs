@@ -29,7 +29,7 @@ public class UICanvasController : MonoBehaviour
     public void OnExitConfirmOKButtonClick()
     {
         Debug.Log("OnExitConfirmOKButtonClick");
-        // exitConfirmPanel.SetActive(false);
+		Application.LoadLevel ("Title");
     }
 
     public void OnExitConfirmNGButtonClick()

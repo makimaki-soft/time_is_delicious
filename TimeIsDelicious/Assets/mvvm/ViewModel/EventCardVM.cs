@@ -5,6 +5,24 @@ using UnityEngine;
 
 public class EventCardVM : VMBase {
 
+	private readonly int _id;
+	public int ID
+	{
+		get { return _id; }
+	}
+
+	private readonly string _name;
+	public string Name
+	{
+		get { return _name; }
+	}
+
+	private readonly string _description;
+	public string Description
+	{
+		get { return _description; }
+	}
+
     private int _temperature;
     public int Temperature
     {

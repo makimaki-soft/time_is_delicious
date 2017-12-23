@@ -48,6 +48,9 @@ namespace TIDJsonReader
     [System.Serializable]
     public class Event
     {
+		public int id;
+		public string name;
+		public string description;
         public int temperature;
         public int humidity;
         public int wind;
@@ -132,7 +135,7 @@ namespace TIDJsonReader
 
             foreach( var eventcard in inputItems.events)
             {
-                eventCardList.Add(new RuleManager.EventCard(eventcard.temperature, eventcard.humidity, eventcard.wind));
+				eventCardList.Add(new RuleManager.EventCard(eventcard.id, eventcard.name, eventcard.description, eventcard.temperature, eventcard.humidity, eventcard.wind));
             }
 
             return eventCardList;

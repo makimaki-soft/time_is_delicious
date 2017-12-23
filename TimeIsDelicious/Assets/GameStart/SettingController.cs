@@ -17,12 +17,16 @@ public class SettingController : MonoBehaviour {
 	private int _playerNum = 1;
 	private Text _playerNumText;
 
+	private PermanentObj _pObj;
+
 	// Use this for initialization
 	void Start () {
 		_selected = new Color (1, 1, 1);
 		_deselected = new Color (0.3f, 0.3f, 0.3f);
 
 		_playerNumText = playerNumText.GetComponent<Text> ();
+
+		_pObj = GameObject.Find ("PermanentObj").GetComponent<PermanentObj> ();
 	}
 	
 	// Update is called once per frame
@@ -84,6 +88,10 @@ public class SettingController : MonoBehaviour {
 	}
 
 	public void GameStart() {
+
+		// 	プレイヤー数を恒久オブジェクトに保存
+		_pObj.playerNum = _playerNum;
+
 		Application.LoadLevel ("main");
 	}
 }

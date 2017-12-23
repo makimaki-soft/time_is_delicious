@@ -9,8 +9,6 @@ public class EventCardViewModel : MonoBehaviour {
 	private GameObject card;
 	private EventCardView cv;
 
-	public int eventNo = 1;
-
 	// ステータス
 	public enum Status {
 		Init,     // 配布直後
