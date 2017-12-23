@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace RuleManager
 {
@@ -20,7 +21,7 @@ namespace RuleManager
 
         public TimeIsDelicious ()
         {
-
+            _foodCardOnRound = new List<FoodCard>();
             _foodCardList = TIDJsonReader.Parser.ReadFoodCards();
             _foodCardList.Shuffle();
 
@@ -35,10 +36,23 @@ namespace RuleManager
             }
         }
 
+        private readonly int CardsPerRound = 5;
         public List<FoodCard> StartRound()
         {
-            _foodCardOnRound = _foodCardList.Chunks(5);
-            return _foodCardOnRound;
+            // 足りない場合は退避していた捨て札を
+            if(_foodCardList.Count < CardsPerRound)
+            {
+                _foodCardOnRound.Shuffle();
+                _foodCardList.AddRange(_foodCardOnRound);
+                _foodCardOnRound.RemoveRange(0, _foodCardOnRound.Count);
+            }
+            
+             var roundCards = _foodCardList.Chunks(CardsPerRound);
+            _foodCardList = _foodCardList.Skip(CardsPerRound).ToList();
+            _foodCardOnRound.AddRange(roundCards); // 退避用
+
+            UnityEngine.Debug.Log("肉カード山札 残り枚数:" + _foodCardList.Count);
+            return roundCards;
         }
 
         public void AdvanceTime(int time, EventCard eventCard)
@@ -51,7 +65,13 @@ namespace RuleManager
 
         public EventCard OpenEventCard()
         {
-            return _eventCardList[_numEventCardOpend++%_eventCardList.Count];
+            // 山札を使い切ったらシャッフル
+            if(_numEventCardOpend == _eventCardList.Count )
+            {
+                _eventCardList.Shuffle();
+            }
+
+            return _eventCardList[_numEventCardOpend++ % _eventCardList.Count];
         }
     }
 }

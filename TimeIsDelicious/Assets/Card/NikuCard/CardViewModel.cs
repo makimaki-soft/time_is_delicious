@@ -14,6 +14,8 @@ public class CardViewModel: MonoBehaviour {
 	private CardView cv;
 	private GameObject cardDetailPanel;
 
+    public int ID { get; private set; }
+
 	// ステータス
 	public enum Status {
 		Init,     // 配布直後
@@ -38,6 +40,7 @@ public class CardViewModel: MonoBehaviour {
     public void setViewModel(FoodCardVM model )
     {
         _cardModel = model;
+        ID = model.ID;
         _cardModel.PropertyChanged += _cardModel_PropertyChanged;
     }
 
