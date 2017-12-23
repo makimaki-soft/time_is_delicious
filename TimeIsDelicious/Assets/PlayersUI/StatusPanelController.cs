@@ -38,10 +38,14 @@ public class StatusPanelController : MonoBehaviour {
 			msg = "熟.....塾々..........塾々々...............";
 			break;
 		case GameDirectorVM.Status.Aging:
-			msg = "少し美味しくなりました！";
+			msg = "今日の天気";
 			break;
-		}
+        case GameDirectorVM.Status.NextTurn:
+            msg = "少し美味しくなりました！";
+            break;
+        }
+        
 
-		_statusText.text = msg;
+        _statusText.text = msg;
 	}
 }

@@ -16,14 +16,15 @@ public class GameDirector : MonoBehaviour
     public string CurrentPlayerName { get; private set; }
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
 
         TurnCount = 0;
         RoundCount = 0;
 
         _mainVM = new GameDirectorVM();
         _mainVM.PropertyChanged += _mainVM_PropertyChanged;
-      
+
         // 監視対象GameObjectを取得
         playerUIWindow = GameObject.Find("PlayerUIPanel");
 
@@ -35,7 +36,7 @@ public class GameDirector : MonoBehaviour
     private void _mainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         var vm = (GameDirectorVM)sender;
-        switch(e.PropertyName)
+        switch (e.PropertyName)
         {
             case "CurrentStatus":
                 Status = vm.CurrentStatus;
@@ -65,7 +66,8 @@ public class GameDirector : MonoBehaviour
     private IEnumerator RoundStart()
     {
         // PlyerUIWindowが準備完了したら
-        yield return new WaitUntil(() => {
+        yield return new WaitUntil(() =>
+        {
             return playerUIWindow.GetComponent<PlayersUIWindowController>().UIRready;
         });
 
@@ -77,38 +79,73 @@ public class GameDirector : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update () {
-		
-	}
+    void Update()
+    {
+
+    }
 
     // For Debug
-	public GameObject popupWindow;
-	private DiceController dc;
+    public GameObject popupWindow;
+    private DiceController dc;
     public void OnClickForDebug()
     {
-		dc = GetComponent<DiceController> ();
-		dc.StopDice = DebugStopHandler;
-		dc.Roll ("red");
+        dc = GetComponent<DiceController>();
+        dc.StopDice = DebugStopHandler;
+        dc.Roll("red");
     }
     public void OnClickForDebug2()
     {
         _mainVM.SellFood();
     }
-	private void DebugStopHandler ()
-	{
-		GetComponent<EventCardController> ().DrawEventCard (
-			() => {
-				DebugDiceClean();
-			});
-
+    private void DebugStopHandler()
+    {
         var dice = Dice.Value("");
-        Debug.Log ("Stop Dice: " + Dice.Value (""));
-        _mainVM.AdvanceTime(dice);
-		_mainVM.NotifyDiceCasted ();
+        Debug.Log("Stop Dice: " + Dice.Value(""));
+        // _mainVM.AdvanceTime(dice);
+        _mainVM.NotifyDiceCasted(); // 判断待ちステータスに進める
+
+        // 熟成待ち状態になったらダイスの出目で熟成
+        StartCoroutine(ControlTurnCoroutine(dice));
     }
 
-	private void DebugDiceClean () {
-		Dice.Clear ();
-		dc.StopDice -= DebugStopHandler;
-	}
+    private void DebugDiceClean()
+    {
+        Dice.Clear();
+        dc.StopDice -= DebugStopHandler;
+    }
+
+    private IEnumerator ControlTurnCoroutine(int dice)
+    {
+        yield return new WaitUntil(() =>
+        {
+            return Status == GameDirectorVM.Status.Event; // イベントカードオープン待ちになったら
+        });
+
+        bool EventChecked = false;
+        // イベントカードオープン
+        _mainVM.EventCardOpen();
+        GetComponent<EventCardController>().DrawEventCard(
+            () =>
+            {
+                DebugDiceClean();
+                EventChecked = true;
+            });
+
+        yield return new WaitUntil(() =>
+        {
+            return EventChecked && Status == GameDirectorVM.Status.Aging; // 熟成待ち状態になったら
+        });
+
+        // 熟成
+        _mainVM.AdvanceTime(dice);
+
+        yield return new WaitUntil(() =>
+        {
+            return EventChecked && Status == GameDirectorVM.Status.NextTurn; // 次のターンへの移行待ち状態になったら
+        });
+
+        // ２秒待って
+        yield return new WaitForSeconds(2.0f);
+        _mainVM.GoNextTurn(); // 次のターンへ移行
+    }
 }
