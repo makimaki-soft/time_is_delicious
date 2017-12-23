@@ -48,6 +48,11 @@ public class PlayerVM : VMBase {
         get { return _bets; }
     }
 
+    public string Name
+    {
+        get { return _playerModel.Name; }
+    }
+
     private Player _playerModel;
     public PlayerVM(Player model)
     {

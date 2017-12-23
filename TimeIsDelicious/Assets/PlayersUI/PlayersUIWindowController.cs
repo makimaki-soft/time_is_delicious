@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using UnityEngine;
 
 // Player UI 全体のView
@@ -18,12 +19,21 @@ public class PlayersUIWindowController : MonoBehaviour {
 
     public bool UIRready { get; private set; }
 
+    private Dictionary<string, int> NameUIMap;
+
     // Use this for initialization
     void Start () {
         UIRready = false;
         _playerViewList = new List<GameObject>();
         numberOfPlayers = 0;
         _maxNumberOfViewList = 0;
+
+        // プレイヤー名とプレハブの紐づけ
+        NameUIMap = new Dictionary<string, int>();
+        NameUIMap["Chouette"] = 0;
+        NameUIMap["鈴木精肉店"] = 1;
+        NameUIMap["マザーミート"] = 2;
+        NameUIMap["王丸農場"] = 3;
 
         //// 一度すべて非アクティブ
         for (int i = 0; i < 4; i++)
@@ -46,6 +56,15 @@ public class PlayersUIWindowController : MonoBehaviour {
             case "NumberOfPlayers":
                 _maxNumberOfViewList = playersUIVM.NumberOfPlayers;
                 break;
+            case "CurrentPlayer":
+                var startIndex =_playerViewList.FindIndex(go=>go.GetComponent<PlayerUIController>().PlayerID == playersUIVM.CurrentPlayer.ID);
+                for(int idx = 0; idx< _playerViewList.Count; idx++)
+                {
+                    int order = (startIndex + idx) % _playerViewList.Count;
+                    _playerViewList[order].GetComponent<PlayerUIController>().ChangePosision(idx, (msg)=> { });
+                }
+
+                break;
         }
     }
 
@@ -58,7 +77,8 @@ public class PlayersUIWindowController : MonoBehaviour {
                 foreach (var item in e.NewItems)
                 {
                     // Instanciateの位置調整がうまくいかないのでひとまず静的配置からFind
-                    var name = "PlayerPrefab_" + numberOfPlayers.ToString();
+                    var vm = (PlayerVM)item;
+                    var name = "PlayerPrefab_" + NameUIMap[vm.Name];
                     var UI = transform.Find(name).gameObject;
                     //    UI.transform.parent = transform;
                     //    var rectTrans = (RectTransform)UI.transform;
@@ -68,7 +88,7 @@ public class PlayersUIWindowController : MonoBehaviour {
                     //    rectTrans.offsetMax = new Vector2(0.8f, 0.8f);
                     UI.SetActive(true);
                     UI.GetComponent<PlayerUIController>().setViewModel((PlayerVM)item);
-                    UI.GetComponent<PlayerUIController>().ChangePosision(4-numberOfPlayers, (msg)=>
+                    UI.GetComponent<PlayerUIController>().ChangePosision(vm.ID, (msg)=>
                     {
                         Debug.Log("UI View " + msg + " Finish");
                         if(++_viewComplete == _maxNumberOfViewList )
