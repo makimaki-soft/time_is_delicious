@@ -17,6 +17,9 @@ public class EventCardController : MonoBehaviour {
     private EventCardVM _vm;
     class EventValues
     {
+        public int ID;
+        public string Name;
+        public string Description;
         public int Temperature;
         public int Humidity;
         public int Wind;
@@ -37,6 +40,15 @@ public class EventCardController : MonoBehaviour {
         var vm = (EventCardVM)sender;
         switch(e.PropertyName)
         {
+            case "ID":
+                _eventValues.ID = vm.ID;
+                break;
+            case "Name":
+                _eventValues.Name = vm.Name;
+                break;
+            case "Description":
+                _eventValues.Description = vm.Description;
+                break;
             case "Temperature":
                 _eventValues.Temperature = vm.Temperature;
                 break;
@@ -46,6 +58,7 @@ public class EventCardController : MonoBehaviour {
             case "Wind":
                 _eventValues.Wind = vm.Wind;
                 break;
+
         }
     }
 
@@ -71,7 +84,7 @@ public class EventCardController : MonoBehaviour {
 		);
 		currentEventCard = cardvm;
         Debug.Log("現在のイベント/気温" + _eventValues.Temperature + "/湿度" + _eventValues.Humidity + "/風" + _eventValues.Wind);
-		Debug.Log ("id: " + _vm.ID);
+		Debug.Log ("id: " + _eventValues.ID + "Name" + _eventValues.Name);
 		StartCoroutine (OpenEventDetail (_funcClose));
 	}
 
