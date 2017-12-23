@@ -1,6 +1,7 @@
 ﻿using RuleManager;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 public class PlayersUIWindowVM : VMBase {
 
@@ -37,6 +38,20 @@ public class PlayersUIWindowVM : VMBase {
         }
     }
 
+    private PlayerVM _currentPlayer;
+    public PlayerVM CurrentPlayer
+    {
+        get { return _currentPlayer; }
+        set
+        {
+            if (_currentPlayer != value)
+            {
+                _currentPlayer = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
     private void SingletonMainModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         var mainModel = sender as MainModel;
@@ -44,6 +59,9 @@ public class PlayersUIWindowVM : VMBase {
         {
             case "NumberOfPlayers":
                 NumberOfPlayers = mainModel.NumberOfPlayers;
+                break;
+            case "CurrentPlayer":
+                CurrentPlayer = _playerListVM.FirstOrDefault(v => v.ID == mainModel.CurrentPlayer.ID);
                 break;
         }
     }
