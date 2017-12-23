@@ -70,9 +70,8 @@ public class EventCardController : MonoBehaviour {
 			Quaternion.identity
 		);
 		currentEventCard = cardvm;
-		cardvm.GetComponent<EventCardViewModel> ().eventNo= 1;
         Debug.Log("現在のイベント/気温" + _eventValues.Temperature + "/湿度" + _eventValues.Humidity + "/風" + _eventValues.Wind);
-
+		Debug.Log ("id: " + _vm.ID);
 		StartCoroutine (OpenEventDetail (_funcClose));
 	}
 
@@ -83,6 +82,7 @@ public class EventCardController : MonoBehaviour {
 		yield return new WaitForSeconds(1.0f);
 
 		cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenEvent (
+			_vm,
 			() => {
 				_funcClose?.Invoke();
 			});

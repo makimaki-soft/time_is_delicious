@@ -85,9 +85,9 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 
 		_cardName.text = _food.Name;
 		_cardDes.text = _food.Description;
+
 		_agingPointText.text = _food.Aged.ToString () + "/" + _food.MaxAged.ToString ();
 		_sellPointText.text = _food.Price.ToString ();
-		// todo ロゴの設定, ボタンの表示制御
 
 		IReadOnlyList<string> names = _food.NamesWhoBet;
 		Debug.Log ("Betting players is " + names.Count);
@@ -120,15 +120,22 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 	}
 
 	public void OpenEvent(
-		callBackClose _funcClose = null,
-		callBackBet _funcBet = null,
-		callBackSell _funcSell = null) {
+		EventCardVM _event,
+		callBackClose _funcClose = null) {
 
 		Clear ();
 
+		string imageName = "Event/event" + _event.ID.ToString ();
+		Sprite image = Resources.Load<Sprite> (imageName);
+		_cardImage.sprite = image;
+
+		_cardName.text = _event.Name;
+		_cardDes.text = _event.Description;
+
+		_agingPointText.text = "";
+		_sellPointText.text = "";
+
 		_callBackClose = _funcClose;
-		_callBackBet = _funcBet;
-		_callBackSell = _funcSell;
 		gameObject.SetActive (true);
 	}
 
