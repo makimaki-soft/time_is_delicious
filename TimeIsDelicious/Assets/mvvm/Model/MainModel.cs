@@ -28,6 +28,7 @@ public sealed class MainModel : GameComponent {
         Aging,              // 熟成待ち
         NextTurn,           // 次のターンへの移行待ち
         // ループ終わり
+        GameEnd             // ゲーム終了
     }
 
     // ターン数
@@ -87,6 +88,16 @@ public sealed class MainModel : GameComponent {
                 _currentPlayer = value;
                 NotifyPropertyChanged();
             }
+        }
+    }
+
+    // 強制イベント通知
+    public Player CurrentPlayerForceEvent
+    {
+        set
+        {
+            _currentPlayer = value;
+            NotifyPropertyChanged("CurrentPlayer");
         }
     }
 
@@ -190,11 +201,20 @@ public sealed class MainModel : GameComponent {
 
     public void GoNextTurn()
     {
-        if (TurnCount == 10)
+        var NotRotten = _currentFoodCards.Where(fc => fc.Rotten == false)
+                                         .Select(fc => fc.GUID)
+                                         .Count();
+        var StillHave = _players.Where(player => player.Bets.Count > 0)
+                           .Select(player => player.GUID)
+                           .Count();
+
+        // すべてのカードが腐るか、すべてのカードが売り払われたら次のラウンドに進む
+        if (TurnCount == 10 || NotRotten == 0 || StillHave == 0 )
         {
             TurnCount = 0;
             _currentPlayerIndex = 0;
-            CurrentStatus = Status.WaitForRoundStart; // ラウンド開始待ちに移行
+            
+            CurrentStatus = RoundCount == 1 ? Status.GameEnd : Status.WaitForRoundStart; // ラウンド開始待ちor終了に移行
         }
         else
         {
@@ -209,20 +229,6 @@ public sealed class MainModel : GameComponent {
     {
         var targetCard = (from foodcard in _currentFoodCards where foodcard.GUID == card.GUID select foodcard).Single();
         CurrentPlayer.Sell(targetCard);
-
-        _currentPlayerIndex++;
-        if (_currentPlayerIndex >= NumberOfPlayers)
-        {
-            _currentPlayerIndex = 0;
-            _betTurnCount++;
-            if (_betTurnCount >= 2)
-            {
-                CurrentStatus = Status.Event; // イベント待ちに移行
-                _currentPlayerIndex = 0;
-                return;
-            }
-        }
-        CurrentPlayer = _players[_currentPlayerIndex];    // 次のプレイヤーに設定
     }
 
     public void Pass()
@@ -275,6 +281,6 @@ public sealed class MainModel : GameComponent {
     {
         CurrentStatus = Status.DecisionMaking; // 売るかどうかの選択に移行
         _currentPlayerIndex = 0;
-        CurrentPlayer = _players[_currentPlayerIndex];
+        CurrentPlayerForceEvent = _players[_currentPlayerIndex];
     }
 }

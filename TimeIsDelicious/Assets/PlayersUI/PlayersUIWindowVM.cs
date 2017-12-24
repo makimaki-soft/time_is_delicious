@@ -17,6 +17,8 @@ public class PlayersUIWindowVM : VMBase {
         _singletonMainModel.PropertyChanged += SingletonMainModel_PropertyChanged;
     }
 
+    public PermanentObj Permanent { get; set; }
+
     private ObservableCollection<PlayerVM> _playerListVM;
     public ObservableCollection<PlayerVM> PlayerListVM
     {
@@ -62,6 +64,17 @@ public class PlayersUIWindowVM : VMBase {
                 break;
             case "CurrentPlayer":
                 CurrentPlayer = _playerListVM.FirstOrDefault(v => v.ID == mainModel.CurrentPlayer.ID);
+                break;
+            case "CurrentStatus":
+                if (mainModel.CurrentStatus == MainModel.Status.GameEnd)
+                {
+                    if(Permanent != null)
+                    {
+                        Permanent.playerNum = _playerListVM.Count;
+                        Permanent.players = _playerListVM.ToArray();
+                    }
+                    UnityEngine.Application.LoadLevel("GameEnd");
+                }
                 break;
         }
     }
