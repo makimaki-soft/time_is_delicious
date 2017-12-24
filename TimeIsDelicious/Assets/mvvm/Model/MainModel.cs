@@ -7,6 +7,11 @@ using System.Linq;
 public sealed class MainModel : GameComponent {
 
     private static MainModel instance = new MainModel();
+    
+    public static void Reset()
+    {
+        instance = new MainModel();
+    }
 
     public static MainModel Instance
     {
@@ -214,7 +219,7 @@ public sealed class MainModel : GameComponent {
             TurnCount = 0;
             _currentPlayerIndex = 0;
             
-            CurrentStatus = RoundCount == 1 ? Status.GameEnd : Status.WaitForRoundStart; // ラウンド開始待ちor終了に移行
+            CurrentStatus = RoundCount == 3 ? Status.GameEnd : Status.WaitForRoundStart; // ラウンド開始待ちor終了に移行
         }
         else
         {
