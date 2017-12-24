@@ -7,6 +7,11 @@ using System.Linq;
 public sealed class MainModel : GameComponent {
 
     private static MainModel instance = new MainModel();
+    
+    public static void Reset()
+    {
+        instance = new MainModel();
+    }
 
     public static MainModel Instance
     {

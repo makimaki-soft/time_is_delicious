@@ -91,7 +91,7 @@ public class SettingController : MonoBehaviour {
 
 		// 	プレイヤー数を恒久オブジェクトに保存
 		_pObj.playerNum = _playerNum;
-
-		Application.LoadLevel ("main");
+        MainModel.Reset();
+        Application.LoadLevel ("main");
 	}
 }

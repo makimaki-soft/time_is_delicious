@@ -28,6 +28,7 @@ public class GameEndController : MonoBehaviour {
 
 	public void ReturnToStart () {
 		Debug.Log ("return to start");
-		Application.LoadLevel ("Main");
+        MainModel.Reset();
+        Application.LoadLevel ("Main");
 	}
 }
