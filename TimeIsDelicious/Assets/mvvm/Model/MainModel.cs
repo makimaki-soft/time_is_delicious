@@ -90,6 +90,16 @@ public sealed class MainModel : GameComponent {
         }
     }
 
+    // 強制イベント通知
+    public Player CurrentPlayerForceEvent
+    {
+        set
+        {
+            _currentPlayer = value;
+            NotifyPropertyChanged("CurrentPlayer");
+        }
+    }
+
     private int _numberOfPlayers;
     public int NumberOfPlayers
     {
@@ -209,20 +219,6 @@ public sealed class MainModel : GameComponent {
     {
         var targetCard = (from foodcard in _currentFoodCards where foodcard.GUID == card.GUID select foodcard).Single();
         CurrentPlayer.Sell(targetCard);
-
-        _currentPlayerIndex++;
-        if (_currentPlayerIndex >= NumberOfPlayers)
-        {
-            _currentPlayerIndex = 0;
-            _betTurnCount++;
-            if (_betTurnCount >= 2)
-            {
-                CurrentStatus = Status.Event; // イベント待ちに移行
-                _currentPlayerIndex = 0;
-                return;
-            }
-        }
-        CurrentPlayer = _players[_currentPlayerIndex];    // 次のプレイヤーに設定
     }
 
     public void Pass()
@@ -275,6 +271,6 @@ public sealed class MainModel : GameComponent {
     {
         CurrentStatus = Status.DecisionMaking; // 売るかどうかの選択に移行
         _currentPlayerIndex = 0;
-        CurrentPlayer = _players[_currentPlayerIndex];
+        CurrentPlayerForceEvent = _players[_currentPlayerIndex];
     }
 }

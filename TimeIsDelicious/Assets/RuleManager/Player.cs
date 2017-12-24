@@ -80,6 +80,15 @@ namespace RuleManager
             _id = id;
             _name = name;
             _bets = new ObservableCollection<FoodCard>();
+            _bets.CollectionChanged += _bets_CollectionChanged;
+        }
+
+        public delegate int BetsCountDelegate(int newCount);
+        public BetsCountDelegate LookCount { get; set; }
+        private void _bets_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var tmp = (ObservableCollection<FoodCard>)sender;
+            LookCount?.Invoke(tmp.Count);
         }
     }
 }

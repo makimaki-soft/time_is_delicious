@@ -39,7 +39,9 @@ public class GameDirectorVM : VMBase {
                 UnityEngine.Debug.Log(CurrentStatus);
                 break;
             case "CurrentPlayer":
-                CurrentPlayerName = mainModel.CurrentPlayer.Name; // tmp
+                _currentPlayersBets = mainModel.CurrentPlayer.Bets.Count;
+                mainModel.CurrentPlayer.LookCount = (nc) => CurrentPlayersBets = nc;
+                CurrentPlayerNameForce = mainModel.CurrentPlayer.Name; // tmp
                 break;
             case "TurnCount":
                 TurnCount = mainModel.TurnCount;
@@ -103,6 +105,29 @@ public class GameDirectorVM : VMBase {
             if(_currentPlayerName != value)
             {
                 _currentPlayerName = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    public string CurrentPlayerNameForce
+    {
+        set
+        {
+            _currentPlayerName = value;
+            NotifyPropertyChanged("CurrentPlayerName");
+        }
+    }
+
+    private int _currentPlayersBets;
+    public int CurrentPlayersBets
+    {
+        get { return _currentPlayersBets; }
+        set
+        {
+            if (_currentPlayersBets != value)
+            {
+                _currentPlayersBets = value;
                 NotifyPropertyChanged();
             }
         }

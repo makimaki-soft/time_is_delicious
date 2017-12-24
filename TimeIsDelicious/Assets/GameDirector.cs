@@ -53,6 +53,25 @@ public class GameDirector : MonoBehaviour
                 {
                     popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
                 }
+                if(vm.CurrentStatus == GameDirectorVM.Status.DecisionMaking)
+                {
+                    // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
+                    if( vm.CurrentPlayersBets == 0 )
+                    {
+                        GetComponent<PassBtnController>().Pass();
+                    }
+                }
+                break;
+            case "CurrentPlayersBets":
+                // 所持カードが減ったときも自動パスを判定
+                if (vm.CurrentStatus == GameDirectorVM.Status.DecisionMaking)
+                {
+                    // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
+                    if (vm.CurrentPlayersBets == 0)
+                    {
+                        GetComponent<PassBtnController>().Pass();
+                    }
+                }
                 break;
             case "TurnCount":
                 TurnCount = vm.TurnCount;
