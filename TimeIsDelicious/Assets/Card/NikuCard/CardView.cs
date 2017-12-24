@@ -34,7 +34,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 	}
 
 	public void UpdateSellPontText(string _sellPoint) {
-		sellPointText.GetComponent<TextMesh> ().text = _sellPoint + "pt";
+		sellPointText.GetComponent<TextMesh> ().text = _sellPoint + "G";
 	}
 
 	public void OnPointerClick(PointerEventData data) {
