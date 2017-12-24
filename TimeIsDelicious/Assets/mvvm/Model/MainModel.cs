@@ -164,6 +164,12 @@ public sealed class MainModel : GameComponent {
         _currentPlayerIndex = 0;
         _betTurnCount = 0;
         var cards = _timesIsDelicious.StartRound();
+
+        // リセット
+        while(_currentFoodCards.Count>0)
+        {
+            _currentFoodCards.RemoveAt(0);
+        }
         foreach(var card in cards)
         {
             _currentFoodCards.Add(card);

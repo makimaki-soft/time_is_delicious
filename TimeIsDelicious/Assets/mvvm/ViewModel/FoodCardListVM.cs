@@ -1,6 +1,7 @@
 ﻿using RuleManager;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 // 肉カードVMの親VM
 public class FoodCardListVM : VMBase {
@@ -39,6 +40,15 @@ public class FoodCardListVM : VMBase {
                 break;
             case NotifyCollectionChangedAction.Remove:
                 UnityEngine.Debug.Log("CurrentFoodCards Remove");
+                foreach (var item in e.OldItems)
+                {
+                    var removedItem = _currentFoodCardsVM.FirstOrDefault(vm => vm.ID == ((FoodCard)item).ID);
+                    if(removedItem != null)
+                    {
+                        _currentFoodCardsVM.Remove(removedItem);
+                    }
+                    
+                }
                 break;
             case NotifyCollectionChangedAction.Replace:
                 UnityEngine.Debug.Log("CurrentFoodCards Replace");

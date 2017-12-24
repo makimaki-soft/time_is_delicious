@@ -5,23 +5,47 @@ using UnityEngine;
 
 public class EventCardVM : VMBase {
 
-	private readonly int _id;
+	private int _id;
 	public int ID
 	{
 		get { return _id; }
-	}
+        private set
+        {
+            if (value != _id)
+            {
+                _id = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
 
-	private readonly string _name;
+	private string _name;
 	public string Name
 	{
 		get { return _name; }
-	}
+        private set
+        {
+            if (value != _name)
+            {
+                _name = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
 
-	private readonly string _description;
+	private string _description;
 	public string Description
 	{
 		get { return _description; }
-	}
+        private set
+        {
+            if (value != _description)
+            {
+                _description = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
 
     private int _temperature;
     public int Temperature
@@ -82,6 +106,9 @@ public class EventCardVM : VMBase {
                 Temperature = model.CurrentEventCard.Weather[RuleManager.EventType.Temperature];
                 Humidity = model.CurrentEventCard.Weather[RuleManager.EventType.Humid];
                 Wind = model.CurrentEventCard.Weather[RuleManager.EventType.Wind];
+                ID = model.CurrentEventCard.ID;
+                Name = model.CurrentEventCard.Name;
+                Description = model.CurrentEventCard.Description;
                 break;
         }
     }

@@ -23,7 +23,6 @@ namespace RuleManager
         public static List<T> Chunks<T>(this List<T> list, int size)
         {
             List<T> ret = list.Take(size).ToList();
-            list = list.Skip(size).ToList();
             return ret;
         }
     }

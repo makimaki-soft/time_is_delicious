@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Collections.Specialized;
+using System.Linq;
 
 // FoodCardListのViewという扱いに変更
 public class TempManager : MonoBehaviour
@@ -48,6 +49,16 @@ public class TempManager : MonoBehaviour
                 break;
             case NotifyCollectionChangedAction.Remove:
                 Debug.Log("CurrentFoodCardsVM Remove");
+                foreach (var item in e.OldItems)
+                {
+                    var foodCardVM = (FoodCardVM)item;
+                    var removedItem = _foodCardViewList.FirstOrDefault(gb => gb.GetComponent<CardViewModel>().ID == foodCardVM.ID);
+                    if(removedItem != null)
+                    {
+                        Destroy(removedItem);
+                        _foodCardViewList.Remove(removedItem);
+                    }
+                }
                 break;
             case NotifyCollectionChangedAction.Replace:
                 Debug.Log("CurrentFoodCardsVM Replace");
