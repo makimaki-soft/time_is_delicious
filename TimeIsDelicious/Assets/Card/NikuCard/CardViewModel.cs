@@ -11,6 +11,7 @@ public class CardViewModel: MonoBehaviour {
 	public GameObject cardPrefab;
 	public GameObject poisonEffectPrefab;
 
+	private GameObject card;
 	private CardView cv;
 	private GameObject cardDetailPanel;
 
@@ -52,7 +53,7 @@ public class CardViewModel: MonoBehaviour {
             if (!card.Rotten)
             {
                 agingPoint = card.Aged;
-				cv.UpdateAgedPontText (agingPoint.ToString ());
+				cv.UpdateAgedPontText (agingPoint.ToString () + "/50");
             }
         }
         else if (e.PropertyName == "Rotten")
@@ -89,7 +90,7 @@ public class CardViewModel: MonoBehaviour {
 		Debug.Log ("start: " + cardDetailPanel);
 
 		// 肉カードを生成
-		GameObject card = (GameObject)Instantiate(
+		card = (GameObject)Instantiate(
 			cardPrefab,
 			deckPosition,
 			Quaternion.identity
@@ -136,7 +137,8 @@ public class CardViewModel: MonoBehaviour {
 		Destroy (obj);
 	}
 
-	void OnDestory(){
-		Destroy (cv);
+	void OnDestroy(){
+		Debug.Log ("!!! D E S T O R O Y !!!");
+		Destroy (card);
 	}
 }
