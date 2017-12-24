@@ -154,9 +154,13 @@ public class Die : MonoBehaviour {
 	}
 
 	IEnumerator StopJudge () {
-		while (rolling) {
+		float startTime = Time.timeSinceLevelLoad;
+
+		// 10秒たったら強制停止
+		while (rolling || Time.timeSinceLevelLoad - startTime > 10) {
 			yield return new WaitForSeconds (2);
 			rolling = !(GetComponent<Rigidbody>().velocity.sqrMagnitude < .1F && GetComponent<Rigidbody>().angularVelocity.sqrMagnitude < .1F);
 		}
+		rolling = false;
 	}
 }
