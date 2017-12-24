@@ -87,7 +87,7 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		_cardDes.text = _food.Description;
 
 		_agingPointText.text = _food.Aged.ToString () + "/" + _food.MaxAged.ToString ();
-		_sellPointText.text = _food.Price.ToString ();
+		_sellPointText.text = _food.Price.ToString () + "G";
 
 		IReadOnlyList<string> names = _food.NamesWhoBet;
 		Debug.Log ("Betting players is " + names.Count);
@@ -129,8 +129,8 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		Sprite image = Resources.Load<Sprite> (imageName);
 		_cardImage.sprite = image;
 
-		_cardName.text = _event.Name;
-		_cardDes.text = _event.Description;
+		_cardName.text = "";
+		_cardDes.text = "";
 
 		_agingPointText.text = "";
 		_sellPointText.text = "";

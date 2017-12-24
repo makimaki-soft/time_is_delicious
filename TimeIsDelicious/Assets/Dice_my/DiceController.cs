@@ -15,13 +15,11 @@ public class DiceController : MonoBehaviour {
 	private bool _stopedDice;
 
 	private GameDirector _gd;
-	private Button _diceBtn;
 
 	// Use this for initialization
 	void Start () {
 		_gd = GameObject.Find("GameDirector").GetComponent<GameDirector>();
-		_diceBtn = diceBtnObj.GetComponent<Button> ();
-		_diceBtn.interactable = false;
+		diceBtnObj.SetActive (false);
 	}
 	
 	// Update is called once per frame
@@ -35,10 +33,10 @@ public class DiceController : MonoBehaviour {
 			} 
 		}
 			
-		if (_gd.Status == GameDirectorVM.Status.CastDice) {
-			_diceBtn.interactable = true;
+		if (_gd.Status == GameDirectorVM.Status.CastDice && _stopedDice) {
+			diceBtnObj.SetActive (true);
 		} else {
-			_diceBtn.interactable = false;
+			diceBtnObj.SetActive (false);
 		}
 	}
 

@@ -34,7 +34,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 	}
 
 	public void UpdateSellPontText(string _sellPoint) {
-		sellPointText.GetComponent<TextMesh> ().text = _sellPoint + "pt";
+		sellPointText.GetComponent<TextMesh> ().text = _sellPoint + "G";
 	}
 
 	public void OnPointerClick(PointerEventData data) {
@@ -154,11 +154,11 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 		Texture tex1 = logo1.GetComponent<Renderer> ().material.GetTexture ("_MainTex");
 		Texture tex2 = logo2.GetComponent<Renderer> ().material.GetTexture ("_MainTex");
 		Debug.Log (tex1.name);
-		if (_pName == tex1.name) {
+		if (getLogoTexture(_pName).name == tex1.name) {
 			logo1.SetActive (false);
 		}
 
-		if (_pName == tex2.name) {
+		if (getLogoTexture(_pName).name == tex2.name) {
 			logo2.SetActive (false);
 		}
 	}

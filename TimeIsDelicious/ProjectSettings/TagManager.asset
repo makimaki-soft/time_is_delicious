@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - CardDetailPanel
+  - Score
+  - CharaThumbnail
   layers:
   - Default
   - TransparentFX

@@ -129,8 +129,8 @@
 	"food_cards" : [
 		{
 			"id" : 0,
-			"name" : "名前0",
-			"description" : "説明0",
+			"name" : "サーロイン",
+			"description" : "牛肉の中で唯一「サー」の称号が与えられた部位。庶民には遠い存在。\\nたぶん一番高い\nたぶんステーキが美味しい",
 			"rotten" : 50,
 			"price_tempate_id" : 0,
 			"charactor_table" : [
@@ -143,8 +143,8 @@
 		},
 		{
 			"id" : 1,
-			"name" : "名前1",
-			"description" : "説明1",
+			"name" : "肩ロース",
+			"description" : "霜降りが入りやすい部位。リブロースのお隣\nしゃぶしゃぶで食べたい",
 			"rotten" : 50,
 			"price_tempate_id" : 0,
 			"charactor_table" : [
@@ -157,8 +157,8 @@
 		},
 		{
 			"id" : 2,
-			"name" : "名前2",
-			"description" : "説明2",
+			"name" : "リブロース",
+			"description" : "霜降りになりやすい部位。サーロインのお隣。\n肩ロースのとなりなのは内緒。\n圧倒的肉感。",
 			"rotten" : 50,
 			"price_tempate_id" : 1,
 			"charactor_table" : [
@@ -171,8 +171,8 @@
 		},
 		{
 			"id" : 3,
-			"name" : "名前3",
-			"description" : "説明3",
+			"name" : "肩バラ",
+			"description" : "やや硬いが、硬いバラ肉ではない。\n肋骨の外側の部位。\n角煮が美味しい。",
 			"rotten" : 50,
 			"price_tempate_id" : 1,
 			"charactor_table" : [
@@ -185,8 +185,8 @@
 		},
 		{
 			"id" : 4,
-			"name" : "名前4",
-			"description" : "説明4",
+			"name" : "ナカバラ",
+			"description" : "wikiに乗ってないのでどこの部位かわからない。\nたぶんお腹。\nカルビはたぶんここ。",
 			"rotten" : 50,
 			"price_tempate_id" : 2,
 			"charactor_table" : [
@@ -199,15 +199,15 @@
 		},
 		{
 			"id" : 5,
-			"name" : "名前5",
-			"description" : "説明5",
+			"name" : "ハラミ",
+			"description" : "横隔膜。内蔵っぽくないが内蔵。\nおじさんになるとカルビよりハラミが食べたくなる。\n\n熟成させても大丈夫なのだろうか。",
 			"rotten" : 50,
 			"price_tempate_id" : 2
 		},
 		{
 			"id" : 6,
-			"name" : "名前6",
-			"description" : "説明6",
+			"name" : "シンタマ",
+			"description" : "足の付根あたりの部位。やわらかい。\n赤みの塊。ひびきが可愛い。",
 			"rotten" : 50,
 			"price_tempate_id" : 3,
 			"charactor_table" : [
@@ -220,8 +220,8 @@
 		},
 		{
 			"id" : 7,
-			"name" : "名前7",
-			"description" : "説明7",
+			"name" : "モモ",
+			"description" : "赤みが多い。一番脂肪が少ない部位。\n",
 			"rotten" : 50,
 			"price_tempate_id" : 3,
 			"charactor_table" : [
@@ -234,8 +234,8 @@
 		},
 		{
 			"id" : 8,
-			"name" : "名前8",
-			"description" : "説明8",
+			"name" : "ソトモモ",
+			"description" : "硬めの部位。薄切りにする。\n熟成させる意味があるのだろうか",
 			"rotten" : 50,
 			"price_tempate_id" : 4,
 			"charactor_table" : [
@@ -248,8 +248,8 @@
 		},
 		{
 			"id" : 9,
-			"name" : "名前9",
-			"description" : "説明9",
+			"name" : "ランプ",
+			"description" : "ほとんどの料理に利用できる部位。\n生食に向く...。",
 			"rotten" : 50,
 			"price_tempate_id" : 4,
 			"charactor_table" : [
