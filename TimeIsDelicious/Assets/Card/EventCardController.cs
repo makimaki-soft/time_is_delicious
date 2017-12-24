@@ -79,7 +79,7 @@ public class EventCardController : MonoBehaviour {
 
 		GameObject cardvm = (GameObject)Instantiate (
 			cardVMPrefab,
-			new Vector3 (0, 12, -60),
+			new Vector3 (50, 12, 0),
 			Quaternion.identity
 		);
 		currentEventCard = cardvm;

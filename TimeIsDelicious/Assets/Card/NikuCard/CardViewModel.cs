@@ -11,6 +11,7 @@ public class CardViewModel: MonoBehaviour {
 	public GameObject cardPrefab;
 	public GameObject poisonEffectPrefab;
 
+	private GameObject card;
 	private CardView cv;
 	private GameObject cardDetailPanel;
 
@@ -52,7 +53,7 @@ public class CardViewModel: MonoBehaviour {
             if (!card.Rotten)
             {
                 agingPoint = card.Aged;
-				cv.UpdateAgedPontText (agingPoint.ToString ());
+				cv.UpdateAgedPontText (agingPoint.ToString () + "/50");
             }
         }
         else if (e.PropertyName == "Rotten")
@@ -89,14 +90,15 @@ public class CardViewModel: MonoBehaviour {
 		Debug.Log ("start: " + cardDetailPanel);
 
 		// 肉カードを生成
-		GameObject card = (GameObject)Instantiate(
+		card = (GameObject)Instantiate(
 			cardPrefab,
 			deckPosition,
 			Quaternion.identity
 		);
 
 		// 表面のテクスチャを選択
-		string nikuImgName = "Niku/card" +  _cardModel.ID.ToString() + "_abst";
+		//string nikuImgName = "Niku/card" +  _cardModel.ID.ToString() + "_abst";
+		string nikuImgName = "Niku/card" +  _cardModel.ID.ToString();
 		Texture nikuTexture = (Texture)Resources.Load (nikuImgName);
 		card.GetComponent<Renderer> ().material.SetTexture("_FrontTex", nikuTexture);
 
@@ -134,5 +136,10 @@ public class CardViewModel: MonoBehaviour {
 	private IEnumerator DeleteEffect (GameObject obj, int deleteTime) {
 		yield return new WaitForSeconds (deleteTime);
 		Destroy (obj);
+	}
+
+	void OnDestroy(){
+		Debug.Log ("!!! D E S T O R O Y !!!");
+		Destroy (card);
 	}
 }

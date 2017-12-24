@@ -30,7 +30,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 	}
 
 	public void UpdateAgedPontText(string _agedPoint) {
-		agedPointText.GetComponent<TextMesh> ().text = _agedPoint + "/50";
+		agedPointText.GetComponent<TextMesh> ().text = _agedPoint;
 	}
 
 	public void UpdateSellPontText(string _sellPoint) {
