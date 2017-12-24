@@ -46,12 +46,36 @@ public class GameDirector : MonoBehaviour
                     Debug.Log("StartCoroutine(RoundStart())");
                     StartCoroutine(RoundStart());
                 }
+                else if(vm.CurrentStatus == GameDirectorVM.Status.GameEnd)
+                {
+                    Debug.Log("GameEnd.");
+                    // 最終スコアの設定はPlayersUIWindowVMで実施
+                }
                 break;
             case "CurrentPlayerName":
                 CurrentPlayerName = vm.CurrentPlayerName;
                 if (vm.CurrentStatus == GameDirectorVM.Status.Betting)
                 {
                     popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
+                }
+                if(vm.CurrentStatus == GameDirectorVM.Status.DecisionMaking)
+                {
+                    // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
+                    if( vm.CurrentPlayersBets == 0 )
+                    {
+                        GetComponent<PassBtnController>().Pass();
+                    }
+                }
+                break;
+            case "CurrentPlayersBets":
+                // 所持カードが減ったときも自動パスを判定
+                if (vm.CurrentStatus == GameDirectorVM.Status.DecisionMaking)
+                {
+                    // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
+                    if (vm.CurrentPlayersBets == 0)
+                    {
+                        GetComponent<PassBtnController>().Pass();
+                    }
                 }
                 break;
             case "TurnCount":
