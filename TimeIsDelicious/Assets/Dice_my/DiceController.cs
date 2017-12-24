@@ -33,7 +33,7 @@ public class DiceController : MonoBehaviour {
 			} 
 		}
 			
-		if (_gd.Status == GameDirectorVM.Status.CastDice) {
+		if (_gd.Status == GameDirectorVM.Status.CastDice && _stopedDice) {
 			diceBtnObj.SetActive (true);
 		} else {
 			diceBtnObj.SetActive (false);
