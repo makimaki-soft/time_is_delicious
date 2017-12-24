@@ -18,6 +18,7 @@ public class GameDirectorVM : VMBase {
         Aging,              // 熟成待ち
         NextTurn,           // 次のターンへの移行待ち
         // ループ終わり
+        GameEnd             // ゲーム終了
     }
 
     private MainModel _singletonMainModel;

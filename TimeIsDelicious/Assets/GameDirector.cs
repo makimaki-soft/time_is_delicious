@@ -46,6 +46,11 @@ public class GameDirector : MonoBehaviour
                     Debug.Log("StartCoroutine(RoundStart())");
                     StartCoroutine(RoundStart());
                 }
+                else if(vm.CurrentStatus == GameDirectorVM.Status.GameEnd)
+                {
+                    Debug.Log("GameEnd.");
+                    // 最終スコアの設定はPlayersUIWindowVMで実施
+                }
                 break;
             case "CurrentPlayerName":
                 CurrentPlayerName = vm.CurrentPlayerName;

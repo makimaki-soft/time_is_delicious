@@ -28,6 +28,7 @@ public sealed class MainModel : GameComponent {
         Aging,              // 熟成待ち
         NextTurn,           // 次のターンへの移行待ち
         // ループ終わり
+        GameEnd             // ゲーム終了
     }
 
     // ターン数
@@ -212,7 +213,8 @@ public sealed class MainModel : GameComponent {
         {
             TurnCount = 0;
             _currentPlayerIndex = 0;
-            CurrentStatus = Status.WaitForRoundStart; // ラウンド開始待ちに移行
+            
+            CurrentStatus = RoundCount == 1 ? Status.GameEnd : Status.WaitForRoundStart; // ラウンド開始待ちor終了に移行
         }
         else
         {

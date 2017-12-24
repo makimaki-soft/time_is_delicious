@@ -43,7 +43,10 @@ public class PlayersUIWindowController : MonoBehaviour {
             UI.SetActive(false);
         }
 
+        var pObj = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
+        
         _playersWindowVM = new PlayersUIWindowVM();
+        _playersWindowVM.Permanent = pObj;
         _playersWindowVM.PlayerListVM.CollectionChanged += PlayerListVM_CollectionChanged;
         _playersWindowVM.PropertyChanged += PlayersWindowVM_PropertyChanged;
     }
