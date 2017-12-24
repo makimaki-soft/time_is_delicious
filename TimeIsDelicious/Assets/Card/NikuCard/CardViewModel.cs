@@ -97,7 +97,8 @@ public class CardViewModel: MonoBehaviour {
 		);
 
 		// 表面のテクスチャを選択
-		string nikuImgName = "Niku/card" +  _cardModel.ID.ToString() + "_abst";
+		//string nikuImgName = "Niku/card" +  _cardModel.ID.ToString() + "_abst";
+		string nikuImgName = "Niku/card" +  _cardModel.ID.ToString();
 		Texture nikuTexture = (Texture)Resources.Load (nikuImgName);
 		card.GetComponent<Renderer> ().material.SetTexture("_FrontTex", nikuTexture);
 
