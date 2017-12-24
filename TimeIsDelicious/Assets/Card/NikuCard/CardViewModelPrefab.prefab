@@ -51,6 +51,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf2cd2447b7874de6a76011f373364f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardPrefab: {fileID: 1475235620060544, guid: bf61623d145b9c34480cf8f4cd253820, type: 2}
+  cardPrefab: {fileID: 1391019785811798, guid: da9af3f16c78c3a458c54a932aca403d, type: 2}
   poisonEffectPrefab: {fileID: 1922921950262016, guid: 884d2c110faf3854a9bd7a2f6e076781,
     type: 2}
