@@ -200,7 +200,15 @@ public sealed class MainModel : GameComponent {
 
     public void GoNextTurn()
     {
-        if (TurnCount == 10)
+        var NotRotten = _currentFoodCards.Where(fc => fc.Rotten == false)
+                                         .Select(fc => fc.GUID)
+                                         .Count();
+        var StillHave = _players.Where(player => player.Bets.Count > 0)
+                           .Select(player => player.GUID)
+                           .Count();
+
+        // すべてのカードが腐るか、すべてのカードが売り払われたら次のラウンドに進む
+        if (TurnCount == 10 || NotRotten == 0 || StillHave == 0 )
         {
             TurnCount = 0;
             _currentPlayerIndex = 0;
