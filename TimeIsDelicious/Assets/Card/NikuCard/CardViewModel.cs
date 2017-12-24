@@ -71,6 +71,10 @@ public class CardViewModel: MonoBehaviour {
 				StartCoroutine (DeleteEffect (effect, 1));
             }
         }
+        else if(e.PropertyName == "Price")
+        {
+            cv.UpdateSellPontText(card.Price.ToString());
+        }
     }
 
     void Start () {

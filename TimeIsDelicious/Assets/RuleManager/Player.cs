@@ -56,6 +56,7 @@ namespace RuleManager
             }
             TotalEarned += card.Price;
             _bets.Remove(card);
+            card.RemoveBetPlayer(this);
             card.PropertyChanged -= OnFoodCardPropertyChanged;
         }
 
@@ -69,6 +70,7 @@ namespace RuleManager
                     {
                         // var rotten = _bets.Find(x => x.GUID == card.GUID);
                         _bets.Remove(card);
+                        card.RemoveBetPlayer(this);
                         card.PropertyChanged -= OnFoodCardPropertyChanged;
                     }
                     break;

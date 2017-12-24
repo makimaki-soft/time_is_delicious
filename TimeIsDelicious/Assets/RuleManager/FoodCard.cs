@@ -137,6 +137,11 @@ namespace RuleManager
             _betPlayersList.Add(player);
         }
 
+        public void RemoveBetPlayer(Player player)
+        {
+            _betPlayersList.Remove(player);
+        }
+
         // その肉に賭けられるかどうか
         public bool CanBet
         {
