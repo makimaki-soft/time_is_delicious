@@ -135,4 +135,8 @@ public class CardViewModel: MonoBehaviour {
 		yield return new WaitForSeconds (deleteTime);
 		Destroy (obj);
 	}
+
+	void OnDestory(){
+		Destroy (cv);
+	}
 }
