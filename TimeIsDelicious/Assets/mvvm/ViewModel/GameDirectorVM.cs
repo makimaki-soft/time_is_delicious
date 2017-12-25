@@ -134,9 +134,9 @@ public class GameDirectorVM : VMBase {
         }
     }
 
-    public void StartTimeIsDelicious()
+    public void StartTimeIsDelicious(int numOfPlayers)
     {
-        _singletonMainModel.StartTimeIsDelicious();
+        _singletonMainModel.StartTimeIsDelicious(numOfPlayers);
     }
     public void StartRound()
     {

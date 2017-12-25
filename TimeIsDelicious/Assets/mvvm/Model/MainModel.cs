@@ -159,11 +159,13 @@ public sealed class MainModel : GameComponent {
     }
 
     // ゲームスタート
-    public void StartTimeIsDelicious()
+    public void StartTimeIsDelicious(int numOfPlayers)
     {
         TurnCount = 0;
         RoundCount = 0;
-        NumberOfPlayers = 4;
+        NumberOfPlayers = numOfPlayers;
+
+        _timesIsDelicious.Start(numOfPlayers);
         foreach (var player in _timesIsDelicious.Players)
         {
             _players.Add(player);

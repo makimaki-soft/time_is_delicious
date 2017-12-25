@@ -30,7 +30,12 @@ namespace RuleManager
             _numEventCardOpend = 0;
 
             _players = new List<Player>();
-            for (int i=0; i<4; i++)
+            
+        }
+
+        public void Start(int numOfPlayers)
+        {
+            for (int i = 0; i < numOfPlayers; i++)
             {
                 _players.Add(new Player(i, Names[i]));
             }
