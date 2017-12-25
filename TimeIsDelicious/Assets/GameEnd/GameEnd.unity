@@ -1844,7 +1844,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Background: {fileID: 498437539}
   winPlayerImage: {fileID: 1757115332}
-  winMessage: {fileID: 1725780734}
+  winMessage: {fileID: 1615027971}
+  thumbnails0: {fileID: 1367816171}
+  thumbnails1: {fileID: 963222205}
+  thumbnails2: {fileID: 2134179393}
+  thumbnails3: {fileID: 100992791}
+  score0: {fileID: 1254965026}
+  score1: {fileID: 185346180}
+  score2: {fileID: 646490405}
+  score3: {fileID: 477310723}
 --- !u!4 &1937802821
 Transform:
   m_ObjectHideFlags: 0
