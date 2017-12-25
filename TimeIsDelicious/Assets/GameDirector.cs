@@ -22,6 +22,7 @@ public class GameDirector : MonoBehaviour
         TurnCount = 0;
         RoundCount = 0;
 
+        
         _mainVM = new GameDirectorVM();
         _mainVM.PropertyChanged += _mainVM_PropertyChanged;
 
@@ -30,7 +31,9 @@ public class GameDirector : MonoBehaviour
 
 
         // ゲームを開始する
-        _mainVM.StartTimeIsDelicious();
+        var pObj = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
+        int? numOfPlayers = pObj?.playerNum;
+        _mainVM.StartTimeIsDelicious( numOfPlayers.HasValue ? numOfPlayers.Value : 4);
     }
 
     private void _mainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
