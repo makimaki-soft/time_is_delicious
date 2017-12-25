@@ -174,5 +174,13 @@ namespace RuleManager
             _charactorTable = charactorTable;
             _betPlayersList = new List<Player>();
         }
+
+        public void Reset()
+        {
+            _aged = 0;
+            _price = 0;
+            _rotten = false;
+            _betPlayersList = new List<Player>();
+        }
     }
 }
