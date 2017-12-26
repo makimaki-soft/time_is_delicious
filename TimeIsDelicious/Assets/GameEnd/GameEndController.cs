@@ -10,6 +10,11 @@ public class GameEndController : MonoBehaviour {
 	public Image winPlayerImage;
 	public Text winMessage;
 
+	public GameObject panel0;
+	public GameObject panel1;
+	public GameObject panel2;
+	public GameObject panel3;
+
 	public Image thumbnails0;
 	public Image thumbnails1;
 	public Image thumbnails2;
@@ -27,10 +32,11 @@ public class GameEndController : MonoBehaviour {
 		_pObj = GameObject.Find ("PermanentObj")?.GetComponent<PermanentObj> ();
 		Image[] thumbnails = { thumbnails0, thumbnails1, thumbnails2, thumbnails3 };
 		Text[] scores = { score0, score1, score2, score3 };
+		GameObject[] panels = { panel0, panel1, panel2, panel3 };
 
-		Debug.Log ("thumbnails " + thumbnails.Length);
-		Debug.Log ("scores " + scores.Length);
-		Debug.Log (_pObj.name);
+		foreach (var panel in panels) {
+			panel.SetActive (false);
+		}
 
 		PlayerVM[] players = _pObj.players;
 		Array.Sort (players, (a, b) => b.TotalEarned - a.TotalEarned);
@@ -38,6 +44,7 @@ public class GameEndController : MonoBehaviour {
 		int i = 0;
 		foreach(var player in players) {
 			Debug.Log ("ID:" + player.ID.ToString () + ", Point:" + player.TotalEarned.ToString ());
+			panels [i].SetActive (true);
 			scores [i].GetComponent<Text> ().text = player.TotalEarned.ToString () + "G";
 			thumbnails [i].GetComponent<Image> ().sprite =
 				Resources.Load<Sprite> ("end/chara" + player.ID.ToString ());
