@@ -590,7 +590,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: fcec83e58afd76a40904c040592b0132, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ffe7f9225b67fc3479db78b687869beb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1845,6 +1845,10 @@ MonoBehaviour:
   Background: {fileID: 498437539}
   winPlayerImage: {fileID: 1757115332}
   winMessage: {fileID: 1615027971}
+  panel0: {fileID: 1114440070}
+  panel1: {fileID: 603289198}
+  panel2: {fileID: 1747862805}
+  panel3: {fileID: 587628901}
   thumbnails0: {fileID: 1367816171}
   thumbnails1: {fileID: 963222205}
   thumbnails2: {fileID: 2134179393}
