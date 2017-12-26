@@ -90,17 +90,21 @@ public class PlayerUIController : MonoBehaviour {
     }
 
 	// スコアを1づつ増やす
-	private IEnumerator CountUp(int score) {
-		Debug.Log ("count up: " + score);
-		float startTime = Time.timeSinceLevelLoad;
+	private IEnumerator CountUp(int newScore) {
+		Debug.Log ("count up: " + newScore);
 
-		int cScore = int.Parse (scoreText.GetComponent<Text> ().text);
-		int i = cScore;
-		while((Time.timeSinceLevelLoad - startTime) < 2f){
-			int toScore = i < score ? cScore + i : score;
-			i++;
-			scoreText.GetComponent<Text> ().text = toScore.ToString ();
-			yield return new WaitForSeconds (0.05f);
+		int oldScore = int.Parse (scoreText.GetComponent<Text> ().text);
+
+        float duration = 2f;
+        float interval = Mathf.Min( duration / (newScore - oldScore), 0.05f);
+
+        int tmpScore = oldScore;
+		while(tmpScore != newScore)
+        {
+			scoreText.GetComponent<Text> ().text = tmpScore++.ToString ();
+			yield return new WaitForSeconds (interval);
 		}
-	}
+
+        scoreText.GetComponent<Text>().text = newScore.ToString();
+    }
 }
