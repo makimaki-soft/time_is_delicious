@@ -46,6 +46,7 @@ public class FoodCardListVM : VMBase {
                     if(removedItem != null)
                     {
                         _currentFoodCardsVM.Remove(removedItem);
+                        removedItem.Reset();
                     }
                     
                 }

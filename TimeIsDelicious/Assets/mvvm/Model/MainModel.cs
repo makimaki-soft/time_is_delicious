@@ -220,7 +220,13 @@ public sealed class MainModel : GameComponent {
         {
             TurnCount = 0;
             _currentPlayerIndex = 0;
-            
+
+            // 次のラウンドに行く前に、持っているカードはすべて売る
+            foreach(var player in _players)
+            {
+                player.SellAll();
+            }
+
             CurrentStatus = RoundCount == 3 ? Status.GameEnd : Status.WaitForRoundStart; // ラウンド開始待ちor終了に移行
         }
         else

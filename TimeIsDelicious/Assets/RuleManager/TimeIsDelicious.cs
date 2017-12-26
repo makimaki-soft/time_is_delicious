@@ -9,6 +9,7 @@ namespace RuleManager
 
         private List<FoodCard> _foodCardList;
         private List<FoodCard> _foodCardOnRound;
+        private List<FoodCard> _wasteCards;
 
         private List<EventCard> _eventCardList;
         private int _numEventCardOpend;
@@ -22,6 +23,7 @@ namespace RuleManager
         public TimeIsDelicious ()
         {
             _foodCardOnRound = new List<FoodCard>();
+            _wasteCards = new List<FoodCard>();
             _foodCardList = TIDJsonReader.Parser.ReadFoodCards();
             _foodCardList.Shuffle();
 
@@ -47,17 +49,25 @@ namespace RuleManager
             // 足りない場合は退避していた捨て札を
             if(_foodCardList.Count < CardsPerRound)
             {
-                _foodCardOnRound.Shuffle();
-                _foodCardList.AddRange(_foodCardOnRound);
-                _foodCardOnRound.RemoveRange(0, _foodCardOnRound.Count);
+                foreach(var waste in _wasteCards)
+                {
+                    waste.Reset();
+                }
+
+                _wasteCards.Shuffle();
+
+                //_wasteCards[0].PropertyChanged = null;
+
+                _foodCardList.AddRange(_wasteCards);
+                _wasteCards.RemoveRange(0, _wasteCards.Count);
             }
-            
-             var roundCards = _foodCardList.Chunks(CardsPerRound);
+
+            _foodCardOnRound = _foodCardList.Chunks(CardsPerRound);
             _foodCardList = _foodCardList.Skip(CardsPerRound).ToList();
-            _foodCardOnRound.AddRange(roundCards); // 退避用
+            _wasteCards.AddRange(_foodCardOnRound); // 退避用
 
             UnityEngine.Debug.Log("肉カード山札 残り枚数:" + _foodCardList.Count);
-            return roundCards;
+            return _foodCardOnRound;
         }
 
         public void AdvanceTime(int time, EventCard eventCard)

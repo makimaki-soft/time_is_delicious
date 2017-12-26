@@ -102,6 +102,11 @@ public class FoodCardVM : VMBase {
         _foodCardModel.PropertyChanged += _foodCardModel_PropertyChanged;
     }
 
+   public void Reset()
+    {
+        _foodCardModel.PropertyChanged -= _foodCardModel_PropertyChanged;
+    }
+
     private void _foodCardModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         var card = (FoodCard)sender;

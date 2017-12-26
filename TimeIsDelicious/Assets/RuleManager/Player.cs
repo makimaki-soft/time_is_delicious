@@ -60,6 +60,18 @@ namespace RuleManager
             card.PropertyChanged -= OnFoodCardPropertyChanged;
         }
 
+        public void SellAll()
+        {
+            var sell = _bets.ToArray();
+            var sellCount = _bets.Count;
+
+            for(int i=0; i<sellCount;i++)
+            {
+                Sell(sell[i]);
+            }
+
+        }
+
         public void OnFoodCardPropertyChanged(Object sender, PropertyChangedEventArgs e)
         {
             var card = sender as FoodCard;
