@@ -73,7 +73,7 @@ public class PlayersUIWindowVM : VMBase {
                         Permanent.playerNum = _playerListVM.Count;
                         Permanent.players = _playerListVM.ToArray();
                     }
-                    UnityEngine.Application.LoadLevel("GameEnd");
+                    FadeManager.Instance.LoadScene("GameEnd", 1.0f);
                 }
                 break;
         }
