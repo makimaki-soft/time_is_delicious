@@ -91,7 +91,7 @@ public class PlayerVM : VMBase {
                     {
                         if( bet.guid == card.GUID )
                         {
-                            bet.status = card.Rotten ? Status.Rotten : Status.AlreadySold;
+                            bet.status = card.Rotten.Value ? Status.Rotten : Status.AlreadySold;
                             _bets.Remove(bet);
                             break;
                         }

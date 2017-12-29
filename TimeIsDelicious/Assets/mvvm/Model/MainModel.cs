@@ -208,7 +208,7 @@ public sealed class MainModel : GameComponent {
 
     public void GoNextTurn()
     {
-        var NotRotten = _currentFoodCards.Where(fc => fc.Rotten == false)
+        var NotRotten = _currentFoodCards.Where(fc => fc.Rotten.Value == false)
                                          .Select(fc => fc.GUID)
                                          .Count();
         var StillHave = _players.Where(player => player.Bets.Count > 0)

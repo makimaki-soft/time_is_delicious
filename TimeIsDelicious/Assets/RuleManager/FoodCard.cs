@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UniRx;
 
 namespace RuleManager
 {
@@ -18,80 +19,14 @@ namespace RuleManager
 
     public class FoodCard : GameComponent
     {
-        private readonly int _id;
-        public int ID
-        {
-            get { return _id; }
-        }
+        public int ID { get; private set; }
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        public int MaxAged { get; private set; }
 
-        private readonly string _name;
-        public string Name
-        {
-            get { return _name; }
-        }
-
-        private readonly string _description;
-        public string Description
-        {
-            get { return _description; }
-        }
-
-        private int _aged;
-        public int Aged
-        {
-            get { return _aged; }
-            set
-            {
-                if (value != _aged)
-                {
-                    _aged = value;
-                    NotifyPropertyChanged();
-                    if(_aged > _maxAged)
-                    {
-                        Rotten = true;
-                        Price = 0;
-                    }
-                    else
-                    {
-                        Price = AgedToPrice(_aged);
-                    }
-                }
-            }
-        }
-
-        private readonly int _maxAged;
-        public int MaxAged
-        {
-            get { return _maxAged; }
-        }
-
-        private int _price;
-        public int Price
-        {
-            get { return _price; }
-            private set
-            {
-                if (value != _price)
-                {
-                    _price = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
-
-        private bool _rotten;
-        public bool Rotten
-        {
-            get { return _rotten; }
-            private set
-            {
-                if (value != _rotten)
-                {
-                    _rotten = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
+        public IReactiveProperty<int> Aged { get; private set; }
+        public IReactiveProperty<int> Price { get; private set; }
+        public IReactiveProperty<bool> Rotten { get; private set; }
 
         private readonly List<PriceTable> _priceTable;
         public IReadOnlyList<PriceTable> PriceTable
@@ -127,7 +62,7 @@ namespace RuleManager
                     scale *= ch.scale;
                 }
             }
-            Aged += days * scale;
+            Aged.Value += days * scale;
         }
 
         private readonly int MaxBet = 2;
@@ -161,25 +96,27 @@ namespace RuleManager
             }
         }
 
-        public FoodCard(int ID, string Name, string Decription, List<PriceTable> priceTable, List<CharactorTable> charactorTable, int maxAged = 50)
+        public FoodCard(int ID, string Name, string Description, List<PriceTable> priceTable, List<CharactorTable> charactorTable, int maxAged = 50)
         {
-            _id = ID;
-            _name = Name;
-            _description = Decription;
-            _aged = 0;
-            _maxAged = maxAged;
-            _price = 0;
-            _rotten = false;
+            this.ID = ID;
+            this.Name = Name;
+            this.Description = Description;
+            this.MaxAged = maxAged;
+
             _priceTable = priceTable;
             _charactorTable = charactorTable;
             _betPlayersList = new List<Player>();
+
+            Aged = new ReactiveProperty<int>(0);
+            Price = Aged.Select(aged => AgedToPrice(aged)).ToReactiveProperty();
+            Rotten = Aged.Select(aged => aged > this.MaxAged).ToReactiveProperty();
         }
 
         public void Reset()
         {
-            _aged = 0;
-            _price = 0;
-            _rotten = false;
+            Aged.Value = 0;
+            Price.Value = 0;
+            Rotten.Value = false;
             _betPlayersList = new List<Player>();
         }
     }

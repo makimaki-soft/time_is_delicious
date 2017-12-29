@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using UniRx;
 
 public class FoodCardVM : VMBase {
 
@@ -91,37 +92,28 @@ public class FoodCardVM : VMBase {
         _id = model.ID;
         _name = model.Name;
         _description = model.Description;
-        _aged = model.Aged;
+        _aged = model.Aged.Value;
         _maxAged = model.MaxAged;
-        _price = model.Price;
-        _rotten = model.Rotten;
+        _price = model.Price.Value;
+        _rotten = model.Rotten.Value;
         _foodCardModel = model;
         PriceTable = model.PriceTable;
         CharactorTable = model.CharactorTable;
 
-        _foodCardModel.PropertyChanged += _foodCardModel_PropertyChanged;
+        AgedDisposable = model.Aged.Subscribe(aged => Aged = aged);
+        PriceDisposable = model.Price.Subscribe(price => Price = price);
+        RottenDisposable = model.Rotten.Subscribe(rotten => Rotten = rotten);
     }
 
-   public void Reset()
-    {
-        _foodCardModel.PropertyChanged -= _foodCardModel_PropertyChanged;
-    }
+    private System.IDisposable AgedDisposable;
+    private System.IDisposable PriceDisposable;
+    private System.IDisposable RottenDisposable;
 
-    private void _foodCardModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    public void Reset()
     {
-        var card = (FoodCard)sender;
-        switch (e.PropertyName)
-        {
-            case "Aged":
-                Aged = card.Aged;
-                break;
-            case "Price":
-                Price = card.Price;
-                break;
-            case "Rotten":
-                Rotten = card.Rotten;
-                break;
-        }
+        AgedDisposable.Dispose();
+        PriceDisposable.Dispose();
+        RottenDisposable.Dispose();
     }
 
     public void BetByCurrentPlayer()

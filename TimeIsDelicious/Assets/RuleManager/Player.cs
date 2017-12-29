@@ -54,7 +54,7 @@ namespace RuleManager
                 UnityEngine.Debug.Log("持ってないカードは売れません。");
                 return;
             }
-            TotalEarned += card.Price;
+            TotalEarned += card.Price.Value;
             _bets.Remove(card);
             card.RemoveBetPlayer(this);
             card.PropertyChanged -= OnFoodCardPropertyChanged;
@@ -78,7 +78,7 @@ namespace RuleManager
             switch (e.PropertyName)
             {
                 case "Rotten":
-                    if (card.Rotten == true && _bets.Contains(card))
+                    if (card.Rotten.Value == true && _bets.Contains(card))
                     {
                         // var rotten = _bets.Find(x => x.GUID == card.GUID);
                         _bets.Remove(card);
