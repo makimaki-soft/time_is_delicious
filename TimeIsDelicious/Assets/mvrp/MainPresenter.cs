@@ -1,21 +1,19 @@
-﻿using RuleManager;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UniRx;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using RuleManager;
 using System.Linq;
 
-// 肉カードVMの親VM
-public class FoodCardListVM : VMBase {
+public class MainPresenter : MonoBehaviour {
+
+
+    [SerializeField]
+    private TempManager foodCardFactory;
 
     private MainModel _singletonMainModel;
-
-    public FoodCardListVM()
-    {
-        _currentFoodCardsVM = new ObservableCollection<FoodCardVM>();
-
-        _singletonMainModel = MainModel.Instance;
-        // CurrentFoodCardsプロパティ全体を公開してしまうかは悩みどころ。
-        _singletonMainModel.CurrentFoodCards.CollectionChanged += CurrentFoodCards_CollectionChanged;
-    }
 
     private ObservableCollection<FoodCardVM> _currentFoodCardsVM;
     public ObservableCollection<FoodCardVM> CurrentFoodCardsVM
@@ -25,13 +23,14 @@ public class FoodCardListVM : VMBase {
 
     private void CurrentFoodCards_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        switch(e.Action)
+        switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
-                foreach( var item in e.NewItems )
+                foreach (var item in e.NewItems)
                 {
                     var foodCardVM = new FoodCardVM((FoodCard)item);
                     _currentFoodCardsVM.Add(foodCardVM);
+                    foodCardFactory.CreateFoodCard(foodCardVM);
                 }
                 UnityEngine.Debug.Log("CurrentFoodCards Add");
                 break;
@@ -43,12 +42,12 @@ public class FoodCardListVM : VMBase {
                 foreach (var item in e.OldItems)
                 {
                     var removedItem = _currentFoodCardsVM.FirstOrDefault(vm => vm.ID == ((FoodCard)item).ID);
-                    if(removedItem != null)
+                    if (removedItem != null)
                     {
                         _currentFoodCardsVM.Remove(removedItem);
                         removedItem.Reset();
+                        foodCardFactory.RemoveFoodCard(removedItem);
                     }
-                    
                 }
                 break;
             case NotifyCollectionChangedAction.Replace:
@@ -59,4 +58,12 @@ public class FoodCardListVM : VMBase {
                 break;
         }
     }
+
+	// Use this for initialization
+	void Start () {
+        _currentFoodCardsVM = new ObservableCollection<FoodCardVM>();
+        _singletonMainModel = MainModel.Instance;
+        // CurrentFoodCardsプロパティ全体を公開してしまうかは悩みどころ。
+        _singletonMainModel.CurrentFoodCards.CollectionChanged += CurrentFoodCards_CollectionChanged;
+	}
 }
