@@ -72,8 +72,8 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		Close ();
 	}
 
-	public void OpenNiku(FoodCardVM _food,
-		callBackClose _funcClose = null,
+    public void OpenNiku(CardViewModel.CardMeta _food,
+		callBackClose _funcClose= null,
 		callBackBet _funcBet = null,
 		callBackSell _funcSell = null) {
 

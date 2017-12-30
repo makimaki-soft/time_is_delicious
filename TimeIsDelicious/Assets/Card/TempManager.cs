@@ -5,6 +5,7 @@ using UnityEngine;
 using System;
 using System.Collections.Specialized;
 using System.Linq;
+using UniRx;
 
 // FoodCardListのViewという扱いに変更
 public class TempManager : MonoBehaviour
@@ -48,6 +49,10 @@ public class TempManager : MonoBehaviour
                         Quaternion.identity
                     );
                     cardview.GetComponent<CardViewModel>().setViewModel(foodCardVM);
+                    Observable.NextFrame().Subscribe(_ =>
+                    {
+                        foodCardVM.CardView = cardview.GetComponent<CardViewModel>();
+                    });
                     _foodCardViewList.Add(cardview);
                 }
                 Debug.Log("CurrentFoodCardsVM Add");

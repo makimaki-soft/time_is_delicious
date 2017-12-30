@@ -6,104 +6,61 @@ using UniRx;
 
 public class FoodCardVM : VMBase {
 
-    private readonly int _id;
-    public int ID
-    {
-        get { return _id; }
-    }
 
-    private readonly string _name;
-    public string Name
-    {
-        get { return _name; }
-    }
-
-    private readonly string _description;
-    public string Description
-    {
-        get { return _description; }
-    }
-
-
-    private int _aged;
-    public int Aged
-    {
-        get { return _aged; }
-        set
-        {
-            if (value != _aged)
-            {
-                _aged = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-
-    private readonly int _maxAged;
-    public int MaxAged
-    {
-        get { return _maxAged; }
-    }
-
-    private int _price;
-    public int Price
-    {
-        get { return _price; }
-        private set
-        {
-            if (value != _price)
-            {
-                _price = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-
-    private bool _rotten;
-    public bool Rotten
-    {
-        get { return _rotten; }
-        private set
-        {
-            if (value != _rotten)
-            {
-                _rotten = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-
-    public bool CanBet
-    {
-        get { return _foodCardModel.CanBet; }
-    }
-
-    public IReadOnlyList<string> NamesWhoBet
-    {
-        get { return _foodCardModel.NamesWhoBet; }
-    }
-
+    public int ID { get; private set; }
     public IReadOnlyList<PriceTable> PriceTable { get; }
     public IReadOnlyList<CharactorTable> CharactorTable { get; }
 
     private FoodCard _foodCardModel;
     public FoodCardVM(FoodCard model)
     {
-        _id = model.ID;
-        _name = model.Name;
-        _description = model.Description;
-        _aged = model.Aged.Value;
-        _maxAged = model.MaxAged;
-        _price = model.Price.Value;
-        _rotten = model.Rotten.Value;
         _foodCardModel = model;
+        this.ID = model.ID;
         PriceTable = model.PriceTable;
         CharactorTable = model.CharactorTable;
-
-        AgedDisposable = model.Aged.Subscribe(aged => Aged = aged);
-        PriceDisposable = model.Price.Subscribe(price => Price = price);
-        RottenDisposable = model.Rotten.Subscribe(rotten => Rotten = rotten);
     }
+
+    private CardViewModel cardView;
+    public CardViewModel CardView
+    {
+        set
+        {
+            cardView = value;
+            AgedDisposable = _foodCardModel.Aged
+                                           .Where(aged=>aged<=_foodCardModel.MaxAged)
+                                           .Subscribe(aged => cardView.UpdateAgedPont(aged));
+
+            PriceDisposable = _foodCardModel.Price
+                                            .Subscribe(price => cardView.UpdateSellPont(price));
+
+            RottenDisposable = _foodCardModel.Rotten
+                                             .Where(rotten=>rotten)
+                                             .Subscribe(rotten => {
+                cardView.UpdateAgedPont(null);
+                cardView.RunPoisonEffect();
+            });
+
+            cardView.SetID(_foodCardModel.ID);
+
+            cardView.OnClickAsObservable
+                    // .First()
+                    .Subscribe(_=>
+            {
+                var meta = new CardViewModel.CardMeta();
+                meta.Aged = _foodCardModel.Aged.Value;
+                meta.CanBet = _foodCardModel.CanBet;
+                meta.Description = _foodCardModel.Description;
+                meta.ID = _foodCardModel.ID;
+                meta.MaxAged = _foodCardModel.MaxAged;
+                meta.Name = _foodCardModel.Name;
+                meta.NamesWhoBet = _foodCardModel.NamesWhoBet;
+                meta.Price = _foodCardModel.Price.Value;
+                cardView.ShowDetail(meta);
+            });
+        }
+        get { return cardView; }
+    }
+
 
     private System.IDisposable AgedDisposable;
     private System.IDisposable PriceDisposable;
