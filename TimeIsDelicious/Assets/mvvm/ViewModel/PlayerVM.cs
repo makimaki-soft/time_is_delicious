@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using UnityEngine;
+using UniRx;
 
 public class PlayerVM : VMBase {
 
@@ -58,10 +59,11 @@ public class PlayerVM : VMBase {
     {
         _id = model.ID;
         _bets = new ObservableCollection<FoodCardStatus>();
-        _totalEarned = model.TotalEarned;
+        _totalEarned = model.TotalEarned.Value;
         _playerModel = model;
-        _playerModel.PropertyChanged += _playerModel_PropertyChanged;
         _playerModel.Bets.CollectionChanged += Bets_CollectionChanged;
+
+        _playerModel.TotalEarned.Subscribe(earned => TotalEarned = earned);
     }
 
     private void Bets_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -97,17 +99,6 @@ public class PlayerVM : VMBase {
                         }
                     }
                 }
-                break;
-        }
-    }
-
-    private void _playerModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        var player = (Player)sender;
-        switch(e.PropertyName)
-        {
-            case "TotalEarned":
-                TotalEarned = player.TotalEarned;
                 break;
         }
     }

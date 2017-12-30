@@ -3,36 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using UniRx;
 
 namespace RuleManager
 {
     public class Player : GameComponent
     {
-        private readonly int _id;
-        public int ID
-        {
-            get { return _id; }
-        }
-
-        private readonly string _name;
-        public string Name
-        {
-            get { return _name; }
-        }
-
-        private int _totalEarned;
-        public int TotalEarned
-        {
-            get { return _totalEarned; }
-            set
-            {
-                if (value != _totalEarned)
-                {
-                    _totalEarned = value;
-                    NotifyPropertyChanged();
-                }
-            }
-        }
+        public int ID { get; private set; }
+        public string Name { get; private set; }
+        public IReactiveProperty<int> TotalEarned { get; private set; }
 
         private ObservableCollection<FoodCard> _bets;
         public ObservableCollection<FoodCard> Bets
@@ -44,8 +23,20 @@ namespace RuleManager
         {
             _bets.Add(card);
             card.SetBetPlayer(this);
-            card.PropertyChanged += OnFoodCardPropertyChanged;
+
+            RottenDisposable = card.Rotten
+                .Where(rotten => rotten==true)
+                .First()
+                .Subscribe(rotten=>{
+                if (_bets.Contains(card))
+                {
+                    _bets.Remove(card);
+                    card.RemoveBetPlayer(this);
+                }
+            });
         }
+
+        private IDisposable RottenDisposable;
 
         public void Sell(FoodCard card)
         {
@@ -54,10 +45,11 @@ namespace RuleManager
                 UnityEngine.Debug.Log("持ってないカードは売れません。");
                 return;
             }
-            TotalEarned += card.Price.Value;
+            TotalEarned.Value += card.Price.Value;
             _bets.Remove(card);
             card.RemoveBetPlayer(this);
-            card.PropertyChanged -= OnFoodCardPropertyChanged;
+
+            RottenDisposable.Dispose();
         }
 
         public void SellAll()
@@ -72,29 +64,14 @@ namespace RuleManager
 
         }
 
-        public void OnFoodCardPropertyChanged(Object sender, PropertyChangedEventArgs e)
-        {
-            var card = sender as FoodCard;
-            switch (e.PropertyName)
-            {
-                case "Rotten":
-                    if (card.Rotten.Value == true && _bets.Contains(card))
-                    {
-                        // var rotten = _bets.Find(x => x.GUID == card.GUID);
-                        _bets.Remove(card);
-                        card.RemoveBetPlayer(this);
-                        card.PropertyChanged -= OnFoodCardPropertyChanged;
-                    }
-                    break;
-            }
-        }
-
         public Player(int id, string name)
         {
-            _id = id;
-            _name = name;
+            this.ID = id;
+            this.Name = name;
             _bets = new ObservableCollection<FoodCard>();
             _bets.CollectionChanged += _bets_CollectionChanged;
+
+            TotalEarned = new ReactiveProperty<int>(0); 
         }
 
         public delegate int BetsCountDelegate(int newCount);
