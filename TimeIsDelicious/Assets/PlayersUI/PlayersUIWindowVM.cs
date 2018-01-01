@@ -70,8 +70,8 @@ public class PlayersUIWindowVM : VMBase {
                 {
                     if(Permanent != null)
                     {
-                        Permanent.playerNum = _playerListVM.Count;
-                        Permanent.players = _playerListVM.ToArray();
+                        Permanent.playerNum = mainModel.NumberOfPlayers;
+                        Permanent.players = mainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
                     }
                     FadeManager.Instance.LoadScene("GameEnd", 1.0f);
                 }

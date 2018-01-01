@@ -16,20 +16,6 @@ public class PlayerVM : VMBase {
         get { return _id; }
     }
 
-    private int _totalEarned;
-    public int TotalEarned
-    {
-        get { return _totalEarned; }
-        private set
-        {
-            if (value != _totalEarned)
-            {
-                _totalEarned = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-
     public enum Status
     {
         StillHave,
@@ -59,7 +45,6 @@ public class PlayerVM : VMBase {
     {
         _id = model.ID;
         _bets = new ObservableCollection<FoodCardStatus>();
-        _totalEarned = model.TotalEarned.Value;
         _playerModel = model;
         _playerModel.Bets.CollectionChanged += Bets_CollectionChanged;
     }

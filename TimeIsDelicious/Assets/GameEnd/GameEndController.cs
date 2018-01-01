@@ -38,7 +38,7 @@ public class GameEndController : MonoBehaviour {
 			panel.SetActive (false);
 		}
 
-		PlayerVM[] players = _pObj.players;
+        PermanentObj.PlayerScore[] players = _pObj.players;
 		Array.Sort (players, (a, b) => b.TotalEarned - a.TotalEarned);
 
 		int i = 0;
