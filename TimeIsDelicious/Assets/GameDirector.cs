@@ -10,9 +10,9 @@ public class GameDirector : MonoBehaviour
 
     private GameObject playerUIWindow;
 
-    public int TurnCount { get; private set; }
-    public int RoundCount { get; private set; }
-    public GameDirectorVM.Status Status { get; private set; }
+    public int TurnCount { get; set; }
+    public int RoundCount { get; set; }
+    public MainModel.Status Status { get; set; }
     public string CurrentPlayerName { get; private set; }
 
     // Use this for initialization
@@ -23,12 +23,10 @@ public class GameDirector : MonoBehaviour
         RoundCount = 0;
 
         
-        _mainVM = new GameDirectorVM();
-        _mainVM.PropertyChanged += _mainVM_PropertyChanged;
+        _mainVM = new GameDirectorVM(this);
 
         // 監視対象GameObjectを取得
         playerUIWindow = GameObject.Find("PlayerUIPanel");
-
 
         // ゲームを開始する
         var pObj = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
@@ -36,58 +34,20 @@ public class GameDirector : MonoBehaviour
         _mainVM.StartTimeIsDelicious( numOfPlayers.HasValue ? numOfPlayers.Value : 4);
     }
 
-    private void _mainVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+
+    public void GameRoundStart()
     {
-        var vm = (GameDirectorVM)sender;
-        switch (e.PropertyName)
-        {
-            case "CurrentStatus":
-                Status = vm.CurrentStatus;
-                if (vm.CurrentStatus == GameDirectorVM.Status.WaitForRoundStart)
-                {
-                    // ラウンド開始中のアニメーションをまってからStartRound
-                    Debug.Log("StartCoroutine(RoundStart())");
-                    StartCoroutine(RoundStart());
-                }
-                else if(vm.CurrentStatus == GameDirectorVM.Status.GameEnd)
-                {
-                    Debug.Log("GameEnd.");
-                    // 最終スコアの設定はPlayersUIWindowVMで実施
-                }
-                break;
-            case "CurrentPlayerName":
-                CurrentPlayerName = vm.CurrentPlayerName;
-                if (vm.CurrentStatus == GameDirectorVM.Status.Betting)
-                {
-                    popupWindow.GetComponent<PopupMessaegController>().Popup(vm.CurrentPlayerName + "さんは肉を選んでください。");
-                }
-                if(vm.CurrentStatus == GameDirectorVM.Status.DecisionMaking)
-                {
-                    // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
-                    if( vm.CurrentPlayersBets == 0 )
-                    {
-                        GetComponent<PassBtnController>().Pass();
-                    }
-                }
-                break;
-            case "CurrentPlayersBets":
-                // 所持カードが減ったときも自動パスを判定
-                if (vm.CurrentStatus == GameDirectorVM.Status.DecisionMaking)
-                {
-                    // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
-                    if (vm.CurrentPlayersBets == 0)
-                    {
-                        GetComponent<PassBtnController>().Pass();
-                    }
-                }
-                break;
-            case "TurnCount":
-                TurnCount = vm.TurnCount;
-                break;
-            case "RoundCount":
-                RoundCount = vm.RoundCount;
-                break;
-        }
+        StartCoroutine(RoundStart());
+    }
+
+    public void SetCurrentPlayer(string Name)
+    {
+        CurrentPlayerName = Name;
+    }
+
+    public void RaisePopUp(string Name)
+    {
+        popupWindow.GetComponent<PopupMessaegController>().Popup(Name + "さんは肉を選んでください。");
     }
 
     private IEnumerator RoundStart()
@@ -145,7 +105,7 @@ public class GameDirector : MonoBehaviour
     {
         yield return new WaitUntil(() =>
         {
-            return Status == GameDirectorVM.Status.Event; // イベントカードオープン待ちになったら
+            return Status == MainModel.Status.Event; // イベントカードオープン待ちになったら
         });
 
         bool EventChecked = false;
@@ -160,7 +120,7 @@ public class GameDirector : MonoBehaviour
 
         yield return new WaitUntil(() =>
         {
-            return EventChecked && Status == GameDirectorVM.Status.Aging; // 熟成待ち状態になったら
+            return EventChecked && Status == MainModel.Status.Aging; // 熟成待ち状態になったら
         });
 
         // 熟成
@@ -168,7 +128,7 @@ public class GameDirector : MonoBehaviour
 
         yield return new WaitUntil(() =>
         {
-            return EventChecked && Status == GameDirectorVM.Status.NextTurn; // 次のターンへの移行待ち状態になったら
+            return EventChecked && Status == MainModel.Status.NextTurn; // 次のターンへの移行待ち状態になったら
         });
 
         // ２秒待って

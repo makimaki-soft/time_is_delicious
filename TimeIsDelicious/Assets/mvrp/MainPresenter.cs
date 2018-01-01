@@ -18,30 +18,21 @@ public class MainPresenter : MonoBehaviour {
 
     private MainModel _singletonMainModel;
 
-    private ObservableCollection<FoodCardVM> _currentFoodCardsVM;
-    public ObservableCollection<FoodCardVM> CurrentFoodCardsVM
-    {
-        get { return _currentFoodCardsVM; }
-    }
-
 	// Use this for initialization
 	void Start () {
-        _currentFoodCardsVM = new ObservableCollection<FoodCardVM>();
         _singletonMainModel = MainModel.Instance;
         // CurrentFoodCardsプロパティ全体を公開してしまうかは悩みどころ。
         _singletonMainModel.CurrentFoodCards.ObserveAdd().Subscribe(item =>
         {
             var foodCardVM = new FoodCardVM((FoodCard)item.Value);
-            _currentFoodCardsVM.Add(foodCardVM);
             foodCardFactory.CreateFoodCard(foodCardVM);
         });
 
         _singletonMainModel.CurrentFoodCards.ObserveRemove().Subscribe(item =>
         {
-            var removedItem = _currentFoodCardsVM.FirstOrDefault(vm => vm.ID == ((FoodCard)item.Value).ID);
+            var removedItem = item.Value;
             if (removedItem != null)
             {
-                _currentFoodCardsVM.Remove(removedItem);
                 removedItem.Reset();
                 foodCardFactory.RemoveFoodCard(removedItem);
             }

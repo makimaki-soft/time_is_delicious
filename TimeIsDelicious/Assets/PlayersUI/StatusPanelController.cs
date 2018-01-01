@@ -22,25 +22,25 @@ public class StatusPanelController : MonoBehaviour {
 		string msg = "";
 
 		switch(_gd.Status) {
-		case GameDirectorVM.Status.WaitForRoundStart:
+		case MainModel.Status.WaitForRoundStart:
 			msg = "準備中...";
 			break;
-		case GameDirectorVM.Status.Betting:
+		case MainModel.Status.Betting:
 			msg = "ベットする肉を決めてください";
 			break;
-		case GameDirectorVM.Status.CastDice:
+		case MainModel.Status.CastDice:
 			msg = "サイコロをふってください";
 			break;
-		case GameDirectorVM.Status.DecisionMaking:
+		case MainModel.Status.DecisionMaking:
 			msg = "売るかもう少し熟成させるか決めてください";
 			break;
-		case GameDirectorVM.Status.Event:
+		case MainModel.Status.Event:
 			msg = "熟.....塾々..........塾々々...............";
 			break;
-		case GameDirectorVM.Status.Aging:
+		case MainModel.Status.Aging:
 			msg = "今日の天気";
 			break;
-        case GameDirectorVM.Status.NextTurn:
+        case MainModel.Status.NextTurn:
             msg = "少し美味しくなりました！";
             break;
         }

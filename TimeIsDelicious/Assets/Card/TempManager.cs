@@ -46,9 +46,9 @@ public class TempManager : MonoBehaviour
         _foodCardViewList.Add(cardview);
     }
 
-    public void RemoveFoodCard(FoodCardVM item)
+    public void RemoveFoodCard(FoodCard item)
     {
-        var foodCardVM = (FoodCardVM)item;
+        var foodCardVM = (FoodCard)item;
         var removedItem = _foodCardViewList.FirstOrDefault(gb => gb.GetComponent<CardViewModel>().ID == foodCardVM.ID);
         if (removedItem != null)
         {

@@ -18,7 +18,7 @@ public class PassBtnController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (_gd.Status == GameDirectorVM.Status.DecisionMaking) {
+        if (_gd.Status == MainModel.Status.DecisionMaking) {
 			passBtnObj.SetActive (true);
 		} else {
 			passBtnObj.SetActive (false);

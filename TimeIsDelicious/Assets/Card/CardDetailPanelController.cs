@@ -101,14 +101,14 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		// ボタン制御
 		//   Bet
 		if (_food.CanBet 
-				&& _gd.Status == GameDirectorVM.Status.Betting
+                && _gd.Status == MainModel.Status.Betting
 				&& !ExistMyLogo(names, _gd.CurrentPlayerName)) {
 			_betButton.SetActive (true);
 		}
 
 		// Sell
 		if (names.Count > 0 
-				&& _gd.Status == GameDirectorVM.Status.DecisionMaking
+                && _gd.Status == MainModel.Status.DecisionMaking
 				&& ExistMyLogo(names, _gd.CurrentPlayerName)) {
 			_sellButton.SetActive (true);
 		}
