@@ -5509,6 +5509,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodCardFactory: {fileID: 1599356777}
   eventCardController: {fileID: 1868384429}
+  gameDirector: {fileID: 1868384425}
 --- !u!4 &2064869725
 Transform:
   m_ObjectHideFlags: 0
