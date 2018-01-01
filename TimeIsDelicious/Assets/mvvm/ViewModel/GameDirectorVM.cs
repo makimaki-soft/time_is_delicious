@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using UniRx;
 
 public class GameDirectorVM : VMBase {
 
@@ -27,7 +28,11 @@ public class GameDirectorVM : VMBase {
     {
         _singletonMainModel = MainModel.Instance;
         _singletonMainModel.PropertyChanged += MainModel_PropertyChanged;
+
+
     }
+
+    private IDisposable currentPlayerBetsDisposable;
 
     private void MainModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
     {
@@ -40,8 +45,13 @@ public class GameDirectorVM : VMBase {
                 UnityEngine.Debug.Log(CurrentStatus);
                 break;
             case "CurrentPlayer":
-                _currentPlayersBets = mainModel.CurrentPlayer.Bets.Count;
-                mainModel.CurrentPlayer.LookCount = (nc) => CurrentPlayersBets = nc;
+                if(currentPlayerBetsDisposable != null)
+                {
+                    currentPlayerBetsDisposable.Dispose();
+                }
+
+                currentPlayerBetsDisposable = mainModel.CurrentPlayer.Bets.ObserveCountChanged(true).Subscribe(cnt => CurrentPlayersBets = cnt);
+                CurrentPlayersBets = mainModel.CurrentPlayer.Bets.Count;
                 CurrentPlayerNameForce = mainModel.CurrentPlayer.Name; // tmp
                 break;
             case "TurnCount":

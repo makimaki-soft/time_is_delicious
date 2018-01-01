@@ -12,25 +12,20 @@ namespace RuleManager
         public int ID { get; private set; }
         public string Name { get; private set; }
         public IReactiveProperty<int> TotalEarned { get; private set; }
-
-        private ObservableCollection<FoodCard> _bets;
-        public ObservableCollection<FoodCard> Bets
-        {
-            get { return _bets; }
-        }
+        public ReactiveCollection<FoodCard> Bets { get; private set; }
 
         public void Bet(FoodCard card)
         {
-            _bets.Add(card);
+            Bets.Add(card);
             card.SetBetPlayer(this);
 
             RottenDisposable = card.Rotten
                 .Where(rotten => rotten==true)
                 .First()
                 .Subscribe(rotten=>{
-                if (_bets.Contains(card))
+                if (Bets.Contains(card))
                 {
-                    _bets.Remove(card);
+                    Bets.Remove(card);
                     card.RemoveBetPlayer(this);
                 }
             });
@@ -40,13 +35,13 @@ namespace RuleManager
 
         public void Sell(FoodCard card)
         {
-            if( !_bets.Any(n => n.GUID == card.GUID) )
+            if( !Bets.Any(n => n.GUID == card.GUID) )
             {
                 UnityEngine.Debug.Log("持ってないカードは売れません。");
                 return;
             }
             TotalEarned.Value += card.Price.Value;
-            _bets.Remove(card);
+            Bets.Remove(card);
             card.RemoveBetPlayer(this);
 
             RottenDisposable.Dispose();
@@ -54,8 +49,8 @@ namespace RuleManager
 
         public void SellAll()
         {
-            var sell = _bets.ToArray();
-            var sellCount = _bets.Count;
+            var sell = Bets.ToArray();
+            var sellCount = Bets.Count;
 
             for(int i=0; i<sellCount;i++)
             {
@@ -68,18 +63,8 @@ namespace RuleManager
         {
             this.ID = id;
             this.Name = name;
-            _bets = new ObservableCollection<FoodCard>();
-            _bets.CollectionChanged += _bets_CollectionChanged;
-
+            Bets = new ReactiveCollection<FoodCard>();
             TotalEarned = new ReactiveProperty<int>(0); 
-        }
-
-        public delegate int BetsCountDelegate(int newCount);
-        public BetsCountDelegate LookCount { get; set; }
-        private void _bets_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            var tmp = (ObservableCollection<FoodCard>)sender;
-            LookCount?.Invoke(tmp.Count);
         }
     }
 }

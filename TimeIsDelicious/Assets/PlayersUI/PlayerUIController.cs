@@ -32,28 +32,11 @@ public class PlayerUIController : MonoBehaviour {
     {
         _playerVM = model;
         PlayerID = model.ID;
-        _playerVM.Bets.CollectionChanged += Bets_CollectionChanged;
     }
 
-    private void Bets_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+    public void Sadden()
     {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                foreach (var item in e.OldItems)
-                {
-                    var card = (PlayerVM.FoodCardStatus)item;
-                    if(card.status == PlayerVM.Status.Rotten)
-                    {
-                        // 腐ったことにより手放した
-                        CharactorImage.GetComponent<Faces>().Sad(2);
-                    }
-                }
-                
-                break;
-        }
+        CharactorImage.GetComponent<Faces>().Sad(2);
     }
 
     public void UpdateTotalEarned(int totalEarned)
