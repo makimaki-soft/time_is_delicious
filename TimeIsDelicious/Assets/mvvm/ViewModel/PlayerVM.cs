@@ -62,14 +62,10 @@ public class PlayerVM : VMBase {
         _totalEarned = model.TotalEarned.Value;
         _playerModel = model;
         _playerModel.Bets.CollectionChanged += Bets_CollectionChanged;
-
-        _playerModel.TotalEarned.Subscribe(earned => TotalEarned = earned);
     }
 
     private void Bets_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        // var player = (Player)sender;
-
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
@@ -100,6 +96,17 @@ public class PlayerVM : VMBase {
                     }
                 }
                 break;
+        }
+    }
+
+    public PlayerUIController playerUI;
+    public PlayerUIController PlayerUI
+    {
+        get { return playerUI; }
+        set
+        {
+            playerUI = value;
+            _playerModel.TotalEarned.Subscribe(earned => playerUI.UpdateTotalEarned(earned));
         }
     }
 }

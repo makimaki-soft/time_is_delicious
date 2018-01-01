@@ -91,6 +91,9 @@ public class PlayersUIWindowController : MonoBehaviour {
                     //    rectTrans.offsetMax = new Vector2(0.8f, 0.8f);
                     UI.SetActive(true);
                     UI.GetComponent<PlayerUIController>().setViewModel((PlayerVM)item);
+
+                    vm.PlayerUI = UI.GetComponent<PlayerUIController>();
+
                     UI.GetComponent<PlayerUIController>().ChangePosision(vm.ID, (msg)=>
                     {
                         Debug.Log("UI View " + msg + " Finish");

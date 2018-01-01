@@ -32,7 +32,6 @@ public class PlayerUIController : MonoBehaviour {
     {
         _playerVM = model;
         PlayerID = model.ID;
-        _playerVM.PropertyChanged += _playerVM_PropertyChanged;
         _playerVM.Bets.CollectionChanged += Bets_CollectionChanged;
     }
 
@@ -57,16 +56,10 @@ public class PlayerUIController : MonoBehaviour {
         }
     }
 
-    private void _playerVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    public void UpdateTotalEarned(int totalEarned)
     {
-        var player = (PlayerVM)sender;
-        switch(e.PropertyName)
-        {
-            case "TotalEarned":
-                CharactorImage.GetComponent<Faces>().Smile(2); // 得点が上がったら笑う
-				StartCoroutine(CountUp(player.TotalEarned));
-                break;
-        }
+        CharactorImage.GetComponent<Faces>().Smile(2); // 得点が上がったら笑う
+        StartCoroutine(CountUp(totalEarned));
     }
 
     // ここではなく、上位(ListView)側でこれを載せている皿を移動させるべき
