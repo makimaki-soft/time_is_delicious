@@ -13,6 +13,9 @@ public class MainPresenter : MonoBehaviour {
     [SerializeField]
     private TempManager foodCardFactory;
 
+    [SerializeField]
+    private EventCardController eventCardController;
+
     private MainModel _singletonMainModel;
 
     private ObservableCollection<FoodCardVM> _currentFoodCardsVM;
@@ -21,49 +24,43 @@ public class MainPresenter : MonoBehaviour {
         get { return _currentFoodCardsVM; }
     }
 
-    private void CurrentFoodCards_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                foreach (var item in e.NewItems)
-                {
-                    var foodCardVM = new FoodCardVM((FoodCard)item);
-                    _currentFoodCardsVM.Add(foodCardVM);
-                    foodCardFactory.CreateFoodCard(foodCardVM);
-                }
-                UnityEngine.Debug.Log("CurrentFoodCards Add");
-                break;
-            case NotifyCollectionChangedAction.Move:
-                UnityEngine.Debug.Log("CurrentFoodCards Move");
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                UnityEngine.Debug.Log("CurrentFoodCards Remove");
-                foreach (var item in e.OldItems)
-                {
-                    var removedItem = _currentFoodCardsVM.FirstOrDefault(vm => vm.ID == ((FoodCard)item).ID);
-                    if (removedItem != null)
-                    {
-                        _currentFoodCardsVM.Remove(removedItem);
-                        removedItem.Reset();
-                        foodCardFactory.RemoveFoodCard(removedItem);
-                    }
-                }
-                break;
-            case NotifyCollectionChangedAction.Replace:
-                UnityEngine.Debug.Log("CurrentFoodCards Replace");
-                break;
-            case NotifyCollectionChangedAction.Reset:
-                UnityEngine.Debug.Log("CurrentFoodCards Reset");
-                break;
-        }
-    }
-
 	// Use this for initialization
 	void Start () {
         _currentFoodCardsVM = new ObservableCollection<FoodCardVM>();
         _singletonMainModel = MainModel.Instance;
         // CurrentFoodCardsプロパティ全体を公開してしまうかは悩みどころ。
-        _singletonMainModel.CurrentFoodCards.CollectionChanged += CurrentFoodCards_CollectionChanged;
+        _singletonMainModel.CurrentFoodCards.ObserveAdd().Subscribe(item =>
+        {
+            var foodCardVM = new FoodCardVM((FoodCard)item.Value);
+            _currentFoodCardsVM.Add(foodCardVM);
+            foodCardFactory.CreateFoodCard(foodCardVM);
+        });
+
+        _singletonMainModel.CurrentFoodCards.ObserveRemove().Subscribe(item =>
+        {
+            var removedItem = _currentFoodCardsVM.FirstOrDefault(vm => vm.ID == ((FoodCard)item.Value).ID);
+            if (removedItem != null)
+            {
+                _currentFoodCardsVM.Remove(removedItem);
+                removedItem.Reset();
+                foodCardFactory.RemoveFoodCard(removedItem);
+            }
+        });
+
+        _singletonMainModel.CurrentEventCard.Subscribe(card=>
+        {
+            if(card==null)
+            {
+                return;
+            }
+
+            eventCardController.SetEventValues(
+                card.ID,
+                card.Name,
+                card.Description,
+                card.Weather[RuleManager.EventType.Temperature],
+                card.Weather[RuleManager.EventType.Humid],
+                card.Weather[RuleManager.EventType.Wind]);
+        });
 	}
 }

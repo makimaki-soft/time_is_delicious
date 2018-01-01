@@ -27,10 +27,8 @@ public class PlayerUIController : MonoBehaviour {
         CharactorImage = transform.Find("CharaImage").gameObject;
     }
 
-    private PlayerVM _playerVM;
     public void setViewModel(PlayerVM model)
     {
-        _playerVM = model;
         PlayerID = model.ID;
     }
 

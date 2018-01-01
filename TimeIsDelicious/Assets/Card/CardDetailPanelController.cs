@@ -120,12 +120,12 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 	}
 
 	public void OpenEvent(
-		EventCardVM _event,
+		int _eventID,
 		callBackClose _funcClose = null) {
 
 		Clear ();
 
-		string imageName = "Event/event" + _event.ID.ToString ();
+        string imageName = "Event/event" + _eventID.ToString ();
 		Sprite image = Resources.Load<Sprite> (imageName);
 		_cardImage.sprite = image;
 

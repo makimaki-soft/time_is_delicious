@@ -27,41 +27,41 @@ public class GameDirectorVM : VMBase {
     public GameDirectorVM()
     {
         _singletonMainModel = MainModel.Instance;
-        _singletonMainModel.PropertyChanged += MainModel_PropertyChanged;
+        // _singletonMainModel.PropertyChanged += MainModel_PropertyChanged;
 
+        _singletonMainModel.CurrentStatus.Subscribe(status=>
+        {
+            CurrentStatus = (Status)Enum.ToObject(typeof(Status), (int)status);
+        });
 
+        _singletonMainModel.CurrentPlayer.Subscribe(player=>
+        {
+            if(player == null)
+            {
+                return;
+            }
+
+            if (currentPlayerBetsDisposable != null)
+            {
+                currentPlayerBetsDisposable.Dispose();
+            }
+
+            currentPlayerBetsDisposable = player.Bets.ObserveCountChanged(true).Subscribe(cnt => CurrentPlayersBets = cnt);
+            CurrentPlayersBets = player.Bets.Count;
+            CurrentPlayerName = player.Name; // tmp
+        });
+
+        _singletonMainModel.TurnCount.Subscribe(cnt=>{
+            TurnCount = cnt;
+        });
+
+        _singletonMainModel.RoundCount.Subscribe(cnt=>
+        {
+            RoundCount = cnt;
+        });
     }
 
     private IDisposable currentPlayerBetsDisposable;
-
-    private void MainModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-    {
-        var mainModel = (MainModel)sender;
-        switch(e.PropertyName)
-        {
-            case "CurrentStatus":
-                // ステータスを同期
-                CurrentStatus = (Status)Enum.ToObject(typeof(Status), (int)mainModel.CurrentStatus);
-                UnityEngine.Debug.Log(CurrentStatus);
-                break;
-            case "CurrentPlayer":
-                if(currentPlayerBetsDisposable != null)
-                {
-                    currentPlayerBetsDisposable.Dispose();
-                }
-
-                currentPlayerBetsDisposable = mainModel.CurrentPlayer.Bets.ObserveCountChanged(true).Subscribe(cnt => CurrentPlayersBets = cnt);
-                CurrentPlayersBets = mainModel.CurrentPlayer.Bets.Count;
-                CurrentPlayerNameForce = mainModel.CurrentPlayer.Name; // tmp
-                break;
-            case "TurnCount":
-                TurnCount = mainModel.TurnCount;
-                break;
-            case "RoundCount":
-                RoundCount = mainModel.RoundCount;
-                break;
-        }
-    }
 
     private Status _currentStatus;
     public Status CurrentStatus

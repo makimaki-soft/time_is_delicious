@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using UniRx;
 
 public class PlayersUIWindowVM : VMBase {
 
@@ -12,9 +13,36 @@ public class PlayersUIWindowVM : VMBase {
         _playerListVM = new ObservableCollection<PlayerVM>();
 
         _singletonMainModel = MainModel.Instance;
-        // CurrentFoodCardsプロパティ全体を公開してしまうかは悩みどころ。
-        _singletonMainModel.Players.CollectionChanged += Players_CollectionChanged;
-        _singletonMainModel.PropertyChanged += SingletonMainModel_PropertyChanged;
+
+        _singletonMainModel.NumberOfPlayers.Subscribe(val =>
+        {
+            NumberOfPlayers = val;
+        });
+
+        _singletonMainModel.CurrentPlayer
+                           .Where((arg) => arg != null)
+                           .Subscribe(val =>
+        {
+            CurrentPlayer = _playerListVM.FirstOrDefault(v => v.ID == _singletonMainModel.CurrentPlayer.Value.ID);
+        });
+
+        _singletonMainModel.CurrentStatus.Subscribe(val =>
+        {
+            if (_singletonMainModel.CurrentStatus.Value == MainModel.Status.GameEnd)
+            {
+                if (Permanent != null)
+                {
+                    Permanent.playerNum = _singletonMainModel.NumberOfPlayers.Value;
+                    Permanent.players = _singletonMainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
+                }
+                FadeManager.Instance.LoadScene("GameEnd", 1.0f);
+            }
+        });
+
+        _singletonMainModel.Players.ObserveAdd().Subscribe(item => 
+        {
+            _playerListVM.Add(new PlayerVM(item.Value));
+        });
     }
 
     public PermanentObj Permanent { get; set; }
@@ -51,58 +79,6 @@ public class PlayersUIWindowVM : VMBase {
                 _currentPlayer = value;
                 NotifyPropertyChanged();
             }
-        }
-    }
-
-    private void SingletonMainModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        var mainModel = sender as MainModel;
-        switch (e.PropertyName)
-        {
-            case "NumberOfPlayers":
-                NumberOfPlayers = mainModel.NumberOfPlayers;
-                break;
-            case "CurrentPlayer":
-                CurrentPlayer = _playerListVM.FirstOrDefault(v => v.ID == mainModel.CurrentPlayer.ID);
-                break;
-            case "CurrentStatus":
-                if (mainModel.CurrentStatus == MainModel.Status.GameEnd)
-                {
-                    if(Permanent != null)
-                    {
-                        Permanent.playerNum = mainModel.NumberOfPlayers;
-                        Permanent.players = mainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
-                    }
-                    FadeManager.Instance.LoadScene("GameEnd", 1.0f);
-                }
-                break;
-        }
-    }
-
-    private void Players_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    {
-        switch (e.Action)
-        {
-            case NotifyCollectionChangedAction.Add:
-                foreach (var item in e.NewItems)
-                {
-                    var playerVM = new PlayerVM((Player)item);
-                    _playerListVM.Add(playerVM);
-                }
-                UnityEngine.Debug.Log("CurrentFoodCards Add");
-                break;
-            case NotifyCollectionChangedAction.Move:
-                UnityEngine.Debug.Log("CurrentFoodCards Move");
-                break;
-            case NotifyCollectionChangedAction.Remove:
-                UnityEngine.Debug.Log("CurrentFoodCards Remove");
-                break;
-            case NotifyCollectionChangedAction.Replace:
-                UnityEngine.Debug.Log("CurrentFoodCards Replace");
-                break;
-            case NotifyCollectionChangedAction.Reset:
-                UnityEngine.Debug.Log("CurrentFoodCards Reset");
-                break;
         }
     }
 }

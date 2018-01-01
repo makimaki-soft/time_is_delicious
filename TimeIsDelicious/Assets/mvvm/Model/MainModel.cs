@@ -2,12 +2,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using UniRx;
 
 // シングルトンによる共有インスタンスの実現
-public sealed class MainModel : GameComponent {
+public sealed class MainModel : GameComponent
+{
 
     private static MainModel instance = new MainModel();
-    
+
     public static void Reset()
     {
         instance = new MainModel();
@@ -37,140 +39,49 @@ public sealed class MainModel : GameComponent {
     }
 
     // ターン数
-    private int _turnCount;
-    public int TurnCount
-    {
-        get { return _turnCount; }
-        private set
-        {
-            if (_turnCount != value)
-            {
-                _turnCount = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
+    public IReactiveProperty<int> TurnCount { get; private set; }
 
     // ラウンド数
-    private int _roundCount;
-    public int RoundCount
-    {
-        get { return _roundCount; }
-        private set
-        {
-            if (_roundCount != value)
-            {
-                _roundCount = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
+    public IReactiveProperty<int> RoundCount { get; private set; }
 
     private TimeIsDelicious _timesIsDelicious;
 
-    private Status _currentStatus;
-    public Status CurrentStatus
-    {
-        get { return _currentStatus; }
-        private set
-        {
-            if (_currentStatus != value)
-            {
-                _currentStatus = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
+    public IReactiveProperty<Status> CurrentStatus { get; private set; }
 
-    private Player _currentPlayer;
-    public Player CurrentPlayer
-    {
-        get { return _currentPlayer; }
-        private set
-        {
-            if (_currentPlayer != value)
-            {
-                _currentPlayer = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-
+    public IReactiveProperty<Player> CurrentPlayer { get; private set; }
     // 強制イベント通知
-    public Player CurrentPlayerForceEvent
-    {
-        set
-        {
-            _currentPlayer = value;
-            NotifyPropertyChanged("CurrentPlayer");
-        }
-    }
-
-    private int _numberOfPlayers;
-    public int NumberOfPlayers
-    {
-        get { return _numberOfPlayers; }
-        set
-        {
-            if (_numberOfPlayers != value)
-            {
-                _numberOfPlayers = value;
-                NotifyPropertyChanged();
-            }
-
-        }
-    }
-
-    private EventCard _currentEventCard;
-    public EventCard CurrentEventCard
-    {
-        get { return _currentEventCard; }
-        private set
-        {
-            if (_currentEventCard != value)
-            {
-                _currentEventCard = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-
-    private ObservableCollection<FoodCard> _currentFoodCards;
-    public ObservableCollection<FoodCard> CurrentFoodCards
-    {
-        get { return _currentFoodCards;}
-    }
-
-    private ObservableCollection<Player> _players;
-    public ObservableCollection<Player> Players
-    {
-        get { return _players; }
-    }
+    public IReactiveProperty<int> NumberOfPlayers { get; private set; }
+    public IReactiveProperty<EventCard> CurrentEventCard { get; private set; }
+    public IReactiveCollection<FoodCard> CurrentFoodCards { get; private set; }
+    public IReactiveCollection<Player> Players { get; private set; }
 
     private MainModel()
     {
-        _turnCount = 0;
-        _roundCount = 0;
-
         _timesIsDelicious = new TimeIsDelicious();
-        _currentFoodCards = new ObservableCollection<FoodCard>();
-        _players = new ObservableCollection<Player>();
-        CurrentStatus = Status.NotStarted;
+
+        this.TurnCount = new ReactiveProperty<int>(0);
+        this.RoundCount = new ReactiveProperty<int>(0);
+        this.NumberOfPlayers = new ReactiveProperty<int>(0);
+        this.CurrentFoodCards = new ReactiveCollection<FoodCard>();
+        this.CurrentEventCard = new ReactiveProperty<EventCard>();
+        this.CurrentPlayer = new ReactiveProperty<Player>();
+        this.Players = new ReactiveCollection<Player>();
+        this.CurrentStatus = new ReactiveProperty<Status>(Status.NotStarted);
     }
 
     // ゲームスタート
     public void StartTimeIsDelicious(int numOfPlayers)
     {
-        TurnCount = 0;
-        RoundCount = 0;
-        NumberOfPlayers = numOfPlayers;
+        this.TurnCount.Value = 0;
+        this.RoundCount.Value = 0;
+        this.NumberOfPlayers.Value = numOfPlayers;
 
         _timesIsDelicious.Start(numOfPlayers);
         foreach (var player in _timesIsDelicious.Players)
         {
-            _players.Add(player);
+            this.Players.Add(player);
         }
-        CurrentStatus = Status.WaitForRoundStart; // ラウンド開始待ちに移行
+        CurrentStatus.Value = Status.WaitForRoundStart; // ラウンド開始待ちに移行
     }
 
     // ラウンドを開始
@@ -184,116 +95,116 @@ public sealed class MainModel : GameComponent {
         var cards = _timesIsDelicious.StartRound();
 
         // リセット
-        while(_currentFoodCards.Count>0)
+        while(CurrentFoodCards.Count>0)
         {
-            _currentFoodCards.RemoveAt(0);
+            CurrentFoodCards.RemoveAt(0);
         }
         foreach(var card in cards)
         {
-            _currentFoodCards.Add(card);
+            CurrentFoodCards.Add(card);
         }
-        RoundCount += 1;
-        TurnCount = 1;
-        CurrentStatus = Status.Betting; // 賭けフェイズに移行
-        CurrentPlayer = _players[_currentPlayerIndex];    // 最初のプレイヤーに設定
+        RoundCount.Value += 1;
+        TurnCount.Value = 1;
+        CurrentStatus.Value = Status.Betting; // 賭けフェイズに移行
+        CurrentPlayer.Value = Players[_currentPlayerIndex];    // 最初のプレイヤーに設定
 
-        _currentEventCard = _timesIsDelicious.OpenEventCard(); // Debug用
+        CurrentEventCard.Value = _timesIsDelicious.OpenEventCard(); // Debug用
     }
 
     public void AdvanceTime(int i)
     {
-        _timesIsDelicious.AdvanceTime(i, _currentEventCard);
-        CurrentStatus = Status.NextTurn;
+        _timesIsDelicious.AdvanceTime(i, CurrentEventCard.Value);
+        CurrentStatus.Value = Status.NextTurn;
     }
 
     public void GoNextTurn()
     {
-        var NotRotten = _currentFoodCards.Where(fc => fc.Rotten.Value == false)
+        var NotRotten = CurrentFoodCards.Where(fc => fc.Rotten.Value == false)
                                          .Select(fc => fc.GUID)
                                          .Count();
-        var StillHave = _players.Where(player => player.Bets.Count > 0)
+        var StillHave = Players.Where(player => player.Bets.Count > 0)
                            .Select(player => player.GUID)
                            .Count();
 
         // すべてのカードが腐るか、すべてのカードが売り払われたら次のラウンドに進む
-        if (TurnCount == 10 || NotRotten == 0 || StillHave == 0 )
+        if (TurnCount.Value == 10 || NotRotten == 0 || StillHave == 0 )
         {
-            TurnCount = 0;
+            TurnCount.Value = 0;
             _currentPlayerIndex = 0;
 
             // 次のラウンドに行く前に、持っているカードはすべて売る
-            foreach(var player in _players)
+            foreach(var player in Players)
             {
                 player.SellAll();
             }
 
-            CurrentStatus = RoundCount == 3 ? Status.GameEnd : Status.WaitForRoundStart; // ラウンド開始待ちor終了に移行
+            CurrentStatus.Value = RoundCount.Value == 3 ? Status.GameEnd : Status.WaitForRoundStart; // ラウンド開始待ちor終了に移行
         }
         else
         {
-            TurnCount += 1;
-            CurrentStatus = Status.CastDice;
+            TurnCount.Value += 1;
+            CurrentStatus.Value = Status.CastDice;
             _currentPlayerIndex = 0;
-            CurrentPlayer = _players[_currentPlayerIndex];    // 最初のプレイヤーに設定
+            CurrentPlayer.Value = Players[_currentPlayerIndex];    // 最初のプレイヤーに設定
         }
     }
 
     public void SellFood(FoodCard card)
     {
-        var targetCard = (from foodcard in _currentFoodCards where foodcard.GUID == card.GUID select foodcard).Single();
-        CurrentPlayer.Sell(targetCard);
+        var targetCard = (from foodcard in CurrentFoodCards where foodcard.GUID == card.GUID select foodcard).Single();
+        CurrentPlayer.Value.Sell(targetCard);
     }
 
     public void Pass()
     {
         _currentPlayerIndex++;
-        if (_currentPlayerIndex >= NumberOfPlayers)
+        if (_currentPlayerIndex >= NumberOfPlayers.Value)
         {
             _currentPlayerIndex = 0;
             _betTurnCount++;
             if (_betTurnCount >= 2)
             {
-                CurrentStatus = Status.Event; // イベントに移行
+                CurrentStatus.Value = Status.Event; // イベントに移行
                 _currentPlayerIndex = 0;
                 return;
             }
         }
-        CurrentPlayer = _players[_currentPlayerIndex];    // 次のプレイヤーに設定
+        CurrentPlayer.Value = Players[_currentPlayerIndex];    // 次のプレイヤーに設定
     }
 
     // カレントプレイヤーがカードを選択する
     public void BetFood(FoodCard card)
     {
-        var targetCard = (from foodcard in _currentFoodCards where foodcard.GUID == card.GUID select foodcard).Single();
-        CurrentPlayer.Bet(targetCard);
+        var targetCard = (from foodcard in CurrentFoodCards where foodcard.GUID == card.GUID select foodcard).Single();
+        CurrentPlayer.Value.Bet(targetCard);
 
         _currentPlayerIndex++;
-        if(_currentPlayerIndex >= NumberOfPlayers)
+        if(_currentPlayerIndex >= NumberOfPlayers.Value)
         {
             _currentPlayerIndex = 0;
             _betTurnCount++;
             if(_betTurnCount >= 2)
             {
-                CurrentStatus = Status.CastDice; // ダイスに移行
+                CurrentStatus.Value = Status.CastDice; // ダイスに移行
                 _currentPlayerIndex = 0;
-                CurrentPlayer = _players[_currentPlayerIndex];    // 最初のプレイヤーに設定
+                CurrentPlayer.Value = Players[_currentPlayerIndex];    // 最初のプレイヤーに設定
                 return;
             }
         }
-        CurrentPlayer = _players[_currentPlayerIndex];    // 次のプレイヤーに設定
+        CurrentPlayer.Value = Players[_currentPlayerIndex];    // 次のプレイヤーに設定
     }
 
     public void EventCardOpen()
     {
-        CurrentEventCard = _timesIsDelicious.OpenEventCard();
-        CurrentStatus = Status.Aging; // 熟成待ちに移行
+        CurrentEventCard.Value = _timesIsDelicious.OpenEventCard();
+        CurrentStatus.Value = Status.Aging; // 熟成待ちに移行
     }
 
     // さいころを振ったことを通知(ステータスを変えるだけ)
     public void NotifyDiceCasted()
     {
-        CurrentStatus = Status.DecisionMaking; // 売るかどうかの選択に移行
+        CurrentStatus.Value = Status.DecisionMaking; // 売るかどうかの選択に移行
         _currentPlayerIndex = 0;
-        CurrentPlayerForceEvent = _players[_currentPlayerIndex];
+        CurrentPlayer.Value = Players[_currentPlayerIndex];
     }
 }

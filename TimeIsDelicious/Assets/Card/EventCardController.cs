@@ -14,7 +14,6 @@ public class EventCardController : MonoBehaviour {
 	public delegate void callBackClose();
 	private callBackClose _callBackClose;
 
-    private EventCardVM _vm;
     class EventValues
     {
         public int ID;
@@ -30,36 +29,17 @@ public class EventCardController : MonoBehaviour {
     void Start () {
 		GameObject canvas = GameObject.Find ("UICanvas");
 		cardDetailPanel = canvas.transform.Find ("CardDetailPanel").gameObject;
-        _vm = new EventCardVM();
         _eventValues = new EventValues();
-        _vm.PropertyChanged += _vm_PropertyChanged;
     }
 
-    private void _vm_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    public void SetEventValues(int ID, string Name, string Description, int Temperature, int Humidity,int Wind )
     {
-        var vm = (EventCardVM)sender;
-        switch(e.PropertyName)
-        {
-            case "ID":
-                _eventValues.ID = vm.ID;
-                break;
-            case "Name":
-                _eventValues.Name = vm.Name;
-                break;
-            case "Description":
-                _eventValues.Description = vm.Description;
-                break;
-            case "Temperature":
-                _eventValues.Temperature = vm.Temperature;
-                break;
-            case "Humidity":
-                _eventValues.Humidity = vm.Humidity;
-                break;
-            case "Wind":
-                _eventValues.Wind = vm.Wind;
-                break;
-
-        }
+        _eventValues.ID = ID;
+        _eventValues.Name = Name;
+        _eventValues.Description = Description;
+        _eventValues.Temperature = Temperature;
+        _eventValues.Humidity = Humidity;
+        _eventValues.Wind = Wind;
     }
 
     // Update is called once per frame
@@ -95,7 +75,7 @@ public class EventCardController : MonoBehaviour {
 		yield return new WaitForSeconds(1.0f);
 
 		cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenEvent (
-			_vm,
+            _eventValues.ID,
 			() => {
 				_funcClose?.Invoke();
 			});
