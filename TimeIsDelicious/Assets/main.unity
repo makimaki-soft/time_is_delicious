@@ -3848,6 +3848,12 @@ RectTransform:
   m_PrefabParentObject: {fileID: 224735269967754588, guid: da2c845d1ddb838429015dc91cc7e594,
     type: 2}
   m_PrefabInternal: {fileID: 747751584}
+--- !u!114 &1576962547 stripped
+MonoBehaviour:
+  m_PrefabParentObject: {fileID: 114309285616583342, guid: da2c845d1ddb838429015dc91cc7e594,
+    type: 2}
+  m_PrefabInternal: {fileID: 747751584}
+  m_Script: {fileID: 11500000, guid: 0ed003431481c344c9f9d5e83a027af9, type: 3}
 --- !u!1001 &1585222228
 Prefab:
   m_ObjectHideFlags: 0
@@ -5510,6 +5516,8 @@ MonoBehaviour:
   foodCardFactory: {fileID: 1599356777}
   eventCardController: {fileID: 1868384429}
   gameDirector: {fileID: 1868384425}
+  popupMessageController: {fileID: 1576962547}
+  playerWindowController: {fileID: 483107904}
 --- !u!4 &2064869725
 Transform:
   m_ObjectHideFlags: 0

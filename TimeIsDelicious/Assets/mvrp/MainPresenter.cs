@@ -27,10 +27,13 @@ public class MainPresenter : MonoBehaviour {
     private PlayersUIWindowController playerWindowController;
 
     private MainModel _singletonMainModel;
+    public PermanentObj Permanent { get; private set; }
 
 	// Use this for initialization
 	void Start () {
         _singletonMainModel = MainModel.Instance;
+        Permanent = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
+
         // CurrentFoodCardsプロパティ全体を公開してしまうかは悩みどころ。
         _singletonMainModel.CurrentFoodCards.ObserveAdd().Subscribe(item =>
         {
@@ -134,8 +137,9 @@ public class MainPresenter : MonoBehaviour {
             });
         });
 
-        var pObj = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
-        int? numOfPlayers = pObj?.playerNum;
+        initPlayersUIWindowVM();
+
+        int? numOfPlayers = Permanent?.playerNum;
         _singletonMainModel.StartTimeIsDelicious(numOfPlayers.HasValue ? numOfPlayers.Value : 4);
     }
 	
@@ -189,5 +193,38 @@ public class MainPresenter : MonoBehaviour {
         // ２秒待って
         yield return new WaitForSeconds(2.0f);
         _singletonMainModel.GoNextTurn(); // 次のターンへ移行
+    }
+
+    private void initPlayersUIWindowVM()
+    {
+        _singletonMainModel.NumberOfPlayers.Subscribe(val =>
+        {
+            playerWindowController.MaxNumberOfViewList = val;
+        });
+
+        _singletonMainModel.CurrentPlayer
+                           .Where((arg) => arg != null)
+                           .Subscribe(val =>
+                           {
+                                playerWindowController.SetCurrentPlayer(val.ID);
+                           });
+
+        _singletonMainModel.CurrentStatus.Subscribe(val =>
+        {
+            if (_singletonMainModel.CurrentStatus.Value == MainModel.Status.GameEnd)
+            {
+                if (Permanent != null)
+                {
+                    Permanent.playerNum = _singletonMainModel.NumberOfPlayers.Value;
+                    Permanent.players = _singletonMainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
+                }
+                FadeManager.Instance.LoadScene("GameEnd", 1.0f);
+            }
+        });
+
+        _singletonMainModel.Players.ObserveAdd().Subscribe(item =>
+        {
+            playerWindowController.AddPlayer(new PlayerVM(item.Value));
+        });
     }
 }
