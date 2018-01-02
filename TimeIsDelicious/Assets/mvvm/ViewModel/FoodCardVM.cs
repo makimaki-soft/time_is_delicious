@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UniRx;
 
-public class FoodCardVM : VMBase {
+public class FoodCardVM {
 
 
     public int ID { get; private set; }

@@ -9,8 +9,7 @@ using System.Linq;
 using System;
 
 public class MainPresenter : MonoBehaviour {
-
-
+    
     [SerializeField]
     private TempManager foodCardFactory;
 
@@ -34,7 +33,6 @@ public class MainPresenter : MonoBehaviour {
         _singletonMainModel = MainModel.Instance;
         Permanent = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
 
-        // CurrentFoodCardsプロパティ全体を公開してしまうかは悩みどころ。
         _singletonMainModel.CurrentFoodCards.ObserveAdd().Subscribe(item =>
         {
             var foodCardVM = new FoodCardVM((FoodCard)item.Value);
@@ -129,9 +127,7 @@ public class MainPresenter : MonoBehaviour {
         {
             gameDirector.DiceRoll().Subscribe(dice=>
             {
-
                 MainModel.Instance.NotifyDiceCasted(); // 判断待ちステータスに進める
-
                 // 熟成待ち状態になったらダイスの出目で熟成
                 StartCoroutine(ControlTurnCoroutine(dice));
             });

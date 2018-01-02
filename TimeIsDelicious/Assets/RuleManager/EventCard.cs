@@ -10,7 +10,7 @@ namespace RuleManager
         Wind
     }
 
-    public class EventCard : GameComponent
+    public class EventCard
     {
 		private readonly int _id;
 		public int ID

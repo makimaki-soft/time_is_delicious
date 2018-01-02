@@ -5,7 +5,7 @@ using System.Linq;
 using UniRx;
 
 // シングルトンによる共有インスタンスの実現
-public sealed class MainModel : GameComponent
+public sealed class MainModel
 {
 
     private static MainModel instance = new MainModel();

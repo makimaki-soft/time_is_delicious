@@ -8,7 +8,7 @@ using System.ComponentModel;
 using UnityEngine;
 using UniRx;
 
-public class PlayerVM : VMBase {
+public class PlayerVM {
     
     public int ID { get; private set; }
     public string Name
