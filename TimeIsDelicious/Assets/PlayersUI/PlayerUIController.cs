@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
+using UniRx;
 
 // Player UIのViewという扱い
 public class PlayerUIController : MonoBehaviour {
@@ -39,23 +40,23 @@ public class PlayerUIController : MonoBehaviour {
     }
 
     // ここではなく、上位(ListView)側でこれを載せている皿を移動させるべき
-    public void ChangePosision(int posision, onComplete onCompleteCallback)
+    public IObservable<Unit> ChangePosision(int posision)
     {
         animator.SetInteger("Order", posision);
         animator.SetTrigger("ChangeOrder");
 
         // アニメーション完了後にCallbackを実行
-        StartCoroutine(WaitForAnimationComplete(onCompleteCallback, posision));
+        var coroutine = Observable.FromCoroutine((cancelToken) => WaitForAnimationComplete(posision));
+        var hotCoroutine = coroutine.Publish().RefCount();
+        hotCoroutine.Subscribe(); // 実行
+        return hotCoroutine;
     }
 
-    public delegate void onComplete(string msg);
-    private IEnumerator WaitForAnimationComplete(onComplete callback, int position)
+    private IEnumerator WaitForAnimationComplete(int position)
     {
         yield return new WaitUntil(() => {
             return animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f;
         });
-
-        callback(position.ToString());
     }
 
 	// スコアを1づつ増やす

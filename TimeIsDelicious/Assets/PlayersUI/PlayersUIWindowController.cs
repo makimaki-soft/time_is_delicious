@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using UnityEngine;
+using UniRx;
 
 // Player UI 全体のView
 public class PlayersUIWindowController : MonoBehaviour {
@@ -49,7 +50,7 @@ public class PlayersUIWindowController : MonoBehaviour {
         for (int idx = 0; idx < _playerViewList.Count; idx++)
         {
             int order = (startIndex + idx) % _playerViewList.Count;
-            _playerViewList[order].GetComponent<PlayerUIController>().ChangePosision(idx, (msg) => { });
+            _playerViewList[order].GetComponent<PlayerUIController>().ChangePosision(idx);
         }
     }
 
@@ -66,15 +67,16 @@ public class PlayersUIWindowController : MonoBehaviour {
         //    rectTrans.offsetMax = new Vector2(0.8f, 0.8f);
         UI.SetActive(true);
         UI.GetComponent<PlayerUIController>().PlayerID = ID;
-        UI.GetComponent<PlayerUIController>().ChangePosision(ID, (msg) =>
+        UI.GetComponent<PlayerUIController>().ChangePosision(ID).Subscribe(_=>
         {
-            Debug.Log("UI View " + msg + " Finish");
+            Debug.Log("UI View " + ID.ToString() + " Finish");
             if (++_viewComplete == MaxNumberOfViewList)
             {
                 // 人数分UIの描画ができたら準備完了
                 UIRready = true;
             }
         });
+
         _playerViewList.Add(UI);
         numberOfPlayers++;
 
