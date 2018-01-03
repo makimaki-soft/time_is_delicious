@@ -53,10 +53,10 @@ public class PlayersUIWindowController : MonoBehaviour {
         }
     }
 
-    public void AddPlayer(PlayerVM vm)
+    public PlayerUIController AddPlayer(string Name, int ID)
     {
         // Instanciateの位置調整がうまくいかないのでひとまず静的配置からFind
-        var name = "PlayerPrefab_" + NameUIMap[vm.Name];
+        var name = "PlayerPrefab_" + NameUIMap[Name];
         var UI = transform.Find(name).gameObject;
         //    UI.transform.parent = transform;
         //    var rectTrans = (RectTransform)UI.transform;
@@ -65,11 +65,8 @@ public class PlayersUIWindowController : MonoBehaviour {
         //    rectTrans.offsetMin = new Vector2(0.2f, 0.2f);
         //    rectTrans.offsetMax = new Vector2(0.8f, 0.8f);
         UI.SetActive(true);
-        UI.GetComponent<PlayerUIController>().setViewModel(vm);
-
-        vm.PlayerUI = UI.GetComponent<PlayerUIController>();
-
-        UI.GetComponent<PlayerUIController>().ChangePosision(vm.ID, (msg) =>
+        UI.GetComponent<PlayerUIController>().PlayerID = ID;
+        UI.GetComponent<PlayerUIController>().ChangePosision(ID, (msg) =>
         {
             Debug.Log("UI View " + msg + " Finish");
             if (++_viewComplete == MaxNumberOfViewList)
@@ -80,5 +77,7 @@ public class PlayersUIWindowController : MonoBehaviour {
         });
         _playerViewList.Add(UI);
         numberOfPlayers++;
+
+        return UI.GetComponent<PlayerUIController>();
     }
 }

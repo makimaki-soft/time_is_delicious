@@ -11,7 +11,7 @@ public class PlayerUIController : MonoBehaviour {
     private GameObject scoreText;
     private GameObject CharactorImage;
     private Animator animator;
-    public int PlayerID { get; private set; }
+    public int PlayerID { get; set; }
 
     void Awake()
     {
@@ -25,11 +25,6 @@ public class PlayerUIController : MonoBehaviour {
         scoreText.GetComponent<Text>().text = "0";
 
         CharactorImage = transform.Find("CharaImage").gameObject;
-    }
-
-    public void setViewModel(PlayerVM model)
-    {
-        PlayerID = model.ID;
     }
 
     public void Sadden()

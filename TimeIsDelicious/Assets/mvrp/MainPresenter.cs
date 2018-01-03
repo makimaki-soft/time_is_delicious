@@ -218,9 +218,23 @@ public class MainPresenter : MonoBehaviour {
             }
         });
 
+        // playerModel と UIの結合
         _singletonMainModel.Players.ObserveAdd().Subscribe(item =>
         {
-            playerWindowController.AddPlayer(new PlayerVM(item.Value));
+            var playerModel = item.Value;
+            var playerUI = playerWindowController.AddPlayer(playerModel.Name, playerModel.ID);
+
+            playerModel.Bets.ObserveRemove().Subscribe((bet) =>
+            {
+                var card = bet.Value;
+                if (card.Rotten.Value)
+                {
+                    // 腐ったことにより手放した
+                    playerUI.Sadden();
+                }
+            });
+
+            playerModel.TotalEarned.Subscribe(earned => playerUI.UpdateTotalEarned(earned));
         });
     }
 }
