@@ -25,6 +25,9 @@ public class MainPresenter : MonoBehaviour {
     [SerializeField]
     private PlayersUIWindowController playerWindowController;
 
+    [SerializeField]
+    private InfoPanelController infoPanelController;
+
     private MainModel _singletonMainModel;
     public PermanentObj Permanent { get; private set; }
 
@@ -115,12 +118,12 @@ public class MainPresenter : MonoBehaviour {
         });
 
         _singletonMainModel.TurnCount.Subscribe(cnt => {
-            gameDirector.TurnCount = cnt;
+            infoPanelController.UpdateTurn(cnt);
         });
 
         _singletonMainModel.RoundCount.Subscribe(cnt =>
         {
-            gameDirector.RoundCount = cnt;
+            infoPanelController.UpdateRound(cnt);
         });
 
         gameDirector.OnDiceButtonClickAsObservable.Subscribe(_=>

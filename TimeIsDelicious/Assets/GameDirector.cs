@@ -9,18 +9,12 @@ public class GameDirector : MonoBehaviour
 {
     private GameObject playerUIWindow;
 
-    public int TurnCount { get; set; }
-    public int RoundCount { get; set; }
     public MainModel.Status Status { get; set; }
     public string CurrentPlayerName { get; set; }
 
     // Use this for initialization
     void Start()
     {
-
-        TurnCount = 0;
-        RoundCount = 0;
-
         // 監視対象GameObjectを取得
         playerUIWindow = GameObject.Find("PlayerUIPanel");
     }

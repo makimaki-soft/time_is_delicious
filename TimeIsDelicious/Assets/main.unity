@@ -5518,6 +5518,7 @@ MonoBehaviour:
   gameDirector: {fileID: 1868384425}
   popupMessageController: {fileID: 1576962547}
   playerWindowController: {fileID: 483107904}
+  infoPanelController: {fileID: 1868384430}
 --- !u!4 &2064869725
 Transform:
   m_ObjectHideFlags: 0
