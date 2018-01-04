@@ -5246,7 +5246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fc67adb3eae38524aa50fcb044517f1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passBtnObj: {fileID: 1125325635}
+  passButton: {fileID: 1125325637}
 --- !u!114 &1868384432
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5520,6 +5520,7 @@ MonoBehaviour:
   playerWindowController: {fileID: 483107904}
   infoPanelController: {fileID: 1868384430}
   cardDetailPanel: {fileID: 21673569}
+  passButton: {fileID: 1868384431}
 --- !u!4 &2064869725
 Transform:
   m_ObjectHideFlags: 0

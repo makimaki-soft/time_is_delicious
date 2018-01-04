@@ -31,6 +31,9 @@ public class MainPresenter : MonoBehaviour {
     [SerializeField]
     private CardDetailPanelController cardDetailPanel;
 
+    [SerializeField]
+    private PassBtnController passButton;
+
     private List<CardViewModel> cardViewList = new List<CardViewModel>();
 
     private MainModel _singletonMainModel;
@@ -150,6 +153,8 @@ public class MainPresenter : MonoBehaviour {
             {
                 StartCoroutine(RoundStart());
             }
+
+
         });
 
         _singletonMainModel.CurrentPlayer.Subscribe(player =>
@@ -271,6 +276,8 @@ public class MainPresenter : MonoBehaviour {
         _singletonMainModel.GoNextTurn(); // 次のターンへ移行
     }
 
+    IDisposable passButtonDisposable;
+
     private void initPlayersUIWindowVM()
     {
         _singletonMainModel.NumberOfPlayers.Subscribe(val =>
@@ -295,6 +302,17 @@ public class MainPresenter : MonoBehaviour {
                     Permanent.players = _singletonMainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
                 }
                 FadeManager.Instance.LoadScene("GameEnd", 1.0f);
+            }
+
+            if(val == MainModel.Status.DecisionMaking)
+            {
+                passButtonDisposable = passButton.OnClickAsObservable.Subscribe(_ => MainModel.Instance.Pass());
+                passButton.SetActive(true);
+            }
+            else
+            {
+                passButtonDisposable?.Dispose();
+                passButton.SetActive(false);
             }
         });
 

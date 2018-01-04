@@ -2,31 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UniRx;
+using UnityEngine.UI;
 
 public class PassBtnController : MonoBehaviour {
 
-	public GameObject passBtnObj;
-
-	private GameDirector _gd;
+    public Button passButton;
 
 	// Use this for initialization
 	void Start () {
-		_gd = GameObject.Find("GameDirector").GetComponent<GameDirector>();
-
-		passBtnObj.SetActive (false);
+        passButton.gameObject.SetActive(false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (_gd.Status == MainModel.Status.DecisionMaking) {
-			passBtnObj.SetActive (true);
-		} else {
-			passBtnObj.SetActive (false);
-		}
 	}
 
-    public void Pass()
+    public void SetActive(bool active)
     {
-        MainModel.Instance.Pass();
+        passButton.gameObject.SetActive(active);
+    }
+
+    public IObservable<Unit> OnClickAsObservable
+    {
+        get { return passButton.OnClickAsObservable(); }
     }
 }
