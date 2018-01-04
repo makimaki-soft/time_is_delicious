@@ -52,13 +52,10 @@ public class MainPresenter : MonoBehaviour {
             }
         });
 
-        _singletonMainModel.CurrentEventCard.Subscribe(card=>
+        _singletonMainModel.CurrentEventCard
+                           .Where(card => card != null)
+                           .Subscribe(card=>
         {
-            if(card==null)
-            {
-                return;
-            }
-
             eventCardController.SetEventValues(
                 card.ID,
                 card.Name,
