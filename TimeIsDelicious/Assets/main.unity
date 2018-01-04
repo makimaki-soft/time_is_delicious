@@ -5519,6 +5519,7 @@ MonoBehaviour:
   popupMessageController: {fileID: 1576962547}
   playerWindowController: {fileID: 483107904}
   infoPanelController: {fileID: 1868384430}
+  cardDetailPanel: {fileID: 21673569}
 --- !u!4 &2064869725
 Transform:
   m_ObjectHideFlags: 0

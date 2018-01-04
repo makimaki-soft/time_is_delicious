@@ -28,8 +28,18 @@ public class MainPresenter : MonoBehaviour {
     [SerializeField]
     private InfoPanelController infoPanelController;
 
+    [SerializeField]
+    private CardDetailPanelController cardDetailPanel;
+
+    private List<CardViewModel> cardViewList = new List<CardViewModel>();
+
     private MainModel _singletonMainModel;
     public PermanentObj Permanent { get; private set; }
+
+
+    IDisposable AgedDisposable;
+    IDisposable PriceDisposable;
+    IDisposable RottenDisposable;
 
 	// Use this for initialization
 	void Start () {
@@ -38,8 +48,70 @@ public class MainPresenter : MonoBehaviour {
 
         _singletonMainModel.CurrentFoodCards.ObserveAdd().Subscribe(item =>
         {
-            var foodCardVM = new FoodCardVM((FoodCard)item.Value);
-            foodCardFactory.CreateFoodCard(foodCardVM);
+            var foodCardModel = item.Value;
+            // var foodCardVM = new FoodCardVM((FoodCard)item.Value);
+            var foodCardView = foodCardFactory.CreateFoodCard();
+            // foodCardView はGameObjectのDestroyとともに不正値になる。なんとかしないと
+            Observable.NextFrame().Subscribe(_ =>
+            {
+                foodCardView.SetID(foodCardModel.ID);
+            });
+
+            AgedDisposable = foodCardModel.Aged
+                                          .Where(aged => aged <= foodCardModel.MaxAged)
+                                          .Subscribe(aged => foodCardView.UpdateAgedPont(aged));
+
+            PriceDisposable = foodCardModel.Price
+                                           .Subscribe(price => foodCardView.UpdateSellPont(price));
+
+            RottenDisposable = foodCardModel.Rotten
+                                            .Where(rotten => rotten)
+                                            .Subscribe(rotten => {
+                foodCardView.UpdateAgedPont(null);
+                foodCardView.RunPoisonEffect();
+            });
+
+            foodCardView.OnClickAsObservable.Subscribe(_ =>
+            {
+                var meta = new CardViewModel.CardMeta();
+                meta.Aged = foodCardModel.Aged.Value;
+                meta.CanBet = foodCardModel.CanBet;
+                meta.Description = foodCardModel.Description;
+                meta.ID = foodCardModel.ID;
+                meta.MaxAged = foodCardModel.MaxAged;
+                meta.Name = foodCardModel.Name;
+                meta.NamesWhoBet = foodCardModel.NamesWhoBet;
+                meta.Price = foodCardModel.Price.Value;
+
+                if( _singletonMainModel.CurrentStatus.Value == MainModel.Status.Betting)
+                {
+                    var disposable = cardDetailPanel.OnBetButtonClickAsObservable.First().Subscribe(__=> 
+                    {
+                        foodCardView.SetLogo(_singletonMainModel.CurrentPlayer.Value.Name);
+                        _singletonMainModel.BetFood(foodCardModel);
+                    });
+                    cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
+                    {
+                        disposable.Dispose();
+                    });
+                    cardDetailPanel.OpenNiku(meta, 0, _singletonMainModel.CurrentPlayer.Value.Name);
+                }
+                else if(_singletonMainModel.CurrentStatus.Value == MainModel.Status.DecisionMaking)
+                {
+                    var disposable = cardDetailPanel.OnSellButtonClickAsObservable.Subscribe(__ =>
+                    {
+                        foodCardView.RemoveLogo(_singletonMainModel.CurrentPlayer.Value.Name);
+                        _singletonMainModel.SellFood(foodCardModel);
+                    });
+                    cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
+                    {
+                        disposable.Dispose();
+                    });
+                    cardDetailPanel.OpenNiku(meta, 1, _singletonMainModel.CurrentPlayer.Value.Name);
+                }
+            });
+
+            cardViewList.Add(foodCardView);
         });
 
         _singletonMainModel.CurrentFoodCards.ObserveRemove().Subscribe(item =>
@@ -47,8 +119,13 @@ public class MainPresenter : MonoBehaviour {
             var removedItem = item.Value;
             if (removedItem != null)
             {
-                removedItem.Reset();
-                foodCardFactory.RemoveFoodCard(removedItem);
+                
+                var removeView = cardViewList.FirstOrDefault(view => view.ID == removedItem.ID);
+                if(removeView != null )
+                {
+                    removedItem.Reset();
+                    foodCardFactory.RemoveFoodCard(removeView);
+                }
             }
         });
 
@@ -99,7 +176,7 @@ public class MainPresenter : MonoBehaviour {
                 }
             });
 
-            gameDirector.CurrentPlayerName = player.Name;
+            // gameDirector.CurrentPlayerName = player.Name;
             if (_singletonMainModel.CurrentStatus.Value == MainModel.Status.Betting)
             {
                 popupMessageController.Popup(player.Name + "さんは肉を選んでください。");
@@ -166,12 +243,15 @@ public class MainPresenter : MonoBehaviour {
         bool EventChecked = false;
         // イベントカードオープン
         _singletonMainModel.EventCardOpen();
-        eventCardController.DrawEventCard(
-            () =>
+        eventCardController.DrawEventCard().Subscribe( _ =>
+        {
+            cardDetailPanel.OnCloseAsObservable.Subscribe(___=>
             {
                 gameDirector.DebugDiceClean();
                 EventChecked = true;
             });
+            cardDetailPanel.OpenEvent(_singletonMainModel.CurrentEventCard.Value.ID);
+        });
 
         yield return new WaitUntil(() =>
         {

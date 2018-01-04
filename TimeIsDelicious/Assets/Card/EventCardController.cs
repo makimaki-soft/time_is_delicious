@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 public class EventCardController : MonoBehaviour {
 
@@ -48,10 +49,8 @@ public class EventCardController : MonoBehaviour {
 	}
 
 	// todo event card vm をもらう？
-	public void DrawEventCard(callBackClose _funcClose = null) {
-
-		_callBackClose = _funcClose;
-
+    public IObservable<Unit> DrawEventCard() {
+        
 		if (currentEventCard != null) {
 			// to do ちょっとまってから破棄
 			Destroy (currentEventCard);
@@ -65,19 +64,16 @@ public class EventCardController : MonoBehaviour {
 		currentEventCard = cardvm;
         Debug.Log("現在のイベント/気温" + _eventValues.Temperature + "/湿度" + _eventValues.Humidity + "/風" + _eventValues.Wind);
 		Debug.Log ("id: " + _eventValues.ID + "Name" + _eventValues.Name);
-		StartCoroutine (OpenEventDetail (_funcClose));
+		// StartCoroutine (OpenEventDetail ());
+
+        var hotStream = Observable.FromCoroutine(OpenEventDetail).Publish().RefCount();
+        hotStream.Subscribe();
+        return hotStream;
 	}
 
 	// カード配るアニメーションまち
 	// todo ちゃんと終了みる？
-	private IEnumerator OpenEventDetail(callBackClose _funcClose = null) {
-
+	private IEnumerator OpenEventDetail() {
 		yield return new WaitForSeconds(1.0f);
-
-		cardDetailPanel.GetComponent<CardDetailPanelController> ().OpenEvent (
-            _eventValues.ID,
-			() => {
-				_funcClose?.Invoke();
-			});
 	}
 }

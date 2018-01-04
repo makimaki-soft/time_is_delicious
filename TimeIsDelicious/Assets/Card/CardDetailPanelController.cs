@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UniRx;
 
 public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 
 	public AnimationCurve animCurve = AnimationCurve.Linear(0, 0, 1, 1);
 	private float duration = 0.5f;
-
-	private GameDirector _gd;
 
 	private Image _cardImage;
 	private Text _cardName;
@@ -20,19 +19,9 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 	private GameObject _betButton;
 	private GameObject _sellButton;
 
-	public delegate void callBackClose();
-	private callBackClose _callBackClose;
-
-	public delegate void callBackBet();
-	private callBackBet _callBackBet;
-
-	public delegate void callBackSell();
-	private callBackSell _callBackSell;
-
 	// Use this for initialization
 	void Start () {
 		// 初期化
-		_gd = GameObject.Find("GameDirector").GetComponent<GameDirector>();
 
 		gameObject.SetActive (false);
 
@@ -72,10 +61,27 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		Close ();
 	}
 
+    public IObservable<Unit> OnCloseAsObservable
+    {
+        get { return onCloseSubject; }
+    }
+    private Subject<UniRx.Unit> onCloseSubject = new Subject<Unit>();
+
+    public IObservable<Unit> OnBetButtonClickAsObservable
+    {
+        get { return onBetButtonClickSubject; }
+    }
+    private Subject<UniRx.Unit> onBetButtonClickSubject = new Subject<Unit>();
+
+    public IObservable<Unit> OnSellButtonClickAsObservable
+    {
+        get { return onSellButtonClickSubject; }
+    }
+    private Subject<UniRx.Unit> onSellButtonClickSubject = new Subject<Unit>();
+
     public void OpenNiku(CardViewModel.CardMeta _food,
-		callBackClose _funcClose= null,
-		callBackBet _funcBet = null,
-		callBackSell _funcSell = null) {
+                         int mode, // 0:bet  1:sell
+                         string CurrentPlayerName) {
 
 		Clear ();
 
@@ -98,30 +104,27 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 			_logos [i].SetActive (true);
 		}
 
-		// ボタン制御
-		//   Bet
-		if (_food.CanBet 
-                && _gd.Status == MainModel.Status.Betting
-				&& !ExistMyLogo(names, _gd.CurrentPlayerName)) {
+        // ボタン制御
+        //   Bet
+        if (_food.CanBet
+                && mode == 0
+				&& !ExistMyLogo(names, CurrentPlayerName)) {
 			_betButton.SetActive (true);
 		}
 
 		// Sell
 		if (names.Count > 0 
-                && _gd.Status == MainModel.Status.DecisionMaking
-				&& ExistMyLogo(names, _gd.CurrentPlayerName)) {
+                && mode == 1
+				&& ExistMyLogo(names, CurrentPlayerName)) {
 			_sellButton.SetActive (true);
 		}
 
-		_callBackClose = _funcClose;
-		_callBackBet = _funcBet;
-		_callBackSell = _funcSell;
 		gameObject.SetActive (true);
 	}
 
 	public void OpenEvent(
-		int _eventID,
-		callBackClose _funcClose = null) {
+		int _eventID
+	) {
 
 		Clear ();
 
@@ -135,29 +138,22 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		_agingPointText.text = "";
 		_sellPointText.text = "";
 
-		_callBackClose = _funcClose;
 		gameObject.SetActive (true);
 	}
 
 	public void Close() {
 		gameObject.SetActive (false);
-
-		_callBackClose?.Invoke();
-		_callBackClose = null;
+        onCloseSubject.OnNext(Unit.Default);
 	}
 
 	public void OnClickBet() {
 		gameObject.SetActive (false);
-
-		_callBackBet?.Invoke ();
-		_callBackBet = null;
+        onBetButtonClickSubject.OnNext(Unit.Default);
 	}
 
 	public void OnClickSell() {
 		gameObject.SetActive (false);
-
-		_callBackSell?.Invoke ();
-		_callBackSell = null;
+        onSellButtonClickSubject.OnNext(Unit.Default);
 	}
 
 	private Sprite getLogoSprite(string _pName) {

@@ -28,32 +28,28 @@ public class TempManager : MonoBehaviour
         _foodCardViewList = new List<GameObject>();
     }
 
-    public void CreateFoodCard(FoodCardVM item)
+    public CardViewModel CreateFoodCard()
     {
         int i = _foodCardViewList.Count;
 
-        var foodCardVM = (FoodCardVM)item;
         GameObject cardview = (GameObject)Instantiate(
             cardVMPrefab,
             _bamiris[i],
             Quaternion.identity
         );
-        cardview.GetComponent<CardViewModel>().setViewModel(foodCardVM);
-        Observable.NextFrame().Subscribe(_ =>
-        {
-            foodCardVM.CardView = cardview.GetComponent<CardViewModel>();
-        });
         _foodCardViewList.Add(cardview);
+        return cardview.GetComponent<CardViewModel>();
     }
 
-    public void RemoveFoodCard(FoodCard item)
+    public void RemoveFoodCard(CardViewModel item)
     {
-        var foodCardVM = (FoodCard)item;
-        var removedItem = _foodCardViewList.FirstOrDefault(gb => gb.GetComponent<CardViewModel>().ID == foodCardVM.ID);
+        var foodCardView = (CardViewModel)item;
+        var removedItem = _foodCardViewList.FirstOrDefault(gb => gb.GetComponent<CardViewModel>().ID == foodCardView.ID);
         if (removedItem != null)
         {
             Destroy(removedItem);
             _foodCardViewList.Remove(removedItem);
+            foodCardView = null;
         }
     }
 }

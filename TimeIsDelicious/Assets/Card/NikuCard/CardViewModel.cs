@@ -8,9 +8,6 @@ using UniRx.Triggers;
 // CardのViewという扱いに変更する。ステータス等はVMにもっていきたい
 public class CardViewModel : MonoBehaviour
 {
-
-    private GameDirector _gd;
-
     public GameObject cardPrefab;
     public GameObject poisonEffectPrefab;
 
@@ -43,12 +40,6 @@ public class CardViewModel : MonoBehaviour
         get { return _agingPoint; }
     }
 
-    private FoodCardVM _cardModel;
-    public void setViewModel(FoodCardVM model)
-    {
-        _cardModel = model;
-    }
-
     public void UpdateAgedPont(int? aged)
     {
         var text = aged.HasValue ? aged.Value.ToString() : "✕";
@@ -76,9 +67,6 @@ public class CardViewModel : MonoBehaviour
 
     void Start()
     {
-
-        _gd = GameObject.Find("GameDirector").GetComponent<GameDirector>();
-
         Vector3 deckPosition = GameObject.Find("MeetDeck").transform.position;
         Debug.Log(deckPosition);
 
@@ -138,28 +126,14 @@ public class CardViewModel : MonoBehaviour
         public bool CanBet;
     }
 
-    public void ShowDetail(CardMeta meta)
+    public void SetLogo(string Name)
     {
-        Debug.Log("click card " + meta.Name + " from view:" + state);
-        foreach (var name in meta.NamesWhoBet)
-        {
-            Debug.Log("Bet by " + name);
-        }
+        cv?.SetLogo(Name);
+    }
 
-        cardDetailPanel.GetComponent<CardDetailPanelController>().OpenNiku(
-            meta,
-            null,
-            () =>
-            {
-                cv.SetLogo(_gd.CurrentPlayerName);
-                _cardModel.BetByCurrentPlayer();
-            },
-            () =>
-            {
-                cv.RemoveLogo(_gd.CurrentPlayerName);
-                _cardModel.SellByCurrentPlayer();
-            }
-        );
+    public void RemoveLogo(string Name)
+    {
+        cv?.RemoveLogo(Name);
     }
 
 	// 毒フェクトを消す
