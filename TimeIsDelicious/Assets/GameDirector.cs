@@ -7,8 +7,6 @@ using UniRx;
 // UIからの通知はこのViewが受け取る(動的に表示される「はい」「いいえ」ボタンやシステムボタンなど)
 public class GameDirector : MonoBehaviour
 {
-    public MainModel.Status Status { get; set; }
-
     // Use this for initialization
     void Start()
     {

@@ -34,6 +34,12 @@ public class MainPresenter : MonoBehaviour {
     [SerializeField]
     private PassBtnController passButton;
 
+    [SerializeField]
+    private DiceController diceController;
+
+    [SerializeField]
+    private StatusPanelController statusPanel;
+
     private List<CardViewModel> cardViewList = new List<CardViewModel>();
 
     private MainModel mainModel;
@@ -148,13 +154,13 @@ public class MainPresenter : MonoBehaviour {
       
         mainModel.CurrentStatus.Subscribe(status =>
         {
-            gameDirector.Status = status;
             if (status == MainModel.Status.WaitForRoundStart)
             {
                 StartCoroutine(RoundStart());
             }
 
-
+            statusPanel.gdStatus = status;
+            diceController.IsActive = status == MainModel.Status.CastDice;
         });
 
         mainModel.CurrentPlayer.Subscribe(player =>

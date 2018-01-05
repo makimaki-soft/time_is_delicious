@@ -5521,6 +5521,8 @@ MonoBehaviour:
   infoPanelController: {fileID: 1868384430}
   cardDetailPanel: {fileID: 21673569}
   passButton: {fileID: 1868384431}
+  diceController: {fileID: 1868384427}
+  statusPanel: {fileID: 1868384432}
 --- !u!4 &2064869725
 Transform:
   m_ObjectHideFlags: 0

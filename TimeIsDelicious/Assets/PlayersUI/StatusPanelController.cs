@@ -7,21 +7,21 @@ public class StatusPanelController : MonoBehaviour {
 
 	public GameObject statusTextObj;
 
-	private GameDirector _gd;
 	private Text _statusText;
 
 	// Use this for initialization
 	void Start () {
-		_gd = GameObject.Find("GameDirector").GetComponent<GameDirector>();
 		_statusText = statusTextObj.GetComponent<Text> ();
 	}
+
+    public MainModel.Status gdStatus { get; set; }
 	
 	// Update is called once per frame
 	void Update () {
 
 		string msg = "";
 
-		switch(_gd.Status) {
+        switch(gdStatus) {
 		case MainModel.Status.WaitForRoundStart:
 			msg = "準備中...";
 			break;

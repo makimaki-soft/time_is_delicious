@@ -14,11 +14,8 @@ public class DiceController : MonoBehaviour {
 	private GameObject dice;
 	private bool _stopedDice;
 
-	private GameDirector _gd;
-
 	// Use this for initialization
 	void Start () {
-		_gd = GameObject.Find("GameDirector").GetComponent<GameDirector>();
 		diceBtnObj.SetActive (false);
 	}
 	
@@ -33,12 +30,14 @@ public class DiceController : MonoBehaviour {
 			} 
 		}
 			
-        if (_gd.Status == MainModel.Status.CastDice && _stopedDice) {
+        if (IsActive && _stopedDice) {
 			diceBtnObj.SetActive (true);
 		} else {
 			diceBtnObj.SetActive (false);
 		}
 	}
+
+    public bool IsActive { get; set; }
 
 	// dertermine random rolling force
 	private Vector3 Force() {
