@@ -7,22 +7,6 @@ using UniRx;
 // シングルトンによる共有インスタンスの実現
 public sealed class MainModel
 {
-
-    private static MainModel instance = new MainModel();
-
-    public static void Reset()
-    {
-        instance = new MainModel();
-    }
-
-    public static MainModel Instance
-    {
-        get
-        {
-            return instance;
-        }
-    }
-
     public enum Status
     {
         NotStarted,         // スタート待ち
@@ -55,7 +39,7 @@ public sealed class MainModel
     public IReactiveCollection<FoodCard> CurrentFoodCards { get; private set; }
     public IReactiveCollection<Player> Players { get; private set; }
 
-    private MainModel()
+    public MainModel()
     {
         _timesIsDelicious = new TimeIsDelicious();
 

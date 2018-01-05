@@ -36,7 +36,7 @@ public class MainPresenter : MonoBehaviour {
 
     private List<CardViewModel> cardViewList = new List<CardViewModel>();
 
-    private MainModel _singletonMainModel;
+    private MainModel mainModel;
     public PermanentObj Permanent { get; private set; }
 
 
@@ -46,10 +46,10 @@ public class MainPresenter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        _singletonMainModel = MainModel.Instance;
+        mainModel = new MainModel();
         Permanent = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
 
-        _singletonMainModel.CurrentFoodCards.ObserveAdd().Subscribe(item =>
+        mainModel.CurrentFoodCards.ObserveAdd().Subscribe(item =>
         {
             var foodCardModel = item.Value;
             // var foodCardVM = new FoodCardVM((FoodCard)item.Value);
@@ -86,38 +86,38 @@ public class MainPresenter : MonoBehaviour {
                 meta.NamesWhoBet = foodCardModel.NamesWhoBet;
                 meta.Price = foodCardModel.Price.Value;
 
-                if( _singletonMainModel.CurrentStatus.Value == MainModel.Status.Betting)
+                if( mainModel.CurrentStatus.Value == MainModel.Status.Betting)
                 {
                     var disposable = cardDetailPanel.OnBetButtonClickAsObservable.First().Subscribe(__=> 
                     {
-                        foodCardView.SetLogo(_singletonMainModel.CurrentPlayer.Value.Name);
-                        _singletonMainModel.BetFood(foodCardModel);
+                        foodCardView.SetLogo(mainModel.CurrentPlayer.Value.Name);
+                        mainModel.BetFood(foodCardModel);
                     });
                     cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
                     {
                         disposable.Dispose();
                     });
-                    cardDetailPanel.OpenNiku(meta, 0, _singletonMainModel.CurrentPlayer.Value.Name);
+                    cardDetailPanel.OpenNiku(meta, 0, mainModel.CurrentPlayer.Value.Name);
                 }
-                else if(_singletonMainModel.CurrentStatus.Value == MainModel.Status.DecisionMaking)
+                else if(mainModel.CurrentStatus.Value == MainModel.Status.DecisionMaking)
                 {
                     var disposable = cardDetailPanel.OnSellButtonClickAsObservable.Subscribe(__ =>
                     {
-                        foodCardView.RemoveLogo(_singletonMainModel.CurrentPlayer.Value.Name);
-                        _singletonMainModel.SellFood(foodCardModel);
+                        foodCardView.RemoveLogo(mainModel.CurrentPlayer.Value.Name);
+                        mainModel.SellFood(foodCardModel);
                     });
                     cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
                     {
                         disposable.Dispose();
                     });
-                    cardDetailPanel.OpenNiku(meta, 1, _singletonMainModel.CurrentPlayer.Value.Name);
+                    cardDetailPanel.OpenNiku(meta, 1, mainModel.CurrentPlayer.Value.Name);
                 }
             });
 
             cardViewList.Add(foodCardView);
         });
 
-        _singletonMainModel.CurrentFoodCards.ObserveRemove().Subscribe(item =>
+        mainModel.CurrentFoodCards.ObserveRemove().Subscribe(item =>
         {
             var removedItem = item.Value;
             if (removedItem != null)
@@ -132,7 +132,7 @@ public class MainPresenter : MonoBehaviour {
             }
         });
 
-        _singletonMainModel.CurrentEventCard
+        mainModel.CurrentEventCard
                            .Where(card => card != null)
                            .Subscribe(card=>
         {
@@ -146,7 +146,7 @@ public class MainPresenter : MonoBehaviour {
         });
 
       
-        _singletonMainModel.CurrentStatus.Subscribe(status =>
+        mainModel.CurrentStatus.Subscribe(status =>
         {
             gameDirector.Status = status;
             if (status == MainModel.Status.WaitForRoundStart)
@@ -157,7 +157,7 @@ public class MainPresenter : MonoBehaviour {
 
         });
 
-        _singletonMainModel.CurrentPlayer.Subscribe(player =>
+        mainModel.CurrentPlayer.Subscribe(player =>
         {
             if (player == null)
             {
@@ -171,36 +171,36 @@ public class MainPresenter : MonoBehaviour {
 
             currentPlayerBetsDisposable = player.Bets.ObserveCountChanged(true).Subscribe(cnt =>
             {
-                if (_singletonMainModel.CurrentStatus.Value == MainModel.Status.DecisionMaking)
+                if (mainModel.CurrentStatus.Value == MainModel.Status.DecisionMaking)
                 {
                     // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
                     if (cnt == 0)
                     {
-                        MainModel.Instance.Pass();
+                        mainModel.Pass();
                     }
                 }
             });
 
             // gameDirector.CurrentPlayerName = player.Name;
-            if (_singletonMainModel.CurrentStatus.Value == MainModel.Status.Betting)
+            if (mainModel.CurrentStatus.Value == MainModel.Status.Betting)
             {
                 popupMessageController.Popup(player.Name + "さんは肉を選んでください。");
             }
-            if (_singletonMainModel.CurrentStatus.Value == MainModel.Status.DecisionMaking)
+            if (mainModel.CurrentStatus.Value == MainModel.Status.DecisionMaking)
             {
                 // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
                 if (player.Bets.Count == 0)
                 {
-                    MainModel.Instance.Pass();
+                    mainModel.Pass();
                 }
             }
         });
 
-        _singletonMainModel.TurnCount.Subscribe(cnt => {
+        mainModel.TurnCount.Subscribe(cnt => {
             infoPanelController.UpdateTurn(cnt);
         });
 
-        _singletonMainModel.RoundCount.Subscribe(cnt =>
+        mainModel.RoundCount.Subscribe(cnt =>
         {
             infoPanelController.UpdateRound(cnt);
         });
@@ -209,7 +209,7 @@ public class MainPresenter : MonoBehaviour {
         {
             gameDirector.DiceRoll().Subscribe(dice=>
             {
-                MainModel.Instance.NotifyDiceCasted(); // 判断待ちステータスに進める
+                mainModel.NotifyDiceCasted(); // 判断待ちステータスに進める
                 // 熟成待ち状態になったらダイスの出目で熟成
                 StartCoroutine(ControlTurnCoroutine(dice));
             });
@@ -218,7 +218,7 @@ public class MainPresenter : MonoBehaviour {
         initPlayersUIWindowVM();
 
         int? numOfPlayers = Permanent?.playerNum;
-        _singletonMainModel.StartTimeIsDelicious(numOfPlayers.HasValue ? numOfPlayers.Value : 4);
+        mainModel.StartTimeIsDelicious(numOfPlayers.HasValue ? numOfPlayers.Value : 4);
     }
 	
     private IDisposable currentPlayerBetsDisposable;
@@ -234,7 +234,7 @@ public class MainPresenter : MonoBehaviour {
         // メッセージを表示して、確認されたらStartRound
         popupMessageController.Popup("ラウンド開始します", () =>
         {
-            _singletonMainModel.StartTimeIsDeliciousRound();
+            mainModel.StartTimeIsDeliciousRound();
         });
     }
 
@@ -242,12 +242,12 @@ public class MainPresenter : MonoBehaviour {
     {
         yield return new WaitUntil(() =>
         {
-            return _singletonMainModel.CurrentStatus.Value == MainModel.Status.Event; // イベントカードオープン待ちになったら
+            return mainModel.CurrentStatus.Value == MainModel.Status.Event; // イベントカードオープン待ちになったら
         });
 
         bool EventChecked = false;
         // イベントカードオープン
-        _singletonMainModel.EventCardOpen();
+        mainModel.EventCardOpen();
         eventCardController.DrawEventCard().Subscribe( _ =>
         {
             cardDetailPanel.OnCloseAsObservable.Subscribe(___=>
@@ -255,58 +255,58 @@ public class MainPresenter : MonoBehaviour {
                 gameDirector.DebugDiceClean();
                 EventChecked = true;
             });
-            cardDetailPanel.OpenEvent(_singletonMainModel.CurrentEventCard.Value.ID);
+            cardDetailPanel.OpenEvent(mainModel.CurrentEventCard.Value.ID);
         });
 
         yield return new WaitUntil(() =>
         {
-            return EventChecked && _singletonMainModel.CurrentStatus.Value == MainModel.Status.Aging; // 熟成待ち状態になったら
+            return EventChecked && mainModel.CurrentStatus.Value == MainModel.Status.Aging; // 熟成待ち状態になったら
         });
 
         // 熟成
-        _singletonMainModel.AdvanceTime(dice);
+        mainModel.AdvanceTime(dice);
 
         yield return new WaitUntil(() =>
         {
-            return EventChecked && _singletonMainModel.CurrentStatus.Value == MainModel.Status.NextTurn; // 次のターンへの移行待ち状態になったら
+            return EventChecked && mainModel.CurrentStatus.Value == MainModel.Status.NextTurn; // 次のターンへの移行待ち状態になったら
         });
 
         // ２秒待って
         yield return new WaitForSeconds(2.0f);
-        _singletonMainModel.GoNextTurn(); // 次のターンへ移行
+        mainModel.GoNextTurn(); // 次のターンへ移行
     }
 
     IDisposable passButtonDisposable;
 
     private void initPlayersUIWindowVM()
     {
-        _singletonMainModel.NumberOfPlayers.Subscribe(val =>
+        mainModel.NumberOfPlayers.Subscribe(val =>
         {
             playerWindowController.MaxNumberOfViewList = val;
         });
 
-        _singletonMainModel.CurrentPlayer
+        mainModel.CurrentPlayer
                            .Where((arg) => arg != null)
                            .Subscribe(val =>
                            {
                                 playerWindowController.SetCurrentPlayer(val.ID);
                            });
 
-        _singletonMainModel.CurrentStatus.Subscribe(val =>
+        mainModel.CurrentStatus.Subscribe(val =>
         {
-            if (_singletonMainModel.CurrentStatus.Value == MainModel.Status.GameEnd)
+            if (mainModel.CurrentStatus.Value == MainModel.Status.GameEnd)
             {
                 if (Permanent != null)
                 {
-                    Permanent.playerNum = _singletonMainModel.NumberOfPlayers.Value;
-                    Permanent.players = _singletonMainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
+                    Permanent.playerNum = mainModel.NumberOfPlayers.Value;
+                    Permanent.players = mainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
                 }
                 FadeManager.Instance.LoadScene("GameEnd", 1.0f);
             }
 
             if(val == MainModel.Status.DecisionMaking)
             {
-                passButtonDisposable = passButton.OnClickAsObservable.Subscribe(_ => MainModel.Instance.Pass());
+                passButtonDisposable = passButton.OnClickAsObservable.Subscribe(_ => mainModel.Pass());
                 passButton.SetActive(true);
             }
             else
@@ -317,7 +317,7 @@ public class MainPresenter : MonoBehaviour {
         });
 
         // playerModel と UIの結合
-        _singletonMainModel.Players.ObserveAdd().Subscribe(item =>
+        mainModel.Players.ObserveAdd().Subscribe(item =>
         {
             var playerModel = item.Value;
             var playerUI = playerWindowController.AddPlayer(playerModel.Name, playerModel.ID);
