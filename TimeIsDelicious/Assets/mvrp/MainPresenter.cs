@@ -50,6 +50,63 @@ public class MainPresenter : MonoBehaviour {
     IDisposable PriceDisposable;
     IDisposable RottenDisposable;
 
+    void onStatusChanged(MainModel.Status status)
+    {
+        // Common
+        statusPanel.gdStatus = status;
+        diceController.IsActive = status == MainModel.Status.CastDice;
+        passButtonDisposable?.Dispose();
+        passButton.SetActive(false);
+
+        // Per Status
+        switch(status)
+        {
+            case MainModel.Status.NotStarted:
+                break;
+            case MainModel.Status.WaitForRoundStart:  // ラウンド開始待ち
+                onRoundStart();
+                break;
+            case MainModel.Status.Betting:
+                break;// 賭け中
+            case MainModel.Status.CastDice:           // サイコロ待ち
+                break;
+            case MainModel.Status.DecisionMaking:     // 売る・熟成判断待ち
+                onDecisionMaking();
+                break;
+            case MainModel.Status.Event:              // イベントカードオープン待ち
+                break;
+            case MainModel.Status.Aging:              // 熟成待ち
+                break;
+            case MainModel.Status.NextTurn:           // 次のターンへの移行待ち
+                break;
+            case MainModel.Status.GameEnd:             // ゲーム終了
+                onGameEnd();
+                break;
+        }
+
+    }
+
+    void onRoundStart()
+    {
+        StartCoroutine(RoundStart());
+    }
+
+    void onDecisionMaking()
+    {
+        passButtonDisposable = passButton.OnClickAsObservable.Subscribe(_ => mainModel.Pass());
+        passButton.SetActive(true);
+    }
+
+    void onGameEnd()
+    {
+        if (Permanent != null)
+        {
+            Permanent.playerNum = mainModel.NumberOfPlayers.Value;
+            Permanent.players = mainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
+        }
+        FadeManager.Instance.LoadScene("GameEnd", 1.0f);
+    }
+
 	// Use this for initialization
 	void Start () {
         mainModel = new MainModel();
@@ -151,17 +208,9 @@ public class MainPresenter : MonoBehaviour {
                 card.Weather[RuleManager.EventType.Wind]);
         });
 
-      
-        mainModel.CurrentStatus.Subscribe(status =>
-        {
-            if (status == MainModel.Status.WaitForRoundStart)
-            {
-                StartCoroutine(RoundStart());
-            }
-
-            statusPanel.gdStatus = status;
-            diceController.IsActive = status == MainModel.Status.CastDice;
-        });
+        mainModel.CurrentStatus
+                 .Subscribe(status=>onStatusChanged(status))
+                 .AddTo(this);
 
         mainModel.CurrentPlayer.Subscribe(player =>
         {
@@ -297,30 +346,6 @@ public class MainPresenter : MonoBehaviour {
                            {
                                 playerWindowController.SetCurrentPlayer(val.ID);
                            });
-
-        mainModel.CurrentStatus.Subscribe(val =>
-        {
-            if (mainModel.CurrentStatus.Value == MainModel.Status.GameEnd)
-            {
-                if (Permanent != null)
-                {
-                    Permanent.playerNum = mainModel.NumberOfPlayers.Value;
-                    Permanent.players = mainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
-                }
-                FadeManager.Instance.LoadScene("GameEnd", 1.0f);
-            }
-
-            if(val == MainModel.Status.DecisionMaking)
-            {
-                passButtonDisposable = passButton.OnClickAsObservable.Subscribe(_ => mainModel.Pass());
-                passButton.SetActive(true);
-            }
-            else
-            {
-                passButtonDisposable?.Dispose();
-                passButton.SetActive(false);
-            }
-        });
 
         // playerModel と UIの結合
         mainModel.Players.ObserveAdd().Subscribe(item =>
