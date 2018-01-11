@@ -42,6 +42,8 @@ public class MainPresenter : MonoBehaviour {
 
     private List<CardViewModel> cardViewList = new List<CardViewModel>();
 
+    private CompositeDisposable phaseRangedDisposable = new CompositeDisposable();
+
     private MainModel mainModel;
     public PermanentObj Permanent { get; private set; }
 
@@ -53,10 +55,11 @@ public class MainPresenter : MonoBehaviour {
 
     void onStatusChanged(MainModel.Status status)
     {
+        phaseRangedDisposable.Clear();
+
         // Common
         statusPanel.gdStatus = status;
-        diceController.IsActive = status == MainModel.Status.CastDice;
-        passButtonDisposable?.Dispose();
+        diceController.IsActive = false;
         passButton.SetActive(false);
 
         // Per Status
@@ -73,6 +76,7 @@ public class MainPresenter : MonoBehaviour {
             case MainModel.Status.Betting:
                 break;// 賭け中
             case MainModel.Status.CastDice:           // サイコロ待ち
+                onCastDice();
                 break;
             case MainModel.Status.DecisionMaking:     // 売る・熟成判断待ち
                 onDecisionMaking();
@@ -87,7 +91,6 @@ public class MainPresenter : MonoBehaviour {
                 onGameEnd();
                 break;
         }
-
     }
 
     void onGameStart()
@@ -118,9 +121,27 @@ public class MainPresenter : MonoBehaviour {
         StartCoroutine(RoundStart());
     }
 
+    void onCastDice()
+    {
+        diceController.IsActive = true;
+                      
+        gameDirector.OnDiceButtonClickAsObservable.Subscribe(_ =>
+        {
+            gameDirector.DiceRoll().First().Subscribe(dice =>
+            {
+                mainModel.NotifyDiceCasted(); // 判断待ちステータスに進める
+                // 熟成待ち状態になったらダイスの出目で熟成
+                StartCoroutine(ControlTurnCoroutine(dice));
+            });
+        }).AddTo(phaseRangedDisposable);
+    }
+
     void onDecisionMaking()
     {
-        passButtonDisposable = passButton.OnClickAsObservable.Subscribe(_ => mainModel.Pass());
+        passButton.OnClickAsObservable
+                  .Subscribe(_ => mainModel.Pass())
+                  .AddTo(phaseRangedDisposable);
+        
         passButton.SetActive(true);
     }
 
@@ -289,15 +310,7 @@ public class MainPresenter : MonoBehaviour {
             infoPanelController.UpdateRound(cnt);
         });
 
-        gameDirector.OnDiceButtonClickAsObservable.Subscribe(_=>
-        {
-            gameDirector.DiceRoll().Subscribe(dice=>
-            {
-                mainModel.NotifyDiceCasted(); // 判断待ちステータスに進める
-                // 熟成待ち状態になったらダイスの出目で熟成
-                StartCoroutine(ControlTurnCoroutine(dice));
-            });
-        });
+
 
         initPlayersUIWindowVM();
 
@@ -358,8 +371,6 @@ public class MainPresenter : MonoBehaviour {
         yield return new WaitForSeconds(2.0f);
         mainModel.GoNextTurn(); // 次のターンへ移行
     }
-
-    IDisposable passButtonDisposable;
 
     // Player Model <-> View 初期化
     private void onPlayer(Player player)
