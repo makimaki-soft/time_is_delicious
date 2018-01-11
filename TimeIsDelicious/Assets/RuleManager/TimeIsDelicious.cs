@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace RuleManager
 {
-    class TimeIsDelicious
+    public class TimeIsDelicious
     {
         static string[] Names = new string[4] { "鈴木精肉店", "マザーミート", "王丸農場" , "Chouette"};
 

@@ -45,6 +45,7 @@ public class MainPresenter : MonoBehaviour {
     private MainModel mainModel;
     public PermanentObj Permanent { get; private set; }
 
+    private TimeIsDelicious ruleManager;
 
     IDisposable AgedDisposable;
     IDisposable PriceDisposable;
@@ -62,6 +63,9 @@ public class MainPresenter : MonoBehaviour {
         switch(status)
         {
             case MainModel.Status.NotStarted:
+                break;
+            case MainModel.Status.Init:
+                onGameStart();
                 break;
             case MainModel.Status.WaitForRoundStart:  // ラウンド開始待ち
                 onRoundStart();
@@ -84,6 +88,29 @@ public class MainPresenter : MonoBehaviour {
                 break;
         }
 
+    }
+
+    void onGameStart()
+    {
+        int? numOfPlayers = Permanent?.playerNum;
+        int nop = numOfPlayers.HasValue ? numOfPlayers.Value : 4;
+
+        playerWindowController.MaxNumberOfViewList = nop;
+
+        ruleManager.Start(nop);
+
+        foreach (var player in ruleManager.Players)
+        {
+            onPlayer(player);
+        }
+
+        // debug //
+        foreach (var player in ruleManager.Players)
+        {
+            mainModel.Players.Add(player);
+        }
+
+        mainModel.StartTimeIsDelicious(nop);
     }
 
     void onRoundStart()
@@ -111,6 +138,8 @@ public class MainPresenter : MonoBehaviour {
 	void Start () {
         mainModel = new MainModel();
         Permanent = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
+
+        ruleManager = mainModel._timesIsDelicious;
 
         mainModel.CurrentFoodCards.ObserveAdd().Subscribe(item =>
         {
@@ -272,8 +301,7 @@ public class MainPresenter : MonoBehaviour {
 
         initPlayersUIWindowVM();
 
-        int? numOfPlayers = Permanent?.playerNum;
-        mainModel.StartTimeIsDelicious(numOfPlayers.HasValue ? numOfPlayers.Value : 4);
+        mainModel.Start();
     }
 	
     private IDisposable currentPlayerBetsDisposable;
@@ -333,37 +361,35 @@ public class MainPresenter : MonoBehaviour {
 
     IDisposable passButtonDisposable;
 
+    // Player Model <-> View 初期化
+    private void onPlayer(Player player)
+    {
+        // UI追加
+        var playerUI = playerWindowController.AddPlayer(player.Name, player.ID);
+
+        player.Bets.ObserveRemove().Subscribe((bet) =>
+        {
+            var card = bet.Value;
+            if (card.Rotten.Value)
+            {
+                // 腐ったことにより手放した
+                playerUI.Sadden();
+            }
+        }).AddTo(playerUI);
+
+        // 得点 <-> UI
+        player.TotalEarned
+              .Subscribe(earned => playerUI.UpdateTotalEarned(earned))
+              .AddTo(playerUI);
+    }
+
     private void initPlayersUIWindowVM()
     {
-        mainModel.NumberOfPlayers.Subscribe(val =>
-        {
-            playerWindowController.MaxNumberOfViewList = val;
-        });
-
         mainModel.CurrentPlayer
                            .Where((arg) => arg != null)
                            .Subscribe(val =>
                            {
                                 playerWindowController.SetCurrentPlayer(val.ID);
                            });
-
-        // playerModel と UIの結合
-        mainModel.Players.ObserveAdd().Subscribe(item =>
-        {
-            var playerModel = item.Value;
-            var playerUI = playerWindowController.AddPlayer(playerModel.Name, playerModel.ID);
-
-            playerModel.Bets.ObserveRemove().Subscribe((bet) =>
-            {
-                var card = bet.Value;
-                if (card.Rotten.Value)
-                {
-                    // 腐ったことにより手放した
-                    playerUI.Sadden();
-                }
-            });
-
-            playerModel.TotalEarned.Subscribe(earned => playerUI.UpdateTotalEarned(earned));
-        });
     }
 }

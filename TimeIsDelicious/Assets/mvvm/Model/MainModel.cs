@@ -10,6 +10,7 @@ public sealed class MainModel
     public enum Status
     {
         NotStarted,         // スタート待ち
+        Init,
         WaitForRoundStart,  // ラウンド開始待ち
         Betting,            // 賭け中
         // ループ
@@ -28,7 +29,7 @@ public sealed class MainModel
     // ラウンド数
     public IReactiveProperty<int> RoundCount { get; private set; }
 
-    private TimeIsDelicious _timesIsDelicious;
+    public TimeIsDelicious _timesIsDelicious;
 
     public IReactiveProperty<Status> CurrentStatus { get; private set; }
 
@@ -53,18 +54,18 @@ public sealed class MainModel
         this.CurrentStatus = new ReactiveProperty<Status>(Status.NotStarted);
     }
 
+    // 
+    public void Start()
+    {
+        CurrentStatus.Value = Status.Init;
+    }
+
     // ゲームスタート
     public void StartTimeIsDelicious(int numOfPlayers)
     {
         this.TurnCount.Value = 0;
         this.RoundCount.Value = 0;
         this.NumberOfPlayers.Value = numOfPlayers;
-
-        _timesIsDelicious.Start(numOfPlayers);
-        foreach (var player in _timesIsDelicious.Players)
-        {
-            this.Players.Add(player);
-        }
         CurrentStatus.Value = Status.WaitForRoundStart; // ラウンド開始待ちに移行
     }
 
