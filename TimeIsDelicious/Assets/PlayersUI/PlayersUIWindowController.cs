@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -17,13 +16,17 @@ public class PlayersUIWindowController : MonoBehaviour {
     public int MaxNumberOfViewList { get; set; }
     private int _viewComplete = 0;
 
-    public bool UIRready { get; private set; }
+    public IObservable<Unit> OnGUIAsObservable
+    {
+        get { return onGUISubject; }
+    }
+    private Subject<UniRx.Unit> onGUISubject = new Subject<Unit>();
+
 
     private Dictionary<string, int> NameUIMap;
 
     // Use this for initialization
     void Start () {
-        UIRready = false;
         _playerViewList = new List<GameObject>();
         numberOfPlayers = 0;
         MaxNumberOfViewList = 0;
@@ -73,7 +76,7 @@ public class PlayersUIWindowController : MonoBehaviour {
             if (++_viewComplete == MaxNumberOfViewList)
             {
                 // 人数分UIの描画ができたら準備完了
-                UIRready = true;
+                onGUISubject.OnNext(Unit.Default);
             }
         });
 
