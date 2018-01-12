@@ -8,6 +8,23 @@ using RuleManager;
 using System.Linq;
 using System;
 
+static class ModelViewExtension
+{
+    public static CardViewModel.CardMeta ToCardMeta(this FoodCard foodCardModel)
+    {
+        var meta = new CardViewModel.CardMeta();
+        meta.Aged = foodCardModel.Aged.Value;
+        meta.CanBet = foodCardModel.CanBet;
+        meta.Description = foodCardModel.Description;
+        meta.ID = foodCardModel.ID;
+        meta.MaxAged = foodCardModel.MaxAged;
+        meta.Name = foodCardModel.Name;
+        meta.NamesWhoBet = foodCardModel.NamesWhoBet;
+        meta.Price = foodCardModel.Price.Value;
+        return meta;
+    }
+}
+
 public class MainPresenter : MonoBehaviour {
     
     [SerializeField]
@@ -40,7 +57,7 @@ public class MainPresenter : MonoBehaviour {
     [SerializeField]
     private StatusPanelController statusPanel;
 
-    private List<CardViewModel> cardViewList = new List<CardViewModel>();
+    private Dictionary<Guid,CardViewModel> cardViewList = new Dictionary<Guid, CardViewModel>();
 
     // Disposable Control
     private CompositeDisposable phaseRangedDisposable = new CompositeDisposable();
@@ -52,6 +69,7 @@ public class MainPresenter : MonoBehaviour {
     public PermanentObj Permanent { get; private set; }
 
     private TimeIsDelicious ruleManager;
+
     List<FoodCard> foodCardModelList = new List<FoodCard>();
 
     void onStatusChanged(MainModel.Status status)
@@ -134,7 +152,7 @@ public class MainPresenter : MonoBehaviour {
         // 前ラウンドの破棄処理
         foreach(var foodCard in foodCardModelList)
         {
-            var removeView = cardViewList.FirstOrDefault(view => view.ID == foodCard.ID);
+            var removeView = cardViewList.FirstOrDefault(view => view.Value.ID == foodCard.ID).Value;
             if (removeView != null)
             {
                 foodCard.Reset();
@@ -151,12 +169,19 @@ public class MainPresenter : MonoBehaviour {
             // メッセージを表示して、確認されたらStartRound
             popupMessageController.Popup("ラウンド開始します", () =>
             {
-                mainModel.StartTimeIsDeliciousRound();
-                foreach (var foodCard in mainModel.CurrentFoodCards)
+                mainModel.CurrentFoodCards.Clear();
+
+                foreach (var foodCard in ruleManager.StartRound())
                 {
                     onFoodCard(foodCard);
                     foodCardModelList.Add(foodCard);
+
+                    // Debug
+                    mainModel.CurrentFoodCards.Add(foodCard);
+                    //
                 }
+
+                mainModel.StartTimeIsDeliciousRound();
             });
         }).AddTo(phaseRangedDisposable);
     }
@@ -169,8 +194,27 @@ public class MainPresenter : MonoBehaviour {
         {
             playerWindowController.SetCurrentPlayer(player.ID);
             popupMessageController.Popup(player.Name + "さんは肉を選んでください。");
-        })
-                 .AddTo(phaseRangedDisposable);
+        }).AddTo(phaseRangedDisposable);
+
+        foreach( var foodCardModel in foodCardModelList )
+        {
+            var foodCardView = cardViewList[foodCardModel.GUID];
+
+            foodCardView.OnClickAsObservable.Subscribe(_ =>
+            {
+                var disposable = cardDetailPanel.OnBetButtonClickAsObservable.First().Subscribe(__ =>
+                {
+                    foodCardView.SetLogo(mainModel.CurrentPlayer.Value.Name);
+                    mainModel.BetFood(foodCardModel);
+                });
+                cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
+                {
+                    disposable.Dispose();
+                });
+                cardDetailPanel.OpenNiku(foodCardModel.ToCardMeta(), 0, mainModel.CurrentPlayer.Value.Name);
+
+            }).AddTo(phaseRangedDisposable);
+        }
     }
 
     int dice;
@@ -212,7 +256,23 @@ public class MainPresenter : MonoBehaviour {
             }).AddTo(playerRangedDisposable);
         }).AddTo(phaseRangedDisposable);
 
-
+        foreach (var foodCardModel in foodCardModelList)
+        {
+            var foodCardView = cardViewList[foodCardModel.GUID];
+            foodCardView.OnClickAsObservable.Subscribe(_ =>
+            {
+                var disposable = cardDetailPanel.OnSellButtonClickAsObservable.Subscribe(__ =>
+                {
+                    foodCardView.RemoveLogo(mainModel.CurrentPlayer.Value.Name);
+                    mainModel.SellFood(foodCardModel);
+                });
+                cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
+                {
+                    disposable.Dispose();
+                });
+                cardDetailPanel.OpenNiku(foodCardModel.ToCardMeta(), 1, mainModel.CurrentPlayer.Value.Name);
+            }).AddTo(phaseRangedDisposable);
+        }
     }
 
     void onEvent()
@@ -310,12 +370,10 @@ public class MainPresenter : MonoBehaviour {
               .AddTo(playerUI);
     }
 
-    private void onFoodCard(FoodCard foodCard)
+    private void onFoodCard(FoodCard foodCardModel)
     {
-        var foodCardModel = foodCard;
-        // var foodCardVM = new FoodCardVM((FoodCard)item.Value);
         var foodCardView = foodCardFactory.CreateFoodCard();
-        // foodCardView はGameObjectのDestroyとともに不正値になる。なんとかしないと
+
         Observable.NextFrame().Subscribe(_ =>
         {
             foodCardView.SetID(foodCardModel.ID);
@@ -337,47 +395,7 @@ public class MainPresenter : MonoBehaviour {
             foodCardView.RunPoisonEffect();
         }).AddTo(foodCardView);
 
-        foodCardView.OnClickAsObservable.Subscribe(_ =>
-        {
-            var meta = new CardViewModel.CardMeta();
-            meta.Aged = foodCardModel.Aged.Value;
-            meta.CanBet = foodCardModel.CanBet;
-            meta.Description = foodCardModel.Description;
-            meta.ID = foodCardModel.ID;
-            meta.MaxAged = foodCardModel.MaxAged;
-            meta.Name = foodCardModel.Name;
-            meta.NamesWhoBet = foodCardModel.NamesWhoBet;
-            meta.Price = foodCardModel.Price.Value;
-
-            if (mainModel.CurrentStatus.Value == MainModel.Status.Betting)
-            {
-                var disposable = cardDetailPanel.OnBetButtonClickAsObservable.First().Subscribe(__ =>
-                {
-                    foodCardView.SetLogo(mainModel.CurrentPlayer.Value.Name);
-                    mainModel.BetFood(foodCardModel);
-                });
-                cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
-                {
-                    disposable.Dispose();
-                });
-                cardDetailPanel.OpenNiku(meta, 0, mainModel.CurrentPlayer.Value.Name);
-            }
-            else if (mainModel.CurrentStatus.Value == MainModel.Status.DecisionMaking)
-            {
-                var disposable = cardDetailPanel.OnSellButtonClickAsObservable.Subscribe(__ =>
-                {
-                    foodCardView.RemoveLogo(mainModel.CurrentPlayer.Value.Name);
-                    mainModel.SellFood(foodCardModel);
-                });
-                cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
-                {
-                    disposable.Dispose();
-                });
-                cardDetailPanel.OpenNiku(meta, 1, mainModel.CurrentPlayer.Value.Name);
-            }
-        });
-
-        cardViewList.Add(foodCardView);
+        cardViewList[foodCardModel.GUID] = foodCardView;
     }
 
     private void OnDestroy()

@@ -77,17 +77,17 @@ public sealed class MainModel
         // CurrentStatus = Status.RoundInit;
         _currentPlayerIndex = 0;
         _betTurnCount = 0;
-        var cards = _timesIsDelicious.StartRound();
+        //var cards = _timesIsDelicious.StartRound();
 
         // リセット
-        while(CurrentFoodCards.Count>0)
-        {
-            CurrentFoodCards.RemoveAt(0);
-        }
-        foreach(var card in cards)
-        {
-            CurrentFoodCards.Add(card);
-        }
+        //while(CurrentFoodCards.Count>0)
+        //{
+        //    CurrentFoodCards.RemoveAt(0);
+        //}
+        //foreach(var card in cards)
+        //{
+        //    CurrentFoodCards.Add(card);
+        //}
         RoundCount.Value += 1;
         TurnCount.Value = 1;
         CurrentStatus.Value = Status.Betting; // 賭けフェイズに移行
