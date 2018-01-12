@@ -112,7 +112,7 @@ namespace TIDJsonReader
                         }
                         else
                         {
-                            Debug.Log("Unknown charactor type");
+                            MakiMaki.Logger.Debug("Unknown charactor type");
                         }
                         rmCharactorTable.threshold = charactor.threshold;
                         rmCharactorTable.scale = charactor.scale;

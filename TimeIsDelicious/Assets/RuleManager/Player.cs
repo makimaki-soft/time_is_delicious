@@ -37,7 +37,7 @@ namespace RuleManager
         {
             if( !Bets.Any(n => n.GUID == card.GUID) )
             {
-                UnityEngine.Debug.Log("持ってないカードは売れません。");
+                MakiMaki.Logger.Debug("持ってないカードは売れません。");
                 return;
             }
             TotalEarned.Value += card.Price.Value;

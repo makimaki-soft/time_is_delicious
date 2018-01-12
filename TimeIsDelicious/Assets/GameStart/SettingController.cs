@@ -37,7 +37,7 @@ public class SettingController : MonoBehaviour {
 	public void Select(GameObject obj) {
 
 		// player1は必須
-		Debug.Log("Name is " + obj.name);
+		MakiMaki.Logger.Debug("Name is " + obj.name);
 		switch (obj.name)
 		{
 		case "player2":
@@ -80,7 +80,7 @@ public class SettingController : MonoBehaviour {
 	// 気持ち悪けどcolorで判定
 	private bool selected(Color color) {
 		if (color == _selected) {
-			Debug.Log ("selected");
+			MakiMaki.Logger.Debug ("selected");
 			return true;
 		} else  {
 			return false;

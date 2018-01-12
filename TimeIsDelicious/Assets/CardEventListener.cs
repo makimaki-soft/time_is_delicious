@@ -19,7 +19,7 @@ public class CardEventListener : MonoBehaviour {
 
 	
 	public void ShowDetail() {
-		Debug.Log("show detail");
+		MakiMaki.Logger.Debug("show detail");
 		StartCoroutine(ShowDetailAnimation());
 	}
 

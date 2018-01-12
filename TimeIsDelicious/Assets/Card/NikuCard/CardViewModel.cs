@@ -68,11 +68,11 @@ public class CardViewModel : MonoBehaviour
     void Start()
     {
         Vector3 deckPosition = GameObject.Find("MeetDeck").transform.position;
-        Debug.Log(deckPosition);
+        MakiMaki.Logger.Debug(deckPosition);
 
         GameObject canvas = GameObject.Find("UICanvas");
         cardDetailPanel = canvas.transform.Find("CardDetailPanel").gameObject;
-        Debug.Log("start: " + cardDetailPanel);
+        MakiMaki.Logger.Debug("start: " + cardDetailPanel);
 
         // 肉カードを生成
         card = (GameObject)Instantiate(
@@ -143,7 +143,7 @@ public class CardViewModel : MonoBehaviour
 	}
 
 	void OnDestroy(){
-		Debug.Log ("!!! D E S T O R O Y !!!");
+		MakiMaki.Logger.Debug ("!!! D E S T O R O Y !!!");
         onClickSubject.OnCompleted();
 		Destroy (card);
 	}

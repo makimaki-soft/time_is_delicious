@@ -25,7 +25,7 @@ public class EventCardViewModel : MonoBehaviour {
 	void Start () {
 
 		Vector3 deckPosition = GameObject.Find ("EventDeck").transform.position;
-		Debug.Log (deckPosition);
+		MakiMaki.Logger.Debug (deckPosition);
 
 		// カードを生成
 		card = (GameObject)Instantiate(
@@ -48,7 +48,7 @@ public class EventCardViewModel : MonoBehaviour {
 	}
 
 	public void OnClick() {
-		Debug.Log("click card from view:" + state);
+		MakiMaki.Logger.Debug("click card from view:" + state);
 
 		if (state == Status.Index) {
 			cv.ShowDetail ();
@@ -60,7 +60,7 @@ public class EventCardViewModel : MonoBehaviour {
 	}
 
 	void OnDestroy() {
-		Debug.Log("on destory");
+		MakiMaki.Logger.Debug("on destory");
 		Destroy (card);
 	}
 }

@@ -61,7 +61,7 @@ public class PlayerUIController : MonoBehaviour {
 
 	// スコアを1づつ増やす
 	private IEnumerator CountUp(int newScore) {
-		Debug.Log ("count up: " + newScore);
+		MakiMaki.Logger.Debug ("count up: " + newScore);
 
 		int oldScore = int.Parse (scoreText.GetComponent<Text> ().text);
 

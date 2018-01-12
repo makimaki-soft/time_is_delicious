@@ -29,7 +29,7 @@ public class GameDirector : MonoBehaviour
     private void DebugStopHandler()
     {
         var dice = Dice.Value("");
-        Debug.Log("Stop Dice: " + Dice.Value(""));
+        MakiMaki.Logger.Debug("Stop Dice: " + Dice.Value(""));
         onDice.OnNext(dice);
     }
 

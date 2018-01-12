@@ -62,8 +62,8 @@ public class EventCardController : MonoBehaviour {
 			Quaternion.identity
 		);
 		currentEventCard = cardvm;
-        Debug.Log("現在のイベント/気温" + _eventValues.Temperature + "/湿度" + _eventValues.Humidity + "/風" + _eventValues.Wind);
-		Debug.Log ("id: " + _eventValues.ID + "Name" + _eventValues.Name);
+        MakiMaki.Logger.Debug("現在のイベント/気温" + _eventValues.Temperature + "/湿度" + _eventValues.Humidity + "/風" + _eventValues.Wind);
+		MakiMaki.Logger.Debug ("id: " + _eventValues.ID + "Name" + _eventValues.Name);
 		// StartCoroutine (OpenEventDetail ());
 
         var hotStream = Observable.FromCoroutine(OpenEventDetail).Publish().RefCount();

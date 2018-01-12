@@ -43,7 +43,7 @@ public class GameEndController : MonoBehaviour {
 
 		int i = 0;
 		foreach(var player in players) {
-			Debug.Log ("ID:" + player.ID.ToString () + ", Point:" + player.TotalEarned.ToString ());
+			MakiMaki.Logger.Debug ("ID:" + player.ID.ToString () + ", Point:" + player.TotalEarned.ToString ());
 			panels [i].SetActive (true);
 			scores [i].GetComponent<Text> ().text = player.TotalEarned.ToString () + "G";
 			thumbnails [i].GetComponent<Image> ().sprite =
@@ -63,7 +63,7 @@ public class GameEndController : MonoBehaviour {
 	}
 
 	public void ReturnToStart () {
-		Debug.Log ("return to start");
+		MakiMaki.Logger.Debug ("return to start");
         Application.LoadLevel ("Title");
 	}
 }

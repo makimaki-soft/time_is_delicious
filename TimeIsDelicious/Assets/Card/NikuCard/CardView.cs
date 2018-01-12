@@ -39,11 +39,11 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 
 	public void OnPointerClick(PointerEventData data) {
 		// クリック時の処理
-		Debug.Log("click card");
+		MakiMaki.Logger.Debug("click card");
 		if (onClick != null) {
 			onClick ();
 		} else {
-			Debug.Log ("not set onClick");
+			MakiMaki.Logger.Debug ("not set onClick");
 		}
 	}
 
@@ -153,7 +153,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler {
 	public void RemoveLogo(string _pName) {
 		Texture tex1 = logo1.GetComponent<Renderer> ().material.GetTexture ("_MainTex");
 		Texture tex2 = logo2.GetComponent<Renderer> ().material.GetTexture ("_MainTex");
-		Debug.Log (tex1.name);
+		MakiMaki.Logger.Debug (tex1.name);
 		if (getLogoTexture(_pName).name == tex1.name) {
 			logo1.SetActive (false);
 		}

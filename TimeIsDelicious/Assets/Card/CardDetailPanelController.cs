@@ -96,7 +96,7 @@ public class CardDetailPanelController : MonoBehaviour, IPointerClickHandler {
 		_sellPointText.text = _food.Price.ToString () + "G";
 
 		IReadOnlyList<string> names = _food.NamesWhoBet;
-		Debug.Log ("Betting players is " + names.Count);
+        MakiMaki.Logger.Debug("Betting players is " + names.Count);
 
 		// ロゴ
 		for (int i = 0; i < names.Count; i++) {

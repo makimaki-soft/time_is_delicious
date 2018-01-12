@@ -72,7 +72,7 @@ public class PlayersUIWindowController : MonoBehaviour {
         UI.GetComponent<PlayerUIController>().PlayerID = ID;
         UI.GetComponent<PlayerUIController>().ChangePosision(ID).Subscribe(_=>
         {
-            Debug.Log("UI View " + ID.ToString() + " Finish");
+            MakiMaki.Logger.Debug("UI View " + ID.ToString() + " Finish");
             if (++_viewComplete == MaxNumberOfViewList)
             {
                 // 人数分UIの描画ができたら準備完了

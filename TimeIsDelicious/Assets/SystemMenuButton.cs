@@ -36,7 +36,7 @@ public class SystemMenuButton : MonoBehaviour {
         var newStateHash = animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).fullPathHash;
         if(newStateHash != currentStateHash)
         {
-            Debug.Log("State Changed");
+            MakiMaki.Logger.Debug("State Changed");
             if(newStateHash == animationStateHash["WaitingState"])
             {
                 exitButton.SetActive(true);
@@ -52,11 +52,11 @@ public class SystemMenuButton : MonoBehaviour {
 
     public void OnClick()
     {
-        Debug.Log("Clicked/SystemMenuButton");
+        MakiMaki.Logger.Debug("Clicked/SystemMenuButton");
         var info = animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
         if (info.fullPathHash == animationStateHash["WaitingState"])
         {
-            Debug.Log("Clicked/OnWaitingState");
+            MakiMaki.Logger.Debug("Clicked/OnWaitingState");
             //gameDirector.Command("Clicked/OnWaitingState");
         }
     }

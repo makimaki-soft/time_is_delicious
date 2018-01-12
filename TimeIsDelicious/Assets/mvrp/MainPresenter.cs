@@ -81,6 +81,8 @@ public class MainPresenter : MonoBehaviour {
         diceController.IsActive = false;
         passButton.SetActive(false);
 
+        MakiMaki.Logger.Info("OnPhase : " + status.ToString());
+
         // Per Status
         switch(status)
         {

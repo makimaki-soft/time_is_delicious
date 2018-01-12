@@ -18,11 +18,11 @@ public class EventCardView : MonoBehaviour, IPointerClickHandler {
 
 	public void OnPointerClick(PointerEventData data) {
 		// クリック時の処理
-		Debug.Log("click card");
+		MakiMaki.Logger.Debug("click card");
 		if (onClick != null) {
 			onClick ();
 		} else {
-			Debug.Log ("not set onClick");
+			MakiMaki.Logger.Debug ("not set onClick");
 		}
 	}
 

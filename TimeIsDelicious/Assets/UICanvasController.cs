@@ -22,19 +22,19 @@ public class UICanvasController : MonoBehaviour
 
     public void OnExitButtonClick()
     {
-        Debug.Log("OnExitButtonClick");
+        MakiMaki.Logger.Debug("OnExitButtonClick");
         exitConfirmPanel.SetActive(true);
     }
 
     public void OnExitConfirmOKButtonClick()
     {
-        Debug.Log("OnExitConfirmOKButtonClick");
+        MakiMaki.Logger.Debug("OnExitConfirmOKButtonClick");
 		Application.LoadLevel ("Title");
     }
 
     public void OnExitConfirmNGButtonClick()
     {
-        Debug.Log("OnExitConfirmNGButtonClick");
+        MakiMaki.Logger.Debug("OnExitConfirmNGButtonClick");
         exitConfirmPanel.SetActive(false);
     }
 }

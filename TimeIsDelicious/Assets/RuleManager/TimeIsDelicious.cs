@@ -66,7 +66,7 @@ namespace RuleManager
             _foodCardList = _foodCardList.Skip(CardsPerRound).ToList();
             _wasteCards.AddRange(_foodCardOnRound); // 退避用
 
-            UnityEngine.Debug.Log("肉カード山札 残り枚数:" + _foodCardList.Count);
+            MakiMaki.Logger.Debug("肉カード山札 残り枚数:" + _foodCardList.Count);
             return _foodCardOnRound;
         }
 
