@@ -3,8 +3,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using UniRx;
+using System.Collections;
+using UnityEngine;
 
-// シングルトンによる共有インスタンスの実現
 public sealed class MainModel
 {
     public enum Status
@@ -54,10 +55,96 @@ public sealed class MainModel
         this.CurrentStatus = new ReactiveProperty<Status>(Status.NotStarted);
     }
 
+    private bool init = false;
+    private bool init2 = false;
+    private bool diceCasted = false;
+    private bool passed = false;
+    private bool eventOpened = false;
+    private bool agedDone = false;
+
+    private IEnumerator PhaseControl()
+    {
+        init = false;
+        CurrentStatus.Value = Status.Init;
+
+        yield return new WaitUntil(() => init);
+
+        for (RoundCount.Value = 1; RoundCount.Value <= 3; RoundCount.Value++)
+        {
+            MakiMaki.Logger.Info("PhaseCoroutine : WaitForRoundStart");
+            init2 = false;
+            CurrentStatus.Value = Status.WaitForRoundStart; // ラウンド開始待ちに移行
+
+            yield return new WaitUntil(() => init2);
+
+            CurrentStatus.Value = Status.Betting; // 賭けフェイズに移行
+
+            for (int bets = 0; bets < 2; bets++)
+            {
+                MakiMaki.Logger.Info("Bets : " + (bets + 1).ToString() + "個め");
+                for (int i = 0; i < NumberOfPlayers.Value; i++)
+                {
+                    CurrentPlayer.Value = Players[i];    // 最初のプレイヤーに設定
+                    yield return new WaitUntil(() => CurrentPlayer.Value.Bets.Count == (bets + 1));
+                }
+            }
+
+            for (TurnCount.Value = 1; TurnCount.Value <= 10; TurnCount.Value++)
+            {
+
+                diceCasted = false;
+                CurrentStatus.Value = Status.CastDice; // ダイスに移行
+
+                yield return new WaitUntil(() => diceCasted);
+
+                CurrentStatus.Value = Status.DecisionMaking; // 売るかどうかの選択に移行
+
+                for (int i = 0; i < NumberOfPlayers.Value; i++)
+                {
+                    passed = false;
+                    CurrentPlayer.Value = Players[i];    // 最初のプレイヤーに設定
+                    yield return new WaitUntil(() => CurrentPlayer.Value.Bets.Count == 0 || passed);
+                }
+
+                eventOpened = false;
+                CurrentStatus.Value = Status.Event; // イベントに移行
+
+                yield return new WaitUntil(() => eventOpened);
+
+                agedDone = false;
+                CurrentStatus.Value = Status.Aging; // 熟成待ちに移行
+
+                yield return new WaitUntil(() => agedDone);
+                yield return new WaitForSeconds(2);
+
+                var NotRotten = CurrentFoodCards.Where(fc => fc.Rotten.Value == false)
+                                                 .Select(fc => fc.GUID)
+                                                 .Count();
+                var StillHave = Players.Where(player => player.Bets.Count > 0)
+                                   .Select(player => player.GUID)
+                                   .Count();
+
+                if (NotRotten == 0 || StillHave == 0)
+                {
+                    break;
+                }
+            }
+
+            // 次のラウンドに行く前に、持っているカードはすべて売る
+            // この処理は、「ラウンド修了」などのステータスを作ってPresenter側でやるべき
+            foreach (var player in Players)
+            {
+                player.SellAll();
+            }
+        }
+
+        CurrentStatus.Value = Status.GameEnd;
+    }
+
     // 
     public void Start()
     {
-        CurrentStatus.Value = Status.Init;
+        Observable.FromCoroutine(PhaseControl).Subscribe();
     }
 
     // ゲームスタート
@@ -66,72 +153,25 @@ public sealed class MainModel
         this.TurnCount.Value = 0;
         this.RoundCount.Value = 0;
         this.NumberOfPlayers.Value = numOfPlayers;
-        CurrentStatus.Value = Status.WaitForRoundStart; // ラウンド開始待ちに移行
+
+
+        init = true;
     }
 
     // ラウンドを開始
-    private int _currentPlayerIndex;
-    private int _betTurnCount;
     public void StartTimeIsDeliciousRound()
     {
-        // CurrentStatus = Status.RoundInit;
-        _currentPlayerIndex = 0;
-        _betTurnCount = 0;
-        //var cards = _timesIsDelicious.StartRound();
-
-        // リセット
-        //while(CurrentFoodCards.Count>0)
-        //{
-        //    CurrentFoodCards.RemoveAt(0);
-        //}
-        //foreach(var card in cards)
-        //{
-        //    CurrentFoodCards.Add(card);
-        //}
-        RoundCount.Value += 1;
-        TurnCount.Value = 1;
-        CurrentStatus.Value = Status.Betting; // 賭けフェイズに移行
-        CurrentPlayer.Value = Players[_currentPlayerIndex];    // 最初のプレイヤーに設定
-
-        CurrentEventCard.Value = _timesIsDelicious.OpenEventCard(); // Debug用
+        init2 = true;
     }
 
     public void AdvanceTime(int i)
     {
         _timesIsDelicious.AdvanceTime(i, CurrentEventCard.Value);
-        CurrentStatus.Value = Status.NextTurn;
+        agedDone = true;
     }
 
     public void GoNextTurn()
     {
-        var NotRotten = CurrentFoodCards.Where(fc => fc.Rotten.Value == false)
-                                         .Select(fc => fc.GUID)
-                                         .Count();
-        var StillHave = Players.Where(player => player.Bets.Count > 0)
-                           .Select(player => player.GUID)
-                           .Count();
-
-        // すべてのカードが腐るか、すべてのカードが売り払われたら次のラウンドに進む
-        if (TurnCount.Value == 10 || NotRotten == 0 || StillHave == 0 )
-        {
-            TurnCount.Value = 0;
-            _currentPlayerIndex = 0;
-
-            // 次のラウンドに行く前に、持っているカードはすべて売る
-            foreach(var player in Players)
-            {
-                player.SellAll();
-            }
-
-            CurrentStatus.Value = RoundCount.Value == 3 ? Status.GameEnd : Status.WaitForRoundStart; // ラウンド開始待ちor終了に移行
-        }
-        else
-        {
-            TurnCount.Value += 1;
-            CurrentStatus.Value = Status.CastDice;
-            _currentPlayerIndex = 0;
-            CurrentPlayer.Value = Players[_currentPlayerIndex];    // 最初のプレイヤーに設定
-        }
     }
 
     public void SellFood(FoodCard card)
@@ -142,19 +182,7 @@ public sealed class MainModel
 
     public void Pass()
     {
-        _currentPlayerIndex++;
-        if (_currentPlayerIndex >= NumberOfPlayers.Value)
-        {
-            _currentPlayerIndex = 0;
-            _betTurnCount++;
-            if (_betTurnCount >= 2)
-            {
-                CurrentStatus.Value = Status.Event; // イベントに移行
-                _currentPlayerIndex = 0;
-                return;
-            }
-        }
-        CurrentPlayer.Value = Players[_currentPlayerIndex];    // 次のプレイヤーに設定
+        passed = true;
     }
 
     // カレントプレイヤーがカードを選択する
@@ -162,34 +190,17 @@ public sealed class MainModel
     {
         var targetCard = (from foodcard in CurrentFoodCards where foodcard.GUID == card.GUID select foodcard).Single();
         CurrentPlayer.Value.Bet(targetCard);
-
-        _currentPlayerIndex++;
-        if(_currentPlayerIndex >= NumberOfPlayers.Value)
-        {
-            _currentPlayerIndex = 0;
-            _betTurnCount++;
-            if(_betTurnCount >= 2)
-            {
-                CurrentStatus.Value = Status.CastDice; // ダイスに移行
-                _currentPlayerIndex = 0;
-                CurrentPlayer.Value = Players[_currentPlayerIndex];    // 最初のプレイヤーに設定
-                return;
-            }
-        }
-        CurrentPlayer.Value = Players[_currentPlayerIndex];    // 次のプレイヤーに設定
     }
 
     public void EventCardOpen()
     {
         CurrentEventCard.Value = _timesIsDelicious.OpenEventCard();
-        CurrentStatus.Value = Status.Aging; // 熟成待ちに移行
+        eventOpened = true;
     }
 
     // さいころを振ったことを通知(ステータスを変えるだけ)
     public void NotifyDiceCasted()
     {
-        CurrentStatus.Value = Status.DecisionMaking; // 売るかどうかの選択に移行
-        _currentPlayerIndex = 0;
-        CurrentPlayer.Value = Players[_currentPlayerIndex];
+        diceCasted = true;
     }
 }

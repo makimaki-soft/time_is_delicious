@@ -146,7 +146,12 @@ public class MainPresenter : MonoBehaviour {
             mainModel.Players.Add(player);
         }
 
-        mainModel.StartTimeIsDelicious(nop);
+        playerWindowController.OnGUIAsObservable
+                              .First()
+                              .Subscribe(_ =>
+                              {
+                                  mainModel.StartTimeIsDelicious(nop);
+                              });
     }
 
     void onRoundStart()
@@ -164,28 +169,23 @@ public class MainPresenter : MonoBehaviour {
         foodCardModelList.Clear();
 
         // 今ラウンドの初期化処理
-        playerWindowController.OnGUIAsObservable
-                              .First()
-                              .Subscribe(_ =>
+        // メッセージを表示して、確認されたらStartRound
+        popupMessageController.Popup("ラウンド開始します", () =>
         {
-            // メッセージを表示して、確認されたらStartRound
-            popupMessageController.Popup("ラウンド開始します", () =>
+            mainModel.CurrentFoodCards.Clear();
+
+            foreach (var foodCard in ruleManager.StartRound())
             {
-                mainModel.CurrentFoodCards.Clear();
+                onFoodCard(foodCard);
+                foodCardModelList.Add(foodCard);
 
-                foreach (var foodCard in ruleManager.StartRound())
-                {
-                    onFoodCard(foodCard);
-                    foodCardModelList.Add(foodCard);
+                // Debug
+                mainModel.CurrentFoodCards.Add(foodCard);
+                //
+            }
 
-                    // Debug
-                    mainModel.CurrentFoodCards.Add(foodCard);
-                    //
-                }
-
-                mainModel.StartTimeIsDeliciousRound();
-            });
-        }).AddTo(phaseRangedDisposable);
+            mainModel.StartTimeIsDeliciousRound();
+        });
     }
 
     void onBetting()
