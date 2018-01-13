@@ -330,7 +330,7 @@ public class MainPresenter : MonoBehaviour {
     {
         if (Permanent != null)
         {
-            Permanent.playerNum = mainModel.NumberOfPlayers.Value;
+            Permanent.playerNum = mainModel.NumberOfPlayers;
             Permanent.players = mainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
         }
         FadeManager.Instance.LoadScene("GameEnd", 1.0f);

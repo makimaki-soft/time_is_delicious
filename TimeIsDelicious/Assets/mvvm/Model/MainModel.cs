@@ -5,6 +5,7 @@ using System.Linq;
 using UniRx;
 using System.Collections;
 using UnityEngine;
+using System.Collections.Generic;
 
 public sealed class MainModel
 {
@@ -35,11 +36,11 @@ public sealed class MainModel
     public IReactiveProperty<Status> CurrentStatus { get; private set; }
 
     public IReactiveProperty<Player> CurrentPlayer { get; private set; }
-    // 強制イベント通知
-    public IReactiveProperty<int> NumberOfPlayers { get; private set; }
     public IReactiveProperty<EventCard> CurrentEventCard { get; private set; }
     public IReactiveCollection<FoodCard> CurrentFoodCards { get; private set; }
-    public IReactiveCollection<Player> Players { get; private set; }
+
+    public int NumberOfPlayers { get; private set; }
+    public IList<Player> Players { get; private set; }
 
     public MainModel()
     {
@@ -47,74 +48,83 @@ public sealed class MainModel
 
         this.TurnCount = new ReactiveProperty<int>(0);
         this.RoundCount = new ReactiveProperty<int>(0);
-        this.NumberOfPlayers = new ReactiveProperty<int>(0);
+        this.NumberOfPlayers = 0;
         this.CurrentFoodCards = new ReactiveCollection<FoodCard>();
         this.CurrentEventCard = new ReactiveProperty<EventCard>();
         this.CurrentPlayer = new ReactiveProperty<Player>();
-        this.Players = new ReactiveCollection<Player>();
+        this.Players = new List<Player>();
         this.CurrentStatus = new ReactiveProperty<Status>(Status.NotStarted);
     }
 
-    private bool init = false;
-    private bool init2 = false;
-    private bool diceCasted = false;
-    private bool passed = false;
-    private bool eventOpened = false;
-    private bool agedDone = false;
+    private Subject<UniRx.Unit> onInitialized = new Subject<Unit>();
+    private Subject<UniRx.Unit> onRoundInitialized = new Subject<Unit>();
+    private Subject<UniRx.Unit> onDiceCasted = new Subject<Unit>();
+    private Subject<UniRx.Unit> onAged = new Subject<Unit>();
+    private Subject<UniRx.Unit> onPassed = new Subject<Unit>();
 
     private IEnumerator PhaseControl()
     {
-        init = false;
+        TurnCount.Value = 0;
+        RoundCount.Value = 0;
+
         CurrentStatus.Value = Status.Init;
 
-        yield return new WaitUntil(() => init);
+        // UIの初期化完了を待ち合わせ
+        yield return onInitialized.First().ToYieldInstruction();
 
+        // ラウンド開始
         for (RoundCount.Value = 1; RoundCount.Value <= 3; RoundCount.Value++)
         {
             MakiMaki.Logger.Info("PhaseCoroutine : WaitForRoundStart");
-            init2 = false;
+
             CurrentStatus.Value = Status.WaitForRoundStart; // ラウンド開始待ちに移行
 
-            yield return new WaitUntil(() => init2);
+            // UIの初期化完了を待ち合わせ
+            yield return onRoundInitialized.First().ToYieldInstruction();
 
             CurrentStatus.Value = Status.Betting; // 賭けフェイズに移行
 
             for (int bets = 0; bets < 2; bets++)
             {
                 MakiMaki.Logger.Info("Bets : " + (bets + 1).ToString() + "個め");
-                for (int i = 0; i < NumberOfPlayers.Value; i++)
+                for (int i = 0; i < NumberOfPlayers; i++)
                 {
                     CurrentPlayer.Value = Players[i];    // 最初のプレイヤーに設定
-                    yield return new WaitUntil(() => CurrentPlayer.Value.Bets.Count == (bets + 1));
+
+                    yield return CurrentPlayer.Value.Bets.ObserveCountChanged(true)
+                                              .Where(cnt => cnt == (bets + 1))
+                                              .First()
+                                              .ToYieldInstruction();
                 }
             }
 
             for (TurnCount.Value = 1; TurnCount.Value <= 10; TurnCount.Value++)
             {
-
-                diceCasted = false;
                 CurrentStatus.Value = Status.CastDice; // ダイスに移行
 
-                yield return new WaitUntil(() => diceCasted);
+                // DiceCastedの通知を待ち受け
+                yield return onDiceCasted.First().ToYieldInstruction();
 
                 CurrentStatus.Value = Status.DecisionMaking; // 売るかどうかの選択に移行
 
-                for (int i = 0; i < NumberOfPlayers.Value; i++)
+                for (int i = 0; i < NumberOfPlayers; i++)
                 {
-                    passed = false;
                     CurrentPlayer.Value = Players[i];    // 最初のプレイヤーに設定
-                    yield return new WaitUntil(() => CurrentPlayer.Value.Bets.Count == 0 || passed);
+
+                    yield return Observable.Amb(
+                        CurrentPlayer.Value.Bets.ObserveCountChanged(true).Where(cnt => cnt == 0).AsUnitObservable(),
+                        onPassed
+                    ).First().ToYieldInstruction();
                 }
 
-                eventOpened = false;
                 CurrentStatus.Value = Status.Event; // イベントに移行
 
-                yield return new WaitUntil(() => eventOpened);
+                // EventCardの更新を待ち合わせ
+                yield return CurrentEventCard.First().ToYieldInstruction();
 
-                agedDone = false;
                 CurrentStatus.Value = Status.Aging; // 熟成待ちに移行
 
-                yield return new WaitUntil(() => agedDone);
+                yield return onAged.First().ToYieldInstruction();
                 yield return new WaitForSeconds(2);
 
                 var NotRotten = CurrentFoodCards.Where(fc => fc.Rotten.Value == false)
@@ -150,24 +160,20 @@ public sealed class MainModel
     // ゲームスタート
     public void StartTimeIsDelicious(int numOfPlayers)
     {
-        this.TurnCount.Value = 0;
-        this.RoundCount.Value = 0;
-        this.NumberOfPlayers.Value = numOfPlayers;
-
-
-        init = true;
+        this.NumberOfPlayers = numOfPlayers;
+        onInitialized.OnNext(Unit.Default);
     }
 
     // ラウンドを開始
     public void StartTimeIsDeliciousRound()
     {
-        init2 = true;
+        onRoundInitialized.OnNext(Unit.Default);
     }
 
     public void AdvanceTime(int i)
     {
         _timesIsDelicious.AdvanceTime(i, CurrentEventCard.Value);
-        agedDone = true;
+        onAged.OnNext(Unit.Default);
     }
 
     public void GoNextTurn()
@@ -182,7 +188,7 @@ public sealed class MainModel
 
     public void Pass()
     {
-        passed = true;
+        onPassed.OnNext(Unit.Default);
     }
 
     // カレントプレイヤーがカードを選択する
@@ -195,12 +201,11 @@ public sealed class MainModel
     public void EventCardOpen()
     {
         CurrentEventCard.Value = _timesIsDelicious.OpenEventCard();
-        eventOpened = true;
     }
 
     // さいころを振ったことを通知(ステータスを変えるだけ)
     public void NotifyDiceCasted()
     {
-        diceCasted = true;
+        onDiceCasted.OnNext(Unit.Default);
     }
 }
