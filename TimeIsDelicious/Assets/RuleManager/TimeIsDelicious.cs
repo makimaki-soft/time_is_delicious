@@ -20,9 +20,9 @@ namespace RuleManager
         private int _numEventCardOpend;
 
         private List<Player> _players;
-        public List<Player> Players
+        public IReadOnlyList<Player> Players
         {
-            get { return _players; }
+            get { return _players.AsReadOnly(); }
         }
 
         public int NumberOfPlayers
@@ -45,12 +45,13 @@ namespace RuleManager
             
         }
 
-        public void Start(int numOfPlayers)
+        public IEnumerable<Player> CreatePlayers(int numOfPlayers)
         {
             for (int i = 0; i < numOfPlayers; i++)
             {
                 _players.Add(new Player(i, Names[i]));
             }
+            return _players;
         }
 
         private readonly int CardsPerRound = 5;
@@ -65,9 +66,6 @@ namespace RuleManager
                 }
 
                 _wasteCards.Shuffle();
-
-                //_wasteCards[0].PropertyChanged = null;
-
                 _foodCardList.AddRange(_wasteCards);
                 _wasteCards.RemoveRange(0, _wasteCards.Count);
             }
@@ -82,6 +80,7 @@ namespace RuleManager
 
         public void AdvanceTime(int time, EventCard eventCard)
         {
+            MakiMaki.Logger.Info("Aging(" + time.ToString() + ")");
             foreach(var card in _foodCardOnRound)
             {
                 card.Aging(time, eventCard);

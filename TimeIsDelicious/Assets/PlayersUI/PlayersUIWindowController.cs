@@ -13,7 +13,6 @@ public class PlayersUIWindowController : MonoBehaviour {
 
     private int numberOfPlayers;
     private List<GameObject> _playerViewList; // 子Viewのリスト
-    public int MaxNumberOfViewList { get; set; }
     private int _viewComplete = 0;
 
     public IObservable<Unit> OnGUIAsObservable
@@ -29,8 +28,7 @@ public class PlayersUIWindowController : MonoBehaviour {
     void Start () {
         _playerViewList = new List<GameObject>();
         numberOfPlayers = 0;
-        MaxNumberOfViewList = 0;
-
+       
         // プレイヤー名とプレハブの紐づけ
         NameUIMap = new Dictionary<string, int>();
         NameUIMap["Chouette"] = 0;
@@ -72,12 +70,8 @@ public class PlayersUIWindowController : MonoBehaviour {
         UI.GetComponent<PlayerUIController>().PlayerID = ID;
         UI.GetComponent<PlayerUIController>().ChangePosision(ID).Subscribe(_=>
         {
-            MakiMaki.Logger.Debug("UI View " + ID.ToString() + " Finish");
-            if (++_viewComplete == MaxNumberOfViewList)
-            {
-                // 人数分UIの描画ができたら準備完了
-                onGUISubject.OnNext(Unit.Default);
-            }
+            MakiMaki.Logger.Info("UI View " + ID.ToString() + " Finish");
+            onGUISubject.OnNext(Unit.Default);
         });
 
         _playerViewList.Add(UI);

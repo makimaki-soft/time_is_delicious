@@ -122,15 +122,11 @@ public class MainPresenter : MonoBehaviour {
     {
         int numOfPlayers = Permanent ? Permanent.playerNum : 4;
 
-        playerWindowController.MaxNumberOfViewList = numOfPlayers;
-
-        ruleManager.Start(numOfPlayers);
-
-        foreach (var player in ruleManager.Players)
-        {
-            onPlayer(player);
-        }
-
+        // Player生成
+        ruleManager.CreatePlayers(numOfPlayers)
+                   .Select(player => onPlayer(player))
+                   .ToArray(); // Queryを強制評価するためToArrayを呼ぶ。
+        
         mainModel.TurnCount
                  .Subscribe(cnt => infoPanelController.UpdateTurn(cnt))
                  .AddTo(infoPanelController);
@@ -140,11 +136,9 @@ public class MainPresenter : MonoBehaviour {
                  .AddTo(infoPanelController);
 
         playerWindowController.OnGUIAsObservable
+                              .Skip(numOfPlayers - 1)
                               .First()
-                              .Subscribe(_ =>
-                              {
-                                mainModel.StartTimeIsDelicious(numOfPlayers);
-                              });
+                              .Subscribe(_ => mainModel.StartTimeIsDelicious());
     }
 
     void onRoundStart()
@@ -165,16 +159,10 @@ public class MainPresenter : MonoBehaviour {
         // メッセージを表示して、確認されたらStartRound
         popupMessageController.Popup("ラウンド開始します", () =>
         {
-            // mainModel.CurrentFoodCards.Clear();
-
             foreach (var foodCard in ruleManager.StartRound())
             {
                 onFoodCard(foodCard);
                 foodCardModelList.Add(foodCard);
-
-                // Debug
-                // mainModel.CurrentFoodCards.Add(foodCard);
-                //
             }
 
             mainModel.NotifyRoundInitialized();
@@ -284,13 +272,13 @@ public class MainPresenter : MonoBehaviour {
             card.Weather[RuleManager.EventType.Wind]
         );
 
-        eventCardController.DrawEventCard().Subscribe(_ =>
+        eventCardController.DrawEventCard().First().Subscribe(_ =>
         {
-            cardDetailPanel.OnCloseAsObservable.Subscribe(___ =>
+            cardDetailPanel.OnCloseAsObservable.First().Subscribe(___ =>
             {
                 gameDirector.DebugDiceClean();
                 ruleManager.AdvanceTime(this.dice, card);
-                mainModel.NotifyAged(-1);
+                mainModel.NotifyAged();
             });
             cardDetailPanel.OpenEvent(card.ID);
             mainModel.NotifyEventCardChecked();
@@ -319,10 +307,11 @@ public class MainPresenter : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        mainModel = new MainModel();
-        Permanent = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
 
-        ruleManager = mainModel._timesIsDelicious;
+        ruleManager = new TimeIsDelicious();
+        mainModel = new MainModel(ruleManager);
+
+        Permanent = GameObject.Find("PermanentObj")?.GetComponent<PermanentObj>();
 
         mainModel.CurrentStatus
                  .Subscribe(status=>onStatusChanged(status))
@@ -332,8 +321,9 @@ public class MainPresenter : MonoBehaviour {
     }
 
     // Player Model <-> View 初期化
-    private void onPlayer(Player player)
+    private PlayerUIController onPlayer(Player player)
     {
+        MakiMaki.Logger.Info("onPlayer");
         // UI追加
         var playerUI = playerWindowController.AddPlayer(player.Name, player.ID);
 
@@ -351,6 +341,8 @@ public class MainPresenter : MonoBehaviour {
         player.TotalEarned
               .Subscribe(earned => playerUI.UpdateTotalEarned(earned))
               .AddTo(playerUI);
+
+        return playerUI;
     }
 
     private void onFoodCard(FoodCard foodCardModel)

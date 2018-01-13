@@ -25,39 +25,35 @@ public sealed class MainModel
         GameEnd             // ゲーム終了
     }
 
-    // ターン数
     public IReactiveProperty<int> TurnCount { get; private set; }
-
-    // ラウンド数
     public IReactiveProperty<int> RoundCount { get; private set; }
-
-    public TimeIsDelicious _timesIsDelicious;
-
     public IReactiveProperty<Status> CurrentStatus { get; private set; }
-
     public IReactiveProperty<Player> CurrentPlayer { get; private set; }
 
-    public int NumberOfPlayers { get; private set; }
+    private Subject<Unit> onInitialized = new Subject<Unit>();
+    private Subject<Unit> onRoundInitialized = new Subject<Unit>();
+    private Subject<Unit> onDiceCasted = new Subject<Unit>();
+    private Subject<Unit> onEventOpened = new Subject<Unit>();
+    private Subject<Unit> onAged = new Subject<Unit>();
+    private Subject<Unit> onPassed = new Subject<Unit>();
 
-    public MainModel()
+    TimeIsDelicious timesIsDelicious;
+    int NumberOfPlayers
     {
-        _timesIsDelicious = new TimeIsDelicious();
-
-        this.TurnCount = new ReactiveProperty<int>(0);
-        this.RoundCount = new ReactiveProperty<int>(0);
-        this.NumberOfPlayers = 0;
-        this.CurrentPlayer = new ReactiveProperty<Player>();
-        this.CurrentStatus = new ReactiveProperty<Status>(Status.NotStarted);
+        get { return timesIsDelicious.NumberOfPlayers; }
     }
 
-    private Subject<UniRx.Unit> onInitialized = new Subject<Unit>();
-    private Subject<UniRx.Unit> onRoundInitialized = new Subject<Unit>();
-    private Subject<UniRx.Unit> onDiceCasted = new Subject<Unit>();
-    private Subject<UniRx.Unit> onEventOpened = new Subject<Unit>();
-    private Subject<UniRx.Unit> onAged = new Subject<Unit>();
-    private Subject<UniRx.Unit> onPassed = new Subject<Unit>();
+    public MainModel(TimeIsDelicious ruleManager)
+    {
+        timesIsDelicious = ruleManager;
 
-    private IEnumerator PhaseControl()
+        TurnCount = new ReactiveProperty<int>(0);
+        RoundCount = new ReactiveProperty<int>(0);
+        CurrentPlayer = new ReactiveProperty<Player>();
+        CurrentStatus = new ReactiveProperty<Status>(Status.NotStarted);
+    }
+
+    IEnumerator PhaseControl()
     {
         TurnCount.Value = 0;
         RoundCount.Value = 0;
@@ -84,7 +80,7 @@ public sealed class MainModel
                 MakiMaki.Logger.Info("Bets : " + (bets + 1).ToString() + "個め");
                 for (int i = 0; i < NumberOfPlayers; i++)
                 {
-                    CurrentPlayer.Value = _timesIsDelicious.Players[i];    // 最初のプレイヤーに設定
+                    CurrentPlayer.Value = timesIsDelicious.Players[i];    // 最初のプレイヤーに設定
 
                     yield return CurrentPlayer.Value.Bets.ObserveCountChanged(true)
                                               .Where(cnt => cnt == (bets + 1))
@@ -104,7 +100,7 @@ public sealed class MainModel
 
                 for (int i = 0; i < NumberOfPlayers; i++)
                 {
-                    CurrentPlayer.Value = _timesIsDelicious.Players[i];    // 最初のプレイヤーに設定
+                    CurrentPlayer.Value = timesIsDelicious.Players[i];    // 最初のプレイヤーに設定
 
                     yield return Observable.Amb(
                         CurrentPlayer.Value.Bets.ObserveCountChanged(true).Where(cnt => cnt == 0).AsUnitObservable(),
@@ -122,10 +118,10 @@ public sealed class MainModel
                 yield return onAged.First().ToYieldInstruction();
                 yield return new WaitForSeconds(2);
 
-                var NotRotten = _timesIsDelicious.RoundFoodCard.Where(fc => fc.Rotten.Value == false)
+                var NotRotten = timesIsDelicious.RoundFoodCard.Where(fc => fc.Rotten.Value == false)
                                                  .Select(fc => fc.GUID)
                                                  .Count();
-                var StillHave = _timesIsDelicious.Players.Where(player => player.Bets.Count > 0)
+                var StillHave = timesIsDelicious.Players.Where(player => player.Bets.Count > 0)
                                    .Select(player => player.GUID)
                                    .Count();
 
@@ -137,7 +133,7 @@ public sealed class MainModel
 
             // 次のラウンドに行く前に、持っているカードはすべて売る
             // この処理は、「ラウンド修了」などのステータスを作ってPresenter側でやるべき
-            foreach (var player in _timesIsDelicious.Players)
+            foreach (var player in timesIsDelicious.Players)
             {
                 player.SellAll();
             }
@@ -153,9 +149,8 @@ public sealed class MainModel
     }
 
     // ゲームスタート
-    public void StartTimeIsDelicious(int numOfPlayers)
+    public void StartTimeIsDelicious()
     {
-        this.NumberOfPlayers = numOfPlayers;
         onInitialized.OnNext(Unit.Default);
     }
 
@@ -165,7 +160,7 @@ public sealed class MainModel
         onRoundInitialized.OnNext(Unit.Default);
     }
 
-    public void NotifyAged(int i)
+    public void NotifyAged()
     {
         onAged.OnNext(Unit.Default);
     }
