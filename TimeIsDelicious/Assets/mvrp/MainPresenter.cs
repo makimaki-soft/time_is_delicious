@@ -120,12 +120,11 @@ public class MainPresenter : MonoBehaviour {
 
     void onGameStart()
     {
-        int? numOfPlayers = Permanent?.playerNum;
-        int nop = numOfPlayers.HasValue ? numOfPlayers.Value : 4;
+        int numOfPlayers = Permanent ? Permanent.playerNum : 4;
 
-        playerWindowController.MaxNumberOfViewList = nop;
+        playerWindowController.MaxNumberOfViewList = numOfPlayers;
 
-        ruleManager.Start(nop);
+        ruleManager.Start(numOfPlayers);
 
         foreach (var player in ruleManager.Players)
         {
@@ -140,17 +139,11 @@ public class MainPresenter : MonoBehaviour {
                  .Subscribe(cnt => infoPanelController.UpdateRound(cnt))
                  .AddTo(infoPanelController);
 
-        // debug //
-        foreach (var player in ruleManager.Players)
-        {
-            mainModel.Players.Add(player);
-        }
-
         playerWindowController.OnGUIAsObservable
                               .First()
                               .Subscribe(_ =>
                               {
-                                  mainModel.StartTimeIsDelicious(nop);
+                                mainModel.StartTimeIsDelicious(numOfPlayers);
                               });
     }
 
@@ -172,7 +165,7 @@ public class MainPresenter : MonoBehaviour {
         // メッセージを表示して、確認されたらStartRound
         popupMessageController.Popup("ラウンド開始します", () =>
         {
-            mainModel.CurrentFoodCards.Clear();
+            // mainModel.CurrentFoodCards.Clear();
 
             foreach (var foodCard in ruleManager.StartRound())
             {
@@ -180,11 +173,11 @@ public class MainPresenter : MonoBehaviour {
                 foodCardModelList.Add(foodCard);
 
                 // Debug
-                mainModel.CurrentFoodCards.Add(foodCard);
+                // mainModel.CurrentFoodCards.Add(foodCard);
                 //
             }
 
-            mainModel.StartTimeIsDeliciousRound();
+            mainModel.NotifyRoundInitialized();
         });
     }
 
@@ -207,7 +200,7 @@ public class MainPresenter : MonoBehaviour {
                 var disposable = cardDetailPanel.OnBetButtonClickAsObservable.First().Subscribe(__ =>
                 {
                     foodCardView.SetLogo(mainModel.CurrentPlayer.Value.Name);
-                    mainModel.BetFood(foodCardModel);
+                    mainModel.CurrentPlayer.Value.Bet(foodCardModel);
                 });
                 cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
                 {
@@ -266,7 +259,7 @@ public class MainPresenter : MonoBehaviour {
                 var disposable = cardDetailPanel.OnSellButtonClickAsObservable.Subscribe(__ =>
                 {
                     foodCardView.RemoveLogo(mainModel.CurrentPlayer.Value.Name);
-                    mainModel.SellFood(foodCardModel);
+                    mainModel.CurrentPlayer.Value.Sell(foodCardModel);
                 });
                 cardDetailPanel.OnCloseAsObservable.First().Subscribe(_s =>
                 {
@@ -279,10 +272,9 @@ public class MainPresenter : MonoBehaviour {
 
     void onEvent()
     {
-        EventChecked = false;
         // イベントカードオープン
-        mainModel.EventCardOpen();
-        var card = mainModel.CurrentEventCard.Value;
+        var card = ruleManager.OpenEventCard();
+
         eventCardController.SetEventValues(
             card.ID,
             card.Name,
@@ -297,41 +289,30 @@ public class MainPresenter : MonoBehaviour {
             cardDetailPanel.OnCloseAsObservable.Subscribe(___ =>
             {
                 gameDirector.DebugDiceClean();
-                EventChecked = true;
+                ruleManager.AdvanceTime(this.dice, card);
+                mainModel.NotifyAged(-1);
             });
-            cardDetailPanel.OpenEvent(mainModel.CurrentEventCard.Value.ID);
+            cardDetailPanel.OpenEvent(card.ID);
+            mainModel.NotifyEventCardChecked();
         });
-    }
-
-    bool EventChecked;
-    private IEnumerator ControlTurnCoroutine(int dicenum)
-    {
-        yield return new WaitUntil(()=> EventChecked);
-        // 熟成
-        mainModel.AdvanceTime(dicenum);
     }
 
     void onAging()
     {
-        // 熟成待ち状態になったらダイスの出目で熟成
-        StartCoroutine(ControlTurnCoroutine(this.dice));
+        // 熟成処理はEvent Phaseに統合
     }
 
     void onNextTurn()
     {
-        // ２秒後に次のターンへ移行
-        Observable.Timer(TimeSpan.FromSeconds(2.0)).Subscribe(_ =>
-        {
-            mainModel.GoNextTurn();
-        }).AddTo(this);
+        // 次ターンへの移行は自動で行う
     }
 
     void onGameEnd()
     {
         if (Permanent != null)
         {
-            Permanent.playerNum = mainModel.NumberOfPlayers;
-            Permanent.players = mainModel.Players.Select(player => player.ToPlayerScore()).ToArray();
+            Permanent.playerNum = ruleManager.NumberOfPlayers;
+            Permanent.players = ruleManager.Players.Select(player => player.ToPlayerScore()).ToArray();
         }
         FadeManager.Instance.LoadScene("GameEnd", 1.0f);
     }

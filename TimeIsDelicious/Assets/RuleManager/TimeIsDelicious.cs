@@ -11,6 +11,11 @@ namespace RuleManager
         private List<FoodCard> _foodCardOnRound;
         private List<FoodCard> _wasteCards;
 
+        public IReadOnlyList<FoodCard> RoundFoodCard
+        {
+            get { return _foodCardOnRound.AsReadOnly(); }
+        }
+
         private List<EventCard> _eventCardList;
         private int _numEventCardOpend;
 
@@ -18,6 +23,11 @@ namespace RuleManager
         public List<Player> Players
         {
             get { return _players; }
+        }
+
+        public int NumberOfPlayers
+        {
+            get { return Players.Count; }
         }
 
         public TimeIsDelicious ()
