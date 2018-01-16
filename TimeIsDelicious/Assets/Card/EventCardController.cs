@@ -15,7 +15,7 @@ public class EventCardController : MonoBehaviour {
 	public delegate void callBackClose();
 	private callBackClose _callBackClose;
 
-    class EventValues
+    public class EventValues
     {
         public int ID;
         public string Name;
@@ -24,23 +24,11 @@ public class EventCardController : MonoBehaviour {
         public int Humidity;
         public int Wind;
     };
-    EventValues _eventValues;
 
     // Use this for initialization
     void Start () {
 		GameObject canvas = GameObject.Find ("UICanvas");
 		cardDetailPanel = canvas.transform.Find ("CardDetailPanel").gameObject;
-        _eventValues = new EventValues();
-    }
-
-    public void SetEventValues(int ID, string Name, string Description, int Temperature, int Humidity,int Wind )
-    {
-        _eventValues.ID = ID;
-        _eventValues.Name = Name;
-        _eventValues.Description = Description;
-        _eventValues.Temperature = Temperature;
-        _eventValues.Humidity = Humidity;
-        _eventValues.Wind = Wind;
     }
 
     // Update is called once per frame
@@ -49,7 +37,7 @@ public class EventCardController : MonoBehaviour {
 	}
 
 	// todo event card vm をもらう？
-    public IObservable<Unit> DrawEventCard() {
+    public IObservable<Unit> DrawEventCard(EventValues eventValues) {
         
 		if (currentEventCard != null) {
 			// to do ちょっとまってから破棄
@@ -62,8 +50,8 @@ public class EventCardController : MonoBehaviour {
 			Quaternion.identity
 		);
 		currentEventCard = cardvm;
-        MakiMaki.Logger.Debug("現在のイベント/気温" + _eventValues.Temperature + "/湿度" + _eventValues.Humidity + "/風" + _eventValues.Wind);
-		MakiMaki.Logger.Debug ("id: " + _eventValues.ID + "Name" + _eventValues.Name);
+        MakiMaki.Logger.Debug("現在のイベント/気温" + eventValues.Temperature + "/湿度" + eventValues.Humidity + "/風" + eventValues.Wind);
+        MakiMaki.Logger.Debug ("id: " + eventValues.ID + "Name" + eventValues.Name);
 		// StartCoroutine (OpenEventDetail ());
 
         var hotStream = Observable.FromCoroutine(OpenEventDetail).Publish().RefCount();

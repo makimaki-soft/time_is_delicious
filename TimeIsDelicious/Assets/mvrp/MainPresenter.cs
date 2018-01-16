@@ -23,6 +23,19 @@ static class ModelViewExtension
         meta.Price = foodCardModel.Price.Value;
         return meta;
     }
+
+    public static EventCardController.EventValues ToEventMeta(this EventCard eventCard)
+    {
+        var meta = new EventCardController.EventValues();
+        meta.ID = eventCard.ID;
+        meta.Name = eventCard.Name;
+        meta.Description = eventCard.Description;
+        meta.Temperature = eventCard.Weather[RuleManager.EventType.Temperature];
+        meta.Humidity = eventCard.Weather[RuleManager.EventType.Humid];
+        meta.Wind = eventCard.Weather[RuleManager.EventType.Wind];
+        return meta;
+    }
+
 }
 
 public class MainPresenter : MonoBehaviour {
@@ -263,26 +276,18 @@ public class MainPresenter : MonoBehaviour {
         // イベントカードオープン
         var card = ruleManager.OpenEventCard();
 
-        eventCardController.SetEventValues(
-            card.ID,
-            card.Name,
-            card.Description,
-            card.Weather[RuleManager.EventType.Temperature],
-            card.Weather[RuleManager.EventType.Humid],
-            card.Weather[RuleManager.EventType.Wind]
-        );
-
-        eventCardController.DrawEventCard().First().Subscribe(_ =>
-        {
-            cardDetailPanel.OnCloseAsObservable.First().Subscribe(___ =>
-            {
-                gameDirector.DebugDiceClean();
-                ruleManager.AdvanceTime(this.dice, card);
-                mainModel.NotifyAged();
-            });
-            cardDetailPanel.OpenEvent(card.ID);
-            mainModel.NotifyEventCardChecked();
-        });
+        eventCardController.DrawEventCard(card.ToEventMeta())
+                           .First()
+                           .Do(_=>cardDetailPanel.OpenEvent(card.ID))
+                           .Do(_=>mainModel.NotifyEventCardChecked())
+                           .SelectMany(_=> cardDetailPanel.OnCloseAsObservable)
+                           .First()
+                           .Subscribe(_ =>
+                            {
+                                gameDirector.DebugDiceClean();
+                                ruleManager.AdvanceTime(this.dice, card);
+                                mainModel.NotifyAged();
+                            });
     }
 
     void onAging()
