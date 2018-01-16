@@ -217,14 +217,14 @@ public class MainPresenter : MonoBehaviour {
     void onCastDice()
     {
         diceController.IsActive = true;
-                      
-        gameDirector.OnDiceButtonClickAsObservable.Subscribe(_ =>
+               
+        gameDirector.OnDiceButtonClickAsObservable
+                    .SelectMany(_=>gameDirector.DiceRoll())
+                    .First()
+                    .Subscribe(dice=>
         {
-            gameDirector.DiceRoll().First().Subscribe(dice =>
-            {
-                this.dice = dice;
-                mainModel.NotifyDiceCasted(); // 判断待ちステータスに進める
-            });
+            this.dice = dice;
+            mainModel.NotifyDiceCasted(); // 判断待ちステータスに進める
         }).AddTo(phaseRangedDisposable);
     }
 
