@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UniRx;
+using UniRx.Triggers;
 
 public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 
@@ -16,6 +18,8 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 	private Vector3 popupScale = new Vector3 (1f, 1f, 1f);
 	private Vector3 popoutScale = new Vector3 (1.2f, 1.2f, 1f);
 
+    private Subject<UniRx.Unit> onConfirmSubject = new Subject<Unit>();
+
 
 	// Use this for initialization
 	void Start () {
@@ -27,27 +31,28 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 		msgText = msgWindow.transform.Find ("Message").gameObject.GetComponent<Text> ();
 	}
 
-    public delegate void onConfirm();
-    onConfirm _onConfirm;
-    public void Popup(string msg, onConfirm onConfirmCallback)
-    {
-        _onConfirm = onConfirmCallback;
-        Popup(msg);
-    }
-
-    public void Popup(string msg) {
+    public IObservable<Unit> Popup(string msg) {
 
 		// メッセージを更新
 		msgText.text = msg;
 
 		// ポップップ開始
 		gameObject.SetActive (true);
-		StartCoroutine(StartPopup());
+
+        var strm = Observable.FromCoroutine(StartPopup)
+                             .SelectMany(_ => onConfirmSubject)
+                             .SelectMany(_ => Observable.FromCoroutine(StartPopout))
+                             .First()
+                             .Publish()
+                             .RefCount();
+        
+        strm.Subscribe();
+
+        return strm;
 	}
 
 	private IEnumerator StartPopup() {
 		float startTime = Time.timeSinceLevelLoad;
-
 
 		while((Time.timeSinceLevelLoad - startTime) < duration){
 
@@ -67,7 +72,7 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 	 */
 	public void OnPointerClick(PointerEventData data) {
 		// ポップアウト開始
-		StartCoroutine(StartPopout());
+        onConfirmSubject.OnNext(Unit.Default);
 	}
 
 	private IEnumerator StartPopout() {
@@ -98,7 +103,5 @@ public class PopupMessaegController : MonoBehaviour, IPointerClickHandler  {
 		}
 
 		gameObject.SetActive (false);
-        _onConfirm?.Invoke();
-        _onConfirm = null;
     }
 }

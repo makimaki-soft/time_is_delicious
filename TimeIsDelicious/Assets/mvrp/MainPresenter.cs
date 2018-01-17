@@ -170,16 +170,10 @@ public class MainPresenter : MonoBehaviour {
 
         // 今ラウンドの初期化処理
         // メッセージを表示して、確認されたらStartRound
-        popupMessageController.Popup("ラウンド開始します", () =>
-        {
-            foreach (var foodCard in ruleManager.StartRound())
-            {
-                onFoodCard(foodCard);
-                foodCardModelList.Add(foodCard);
-            }
-
-            mainModel.NotifyRoundInitialized();
-        });
+        popupMessageController.Popup("ラウンド開始します")
+                              .First()
+                              .Do(_=>initRoundFoodCard())
+                              .Subscribe(_ => mainModel.NotifyRoundInitialized());
     }
 
     void onBetting()
@@ -350,7 +344,15 @@ public class MainPresenter : MonoBehaviour {
         return playerUI;
     }
 
-    private void onFoodCard(FoodCard foodCardModel)
+    void initRoundFoodCard()
+    {
+        foodCardModelList = ruleManager.StartRound();
+
+        cardViewList = foodCardModelList.Select(foodCard => System.Tuple.Create(foodCard, createFoodCardView(foodCard)))
+                                        .ToDictionary(tpl => tpl.Item1.GUID, tpl => tpl.Item2);
+    }
+
+    private CardViewModel createFoodCardView(FoodCard foodCardModel)
     {
         var foodCardView = foodCardFactory.CreateFoodCard();
 
@@ -375,7 +377,7 @@ public class MainPresenter : MonoBehaviour {
             foodCardView.RunPoisonEffect();
         }).AddTo(foodCardView);
 
-        cardViewList[foodCardModel.GUID] = foodCardView;
+        return foodCardView;
     }
 
     private void OnDestroy()
