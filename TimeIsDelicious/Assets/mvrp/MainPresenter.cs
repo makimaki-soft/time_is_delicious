@@ -236,14 +236,14 @@ public class MainPresenter : MonoBehaviour {
         {
             playerWindowController.SetCurrentPlayer(player.ID);
             playerRangedDisposable.Clear();
-            player.Bets.ObserveCountChanged(true).Subscribe(cnt =>
-            {
-                // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
-                if (cnt == 0)
-                {
-                    mainModel.Pass();
-                }
-            }).AddTo(playerRangedDisposable);
+
+            // 売るorパス決定ステータスに入ったとき、カレントプレイヤが肉をもってなかったら自動パス
+            player.Bets.ObserveCountChanged(true)
+                  .Where(cnt=>cnt == 0)
+                  .AsUnitObservable()
+                  .Subscribe(_=>mainModel.Pass())
+                  .AddTo(playerRangedDisposable);
+            
         }).AddTo(phaseRangedDisposable);
 
         foreach (var foodCardModel in foodCardModelList)
@@ -326,16 +326,13 @@ public class MainPresenter : MonoBehaviour {
         // UI追加
         var playerUI = playerWindowController.AddPlayer(player.Name, player.ID);
 
-        player.Bets.ObserveRemove().Subscribe((bet) =>
-        {
-            var card = bet.Value;
-            if (card.Rotten.Value)
-            {
-                // 腐ったことにより手放した
-                playerUI.Sadden();
-            }
-        }).AddTo(playerUI);
-
+        // 腐ったことにより手放したら泣く
+        player.Bets.ObserveRemove()
+              .Where(removed => removed.Value.Rotten.Value)
+              .AsUnitObservable()
+              .Subscribe(_ => playerUI.Sadden())
+              .AddTo(playerUI);
+        
         // 得点 <-> UI
         player.TotalEarned
               .Subscribe(earned => playerUI.UpdateTotalEarned(earned))
@@ -356,6 +353,7 @@ public class MainPresenter : MonoBehaviour {
     {
         var foodCardView = foodCardFactory.CreateFoodCard();
 
+        // Createした瞬間はStart()が呼ばれていない
         Observable.NextFrame().Subscribe(_ =>
         {
             foodCardView.SetID(foodCardModel.ID);
