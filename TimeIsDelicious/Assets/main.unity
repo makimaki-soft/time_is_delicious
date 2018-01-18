@@ -4234,7 +4234,7 @@ GameObject:
   - component: {fileID: 1599356778}
   - component: {fileID: 1599356777}
   m_Layer: 0
-  m_Name: TempManager
+  m_Name: FoodCardGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4248,7 +4248,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1599356776}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c24ef9992414be446a5eca7b52aec440, type: 3}
+  m_Script: {fileID: 11500000, guid: 37ebbbb571a5f49559a5dc5ec4d3f183, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   cardVMPrefab: {fileID: 1902369455171602, guid: a27fe1400f7c6064abc846ceef1296ca,
@@ -5513,7 +5513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c23689ce2cec646ed92a673e71f15a59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodCardFactory: {fileID: 1599356777}
+  foodCardGenerator: {fileID: 1599356777}
   eventCardController: {fileID: 1868384429}
   gameDirector: {fileID: 1868384425}
   popupMessageController: {fileID: 1576962547}
