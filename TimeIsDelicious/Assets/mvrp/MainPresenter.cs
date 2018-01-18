@@ -41,7 +41,7 @@ static class ModelViewExtension
 public class MainPresenter : MonoBehaviour {
     
     [SerializeField]
-    private TempManager foodCardFactory;
+    FoodCardGenerator foodCardGenerator;
 
     [SerializeField]
     private EventCardController eventCardController;
@@ -163,7 +163,7 @@ public class MainPresenter : MonoBehaviour {
             if (removeView != null)
             {
                 foodCard.Reset();
-                foodCardFactory.RemoveFoodCard(removeView);
+                foodCardGenerator.RemoveFoodCard(removeView);
             }
         }
         foodCardModelList.Clear();
@@ -353,7 +353,7 @@ public class MainPresenter : MonoBehaviour {
 
     private CardViewModel createFoodCardView(FoodCard foodCardModel)
     {
-        var foodCardView = foodCardFactory.CreateFoodCard();
+        var foodCardView = foodCardGenerator.CreateFoodCard();
 
         // Createした瞬間はStart()が呼ばれていない
         Observable.NextFrame().Subscribe(_ =>

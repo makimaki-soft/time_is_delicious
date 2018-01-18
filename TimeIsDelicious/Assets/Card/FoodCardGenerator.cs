@@ -8,7 +8,7 @@ using System.Linq;
 using UniRx;
 
 // FoodCardListのViewという扱いに変更
-public class TempManager : MonoBehaviour
+public class FoodCardGenerator : MonoBehaviour
 {
     [SerializeField]
     private GameObject cardVMPrefab;
