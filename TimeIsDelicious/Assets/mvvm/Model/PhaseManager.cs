@@ -7,7 +7,7 @@ using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
 
-public sealed class MainModel
+public sealed class PhaseManager
 {
     public enum Status
     {
@@ -43,7 +43,7 @@ public sealed class MainModel
         get { return timesIsDelicious.NumberOfPlayers; }
     }
 
-    public MainModel(TimeIsDelicious ruleManager)
+    public PhaseManager(TimeIsDelicious ruleManager)
     {
         timesIsDelicious = ruleManager;
 

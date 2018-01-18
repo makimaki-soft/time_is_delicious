@@ -14,7 +14,7 @@ public class StatusPanelController : MonoBehaviour {
 		_statusText = statusTextObj.GetComponent<Text> ();
 	}
 
-    public MainModel.Status gdStatus { get; set; }
+    public PhaseManager.Status gdStatus { get; set; }
 	
 	// Update is called once per frame
 	void Update () {
@@ -22,25 +22,25 @@ public class StatusPanelController : MonoBehaviour {
 		string msg = "";
 
         switch(gdStatus) {
-		case MainModel.Status.WaitForRoundStart:
+		case PhaseManager.Status.WaitForRoundStart:
 			msg = "準備中...";
 			break;
-		case MainModel.Status.Betting:
+		case PhaseManager.Status.Betting:
 			msg = "ベットする肉を決めてください";
 			break;
-		case MainModel.Status.CastDice:
+		case PhaseManager.Status.CastDice:
 			msg = "サイコロをふってください";
 			break;
-		case MainModel.Status.DecisionMaking:
+		case PhaseManager.Status.DecisionMaking:
 			msg = "売るかもう少し熟成させるか決めてください";
 			break;
-		case MainModel.Status.Event:
+		case PhaseManager.Status.Event:
 			msg = "熟.....塾々..........塾々々...............";
 			break;
-		case MainModel.Status.Aging:
+		case PhaseManager.Status.Aging:
 			msg = "今日の天気";
 			break;
-        case MainModel.Status.NextTurn:
+        case PhaseManager.Status.NextTurn:
             msg = "少し美味しくなりました！";
             break;
         }
