@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UniRx;
 
 namespace RuleManager
 {
@@ -10,8 +11,14 @@ namespace RuleManager
         Wind
     }
 
-    public class EventCard
+    public class EventCard : ICard
     {
+        public IObservable<Unit> OnDiscardAsObservable
+        {
+            get { return onDiscardSubjct; }
+        }
+        Subject<Unit> onDiscardSubjct = new Subject<Unit>();
+
 		private readonly int _id;
 		public int ID
 		{
@@ -42,6 +49,16 @@ namespace RuleManager
             tmp[EventType.Humid] = humidity;
             tmp[EventType.Wind] = wind;
             Weather = new ReadOnlyDictionary<EventType, int>(tmp);
+        }
+
+        public void Reset()
+        {
+            
+        }
+
+        public void Discard()
+        {
+            onDiscardSubjct.OnNext(Unit.Default);
         }
     }
 

@@ -17,7 +17,7 @@ namespace RuleManager
         public int scale;
     }
 
-    public class FoodCard : GameComponent
+    public class FoodCard : GameComponent, ICard
     {
         public int ID { get; private set; }
         public string Name { get; private set; }
@@ -27,7 +27,12 @@ namespace RuleManager
         public IReactiveProperty<int> Aged { get; private set; }
         public IReactiveProperty<int> Price { get; private set; }
         public IReactiveProperty<bool> Rotten { get; private set; }
-
+        public IObservable<Unit> OnDiscardAsObservable
+        {
+            get { return onDiscardSubjct; }
+        }
+        Subject<Unit> onDiscardSubjct = new Subject<Unit>();
+    
         private readonly List<PriceTable> _priceTable;
         public IReadOnlyList<PriceTable> PriceTable
         {
@@ -118,6 +123,11 @@ namespace RuleManager
             Price.Value = 0;
             Rotten.Value = false;
             _betPlayersList = new List<Player>();
+        }
+
+        public void Discard()
+        {
+            onDiscardSubjct.OnNext(Unit.Default);
         }
     }
 }

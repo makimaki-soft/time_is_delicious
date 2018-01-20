@@ -162,8 +162,8 @@ public class MainPresenter : MonoBehaviour {
             var removeView = cardViewList.FirstOrDefault(view => view.Value.ID == foodCard.ID).Value;
             if (removeView != null)
             {
-                foodCard.Reset();
                 foodCardGenerator.RemoveFoodCard(removeView);
+                foodCard.Discard();
             }
         }
         foodCardModelList.Clear();
@@ -283,6 +283,7 @@ public class MainPresenter : MonoBehaviour {
                            {
                                 gameDirector.DebugDiceClean();
                                 ruleManager.AdvanceTime(this.dice, card);
+                                card.Discard();
                                 phaseManager.NotifyAged();
                            });
     }
